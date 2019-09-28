@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
-import Head from 'next/head';
 import { TweenMax } from 'gsap';
+import Link from 'next/link';
+import LayoutSetup from '../components/layoutSetup';
 
 const FeatureCard = ({ title, picturePath }) => {
     return (
@@ -96,9 +97,7 @@ export default () => {
 
     return (
         <>
-            <Head>
-                <link href="https://fonts.googleapis.com/css?family=Oswald:300,400,500,600,700&display=swap" rel="stylesheet" />
-            </Head>
+            <LayoutSetup/>
             <header>
                 <div className="horizontal-centered justify-space-around">
                     <section>
@@ -112,12 +111,16 @@ export default () => {
                     <FeatureCard title="Urmărește-ți progresul" picturePath="/static/king.svg" />
                     <FeatureCard title="Primește diplome" picturePath="/static/diploma.svg" />
                 </section>
+
                 <button className="see-details">Să începem! Înregistrare.</button>
-                <button className="login-already-user">Deja utilizator? Autentificare.</button>
+                <Link href="/login">
+                    <button className="login-already-user">Deja utilizator? Autentificare.</button>
+                </Link>
             </header>
 
             <main>
                 <section className="feature-detail first-detail">
+
                 </section>
                 <section className="feature-detail second-detail">
                 </section>
@@ -240,6 +243,10 @@ export default () => {
             .feature-detail {
                 width: 100%;
                 height: 300px;
+                padding: 25px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
             }
             .feature-detail:not(:last-child) {
             }
@@ -249,6 +256,7 @@ export default () => {
 
             .second-detail {
             }
+
             `}
             </style>
         </>
