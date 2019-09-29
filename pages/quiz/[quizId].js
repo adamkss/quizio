@@ -1,35 +1,51 @@
 import { useState, useEffect, useCallback } from 'react';
-import LayoutSetup from '../components/layoutSetup';
+import LayoutSetup from '../../components/layoutSetup';
+import { getNextQuizQuestion, verifyAnswer } from '../../utils/QuizRequests';
+import Router, { useRouter } from 'next/router';
 
-const answerOptions = [
-    {
-        id: 1,
-        answer: "Clasa a = new Clasa()"
-    },
-    {
-        id: 2,
-        answer: "Clasa a = Clasa(a)"
-    },
-    {
-        id: 3,
-        answer: "a = new Clasa()"
-    }
-]
+export default ({ }) => {
+    const router = useRouter();
+    const { quizId } = router.query;
 
-const verifyAnswer = (answerId, callback) => {
-    callback(answerId % 2 == 0)
-}
-
-export default ({ questions = [] }) => {
     const [progress, setProgress] = useState(0);
+    const [currentQuestion, setCurrentQuestion] = useState(null);
     const [nextQuestionAvailable, setNextQuestionAvailable] = useState(false);
     const [currentlySelectedAnswerId, setCurrentlySelectedAnswerId] = useState(null);
     const [isCurrentAnswerCorrect, setIsCurrentAnswerCorrect] = useState(false);
 
-    const currentAnswerCorrectVerdictCallback = useCallback((isCorrect) => {
-        setIsCurrentAnswerCorrect(isCorrect);
-        setProgress((progress) => progress + 10);
-    }, []);
+    const getAndSetNextQuizQuestion = async () => {
+        const { data: { question, done } } = await getNextQuizQuestion(quizId);
+        if (done) {
+            Router.push('/quiz/done');
+        }
+        setCurrentQuestion(question);
+    }
+
+    //TODO: This loads the first question from the server
+    useEffect(() => {
+        if (quizId)
+            getAndSetNextQuizQuestion();
+    }, [quizId]);
+
+    const onAnswerSelected = useCallback(async (selectedAnswerId) => {
+        setCurrentlySelectedAnswerId(selectedAnswerId);
+        const { data: { valid, progress: progressUnit } } = await verifyAnswer(quizId, currentQuestion.id, selectedAnswerId);
+        setIsCurrentAnswerCorrect(valid);
+        if (valid) {
+            setProgress((progress) => {
+                const totalProgress = progress + progressUnit;
+                return totalProgress > 99 ? 100 : totalProgress;
+            });
+        }
+        setNextQuestionAvailable(true);
+    }, [currentQuestion, quizId]);
+
+    const onNextPressed = () => {
+        setNextQuestionAvailable(false);
+        setCurrentlySelectedAnswerId(null);
+        setIsCurrentAnswerCorrect(false);
+        getAndSetNextQuizQuestion();
+    }
 
     return (
         <>
@@ -42,20 +58,22 @@ export default ({ questions = [] }) => {
                 </header>
                 <main>
                     <div className="question-container">
-                        <Question
-                            question="Cum se declara un obiect?"
-                            options={answerOptions}
-                            onAnswerSelected={(answerId) => {
-                                setNextQuestionAvailable(true)
-                                setCurrentlySelectedAnswerId(answerId)
-                                verifyAnswer(answerId, currentAnswerCorrectVerdictCallback)
-                            }}
-                            currentlySelectedAnswerId={currentlySelectedAnswerId}
-                            isSelectedAnswerCorrect={isCurrentAnswerCorrect}
-                        />
+                        {currentQuestion ?
+                            <Question
+                                question={currentQuestion.question}
+                                options={currentQuestion.options}
+                                onAnswerSelected={onAnswerSelected}
+                                currentlySelectedAnswerId={currentlySelectedAnswerId}
+                                isSelectedAnswerCorrect={isCurrentAnswerCorrect}
+                            />
+                            :
+                            null
+                        }
                     </div>
                     <div className="button-container">
-                        <button className={`go-forward${nextQuestionAvailable ? " active" : ""}`}>
+                        <button
+                            className={`go-forward${nextQuestionAvailable ? " active" : ""}`}
+                            onClick={onNextPressed}>
                             Next
                         </button>
                     </div>
