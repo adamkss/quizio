@@ -8,6 +8,9 @@ export default () => {
         </Head>
         <style jsx global>
             {`
+                * {
+                    box-sizing: border-box;
+                }
                 body, html {
                     margin: 0;
                     padding: 0;
@@ -33,6 +36,16 @@ export default () => {
                     display: flex;
                     justify-content: center;
                     align-items: center;
+                }
+                .horizontally-centered {
+                    width: 100%;
+                    display: flex;
+                    justify-content: center;
+                }
+                .horizontally-end-positioned {
+                    width: 100%;
+                    display: flex;
+                    justify-content: flex-end;
                 }
             `}
         </style>

@@ -59,14 +59,25 @@ export default () => {
                     color: white;
                     font-family: 'Oswald', sans-serif;
                     font-size: 1.15em;
+                    transition: all 0.3s;
+                }
+                .buttons-container button:hover {
+                    cursor: pointer;
                 }
                 .take-another-quiz-button {
                     background-color: purple;
                     box-shadow: 0px 0px 7px purple;
                 }
+                .take-another-quiz-button:hover {
+                    box-shadow: 0px 0px 12px purple;
+                }
+
                 .continue-learning-button {
-                    background-color: green;
-                    box-shadow: 0px 0px 7px green;
+                    background-color: #18c3f8;
+                    box-shadow: 0px 0px 7px #18c3f8;
+                }
+                .continue-learning-button:hover {
+                    box-shadow: 0px 0px 12px #18c3f8;
                 }
 
                 .message * {
