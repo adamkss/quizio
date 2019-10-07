@@ -1,8 +1,8 @@
 import { useRouter } from 'next/router'
-import { getAllQuestionsOfAQuiz, saveQuestion } from '../../../../../utils/QuizRequests';
+import { getAllQuestionsOfAQuiz, saveQuestion, addOptionToQuestion } from '../../../../../utils/QuizRequests';
 import LayoutSetup from '../../../../../components/layoutSetup';
 import GenericDialog from '../../../../../components/GenericDailog';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 
 export default () => {
     const { quizId } = useRouter().query;
@@ -10,10 +10,10 @@ export default () => {
     const [isCreatingQuestionNow, setIsCreatingQuestionNow] = React.useState(false);
 
     const getAndSetAllQuestionsOfAQuiz = useCallback(async (quizId) => {
-            if (quizId) {
-                const questions = await getAllQuestionsOfAQuiz(quizId);
-                setQuestions(questions);
-            }
+        if (quizId) {
+            const questions = await getAllQuestionsOfAQuiz(quizId);
+            setQuestions(questions);
+        }
     }, [quizId]);
 
     React.useEffect(() => {
@@ -35,6 +35,25 @@ export default () => {
         });
     }
 
+    const getOnAddNewOptionCallback = (questionId) => async (newQuestionOption) => {
+        const newQuestionOptions = await addOptionToQuestion(questionId, newQuestionOption);
+        const questionOptionUpdated = questions.find(question => question.id == questionId);
+        const questionToAlterIndex = questions.indexOf(questionOptionUpdated);
+
+        console.log(newQuestionOptions)
+        if (questionOptionUpdated) {
+            setQuestions([
+                ...questions.slice(0, questionToAlterIndex),
+                {
+                    ...questionOptionUpdated,
+                    questionOptions: newQuestionOptions
+                },
+                ...questions.slice(questionToAlterIndex + 1, questions.length)
+            ]
+            )
+        }
+    };
+
     return (
         <>
             <LayoutSetup />
@@ -44,6 +63,7 @@ export default () => {
                         questionTitle={question.question}
                         questionOptions={question.questionOptions}
                         key={question.id}
+                        onAddNewOption={getOnAddNewOptionCallback(question.id)}
                     />
                 )}
                 <img
@@ -52,7 +72,7 @@ export default () => {
                     src="/static/create_fab.svg"
                     onClick={createQuestionCallback} />
                 {isCreatingQuestionNow ?
-                    <CreateQuestionDialog 
+                    <CreateQuestionDialog
                         onDismissDialog={onDismissCreateQuestionDialog}
                         onSaveQuestion={onSaveQuestion} />
                     :
@@ -83,10 +103,42 @@ export default () => {
     )
 }
 
-const Question = ({ questionTitle, questionOptions }) => {
+const Question = ({ questionTitle, questionOptions, onAddNewOption }) => {
+    const [isNewOptionWanted, setIsNewOptionWanted] = useState(false);
+    const [newOption, setNewOption] = useState("");
+    const newOptionInputRef = useRef(null);
+
+    const onAddNewOptionButtonClick = useCallback((event) => {
+        setIsNewOptionWanted(true);
+        event.stopPropagation();
+    }, []);
+
+    const onNewOptionValueChange = useCallback((event) => {
+        setNewOption(event.target.value);
+    }, []);
+
+    const onCancelNewOptionCreation = useCallback((e) => {
+        if (e.target.tagName === "ARTICLE" || e.target.tagName === "P" || e.target.tagName === "BUTTON") {
+            setIsNewOptionWanted(false);
+            setNewOption("");
+        }
+    }, []);
+
+    const onKeyDownNewOptionInput = useCallback((event) => {
+        //Exit is pressed
+        if (event.keyCode === 27) {
+            setIsNewOptionWanted(false);
+            setNewOption("");
+        }
+        //Enter was pressed
+        if (event.keyCode === 13) {
+            onAddNewOption(newOption);
+        }
+    }, [newOption]);
+
     return (
         <>
-            <article>
+            <article onClick={onCancelNewOptionCreation}>
                 <h2>{questionTitle}</h2>
                 {questionOptions.map((questionOption, index) => {
                     return (
@@ -103,8 +155,17 @@ const Question = ({ questionTitle, questionOptions }) => {
                         </p>
                     )
                 })}
+                {isNewOptionWanted ?
+                    <div className="add-new-option-section">
+                        <input autoFocus ref={newOptionInputRef} type="text" value={newOption}
+                            onChange={onNewOptionValueChange}
+                            onKeyDown={onKeyDownNewOptionInput} />
+                    </div>
+                    :
+                    null
+                }
                 <img title="Delete question" src="/static/delete-24px.svg" className="delete-icon initially-less-visible" />
-                <img title="New answer option" src="/static/add-icon.svg" className="add-icon initially-less-visible" />
+                <img title="New answer option" src="/static/add-icon.svg" className="add-icon initially-less-visible" onClick={onAddNewOptionButtonClick} />
             </article>
             <style jsx>
                 {`
@@ -167,7 +228,14 @@ const Question = ({ questionTitle, questionOptions }) => {
                     .right-answer-icon {
                         margin-left: 5px;
                     }
-                    
+                    .add-new-option-section input {
+                        width: 300px;
+                        font-family: 'Arial', sans-serif;
+                        font-size: 1.1em;
+                        outline: none;
+                        border: none;
+                        border-bottom: 1px solid grey;
+                    }
                 `}
             </style>
         </>
@@ -255,9 +323,9 @@ const CreateQuestionDialog = ({ onDismissDialog, onSaveQuestion }) => {
                         <button className="add-option" onClick={createNewEmptyOption}>Add option</button>
                     </div>
                     <div className="horizontally-end-positioned">
-                        <button 
+                        <button
                             className={`save-question${isNewQuestionReadyToBeCreated ? "" : " inactive"}`}
-                            onClick={onSaveQuestionClicked}>Save question</button>
+                            onClick={isNewQuestionReadyToBeCreated ? onSaveQuestionClicked : null}>Save question</button>
                     </div>
                 </form>
             </GenericDialog>

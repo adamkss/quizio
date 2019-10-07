@@ -38,3 +38,9 @@ export const saveQuestion = (quizId, questionTitle, questionOptions, rightAnswer
         rightAnswer
     });
 }
+
+export const addOptionToQuestion = (questionId, questionOption) => {
+    return axios.post(`/courses/questions/${questionId}/questionOptions`, {
+        questionOption
+    }).then(getDataFromResponseAsPromise)
+}
