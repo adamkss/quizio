@@ -1,8 +1,25 @@
 import { useRouter } from 'next/router'
-import { getAllQuestionsOfAQuiz, saveQuestion, addOptionToQuestion } from '../../../../../utils/QuizRequests';
+import { getAllQuestionsOfAQuiz, saveQuestion, addOptionToQuestion, setNewAnswerOptionAsCorrectAnswer } from '../../../../../utils/QuizRequests';
 import LayoutSetup from '../../../../../components/layoutSetup';
 import GenericDialog from '../../../../../components/GenericDailog';
 import { useState, useCallback, useEffect, useRef } from 'react';
+
+const getNewQuestionsWithUpdatedQuestionOptions = (questions, questionId, newQuestionOptions) => {
+    const questionOptionUpdated = questions.find(question => question.id == questionId);
+    const questionToAlterIndex = questions.indexOf(questionOptionUpdated);
+
+    if (questionOptionUpdated) {
+        return [
+            ...questions.slice(0, questionToAlterIndex),
+            {
+                ...questionOptionUpdated,
+                questionOptions: newQuestionOptions
+            },
+            ...questions.slice(questionToAlterIndex + 1, questions.length)
+        ]
+    }
+    return questions;
+}
 
 export default () => {
     const { quizId } = useRouter().query;
@@ -37,21 +54,20 @@ export default () => {
 
     const getOnAddNewOptionCallback = (questionId) => async (newQuestionOption) => {
         const newQuestionOptions = await addOptionToQuestion(questionId, newQuestionOption);
-        const questionOptionUpdated = questions.find(question => question.id == questionId);
-        const questionToAlterIndex = questions.indexOf(questionOptionUpdated);
+        setQuestions(getNewQuestionsWithUpdatedQuestionOptions(
+            questions,
+            questionId,
+            newQuestionOptions
+        ))
+    };
 
-        console.log(newQuestionOptions)
-        if (questionOptionUpdated) {
-            setQuestions([
-                ...questions.slice(0, questionToAlterIndex),
-                {
-                    ...questionOptionUpdated,
-                    questionOptions: newQuestionOptions
-                },
-                ...questions.slice(questionToAlterIndex + 1, questions.length)
-            ]
-            )
-        }
+    const getOnSetNewCorrectAnswerCallback = (questionId) => async (questionOptionId) => {
+        const newQuestionOptions = await setNewAnswerOptionAsCorrectAnswer(questionId, questionOptionId);
+        setQuestions(getNewQuestionsWithUpdatedQuestionOptions(
+            questions,
+            questionId,
+            newQuestionOptions
+        ))
     };
 
     return (
@@ -64,6 +80,7 @@ export default () => {
                         questionOptions={question.questionOptions}
                         key={question.id}
                         onAddNewOption={getOnAddNewOptionCallback(question.id)}
+                        onSetNewCorrectAnswer={getOnSetNewCorrectAnswerCallback(question.id)}
                     />
                 )}
                 <img
@@ -103,7 +120,7 @@ export default () => {
     )
 }
 
-const Question = ({ questionTitle, questionOptions, onAddNewOption }) => {
+const Question = ({ questionTitle, questionOptions, onAddNewOption, onSetNewCorrectAnswer }) => {
     const [isNewOptionWanted, setIsNewOptionWanted] = useState(false);
     const [newOption, setNewOption] = useState("");
     const newOptionInputRef = useRef(null);
@@ -133,8 +150,14 @@ const Question = ({ questionTitle, questionOptions, onAddNewOption }) => {
         //Enter was pressed
         if (event.keyCode === 13) {
             onAddNewOption(newOption);
+            setIsNewOptionWanted(false);
+            setNewOption("");
         }
     }, [newOption]);
+
+    const getSetNewCorrectQuestionOptionCallback = (newCorrectOptionId) => async () => {
+        onSetNewCorrectAnswer(newCorrectOptionId);
+    };
 
     return (
         <>
@@ -142,7 +165,7 @@ const Question = ({ questionTitle, questionOptions, onAddNewOption }) => {
                 <h2>{questionTitle}</h2>
                 {questionOptions.map((questionOption, index) => {
                     return (
-                        <p className="question-option" key={questionOption.id}>
+                        <div className="question-option" key={questionOption.id}>
                             <span className="order-index">{index + 1}.</span>
                             <span key={questionOption.id}>
                                 {questionOption.title}
@@ -152,7 +175,18 @@ const Question = ({ questionTitle, questionOptions, onAddNewOption }) => {
                                 :
                                 null
                             }
-                        </p>
+                            {!questionOption.amITheRightAnswer ?
+                                <img title="Set as right answer"
+                                    className="accent-on-question-hover"
+                                    src="/static/check_circle_black.svg"
+                                    onClick={getSetNewCorrectQuestionOptionCallback(questionOption.id)} />
+                                :
+                                null
+                            }
+                            <img title="Delete answer"
+                                className="accent-on-question-hover"
+                                src="/static/delete-24px.svg" />
+                        </div>
                     )
                 })}
                 {isNewOptionWanted ?
@@ -191,6 +225,18 @@ const Question = ({ questionTitle, questionOptions, onAddNewOption }) => {
                     }
                     .question-option .order-index {
                         margin-right: 5px;
+                    }
+                    .accent-on-question-hover {
+                        cursor: pointer;
+                        opacity: 0;
+                        transition: all 0.3s;
+                        margin-left: 5px;
+                    }
+                    .question-option:hover .accent-on-question-hover:not(:hover) {
+                        opacity: 0.6;
+                    }
+                    .accent-on-question-hover:hover {
+                        opacity: 1;
                     }
                     article {
                         position: relative;

@@ -44,3 +44,9 @@ export const addOptionToQuestion = (questionId, questionOption) => {
         questionOption
     }).then(getDataFromResponseAsPromise)
 }
+
+export const setNewAnswerOptionAsCorrectAnswer = (questionId, newCorrectQuestionOptionId) => {
+    return axios.put(`/courses/questions/${questionId}/rightAnswer`, {
+        newCorrectQuestionOptionId
+    }).then(getDataFromResponseAsPromise);
+}
