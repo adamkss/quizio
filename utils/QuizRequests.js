@@ -50,3 +50,11 @@ export const setNewAnswerOptionAsCorrectAnswer = (questionId, newCorrectQuestion
         newCorrectQuestionOptionId
     }).then(getDataFromResponseAsPromise);
 }
+
+export const deleteQuestionOptionFromQuestion = (questionId, questionOptionId) => {
+    return axios.delete(`/courses/questions/${questionId}/questionOptions/${questionOptionId}`).then(getDataFromResponseAsPromise);
+}
+
+export const deleteQuestion = (questionId) => {
+    return axios.delete(`/courses/questions/${questionId}`);
+}

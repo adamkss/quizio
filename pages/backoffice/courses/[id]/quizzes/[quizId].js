@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import { getAllQuestionsOfAQuiz, saveQuestion, addOptionToQuestion, setNewAnswerOptionAsCorrectAnswer } from '../../../../../utils/QuizRequests';
+import { getAllQuestionsOfAQuiz, saveQuestion, addOptionToQuestion, setNewAnswerOptionAsCorrectAnswer, deleteQuestionOptionFromQuestion, deleteQuestion } from '../../../../../utils/QuizRequests';
 import LayoutSetup from '../../../../../components/layoutSetup';
 import GenericDialog from '../../../../../components/GenericDailog';
 import { useState, useCallback, useEffect, useRef } from 'react';
@@ -70,6 +70,31 @@ export default () => {
         ))
     };
 
+    const getOnDeleteQuestionOptionFromQuestion = (questionId) => async (questionOptionId) => {
+        const newQuestionOptions = await deleteQuestionOptionFromQuestion(questionId, questionOptionId);
+        setQuestions(getNewQuestionsWithUpdatedQuestionOptions(
+            questions,
+            questionId,
+            newQuestionOptions
+        ))
+    }
+
+    const getOnDeleteQuestionCallback = (questionId) => async () => {
+        const { status } = await deleteQuestion(questionId);
+        if (status >= 200 && status <= 300) {
+            const question = questions.find(question => question.id === questionId);
+            if (question) {
+                const indexOfQuestionToDelete = questions.indexOf(question);
+                setQuestions(
+                    [
+                        ...questions.slice(0, indexOfQuestionToDelete),
+                        ...questions.slice(indexOfQuestionToDelete + 1, questions.length)
+                    ]
+                )
+            }
+        }
+    }
+
     return (
         <>
             <LayoutSetup />
@@ -81,6 +106,8 @@ export default () => {
                         key={question.id}
                         onAddNewOption={getOnAddNewOptionCallback(question.id)}
                         onSetNewCorrectAnswer={getOnSetNewCorrectAnswerCallback(question.id)}
+                        onDeleteQuestionOption={getOnDeleteQuestionOptionFromQuestion(question.id)}
+                        onDeleteQuestion={getOnDeleteQuestionCallback(question.id)}
                     />
                 )}
                 <img
@@ -120,7 +147,7 @@ export default () => {
     )
 }
 
-const Question = ({ questionTitle, questionOptions, onAddNewOption, onSetNewCorrectAnswer }) => {
+const Question = ({ questionTitle, questionOptions, onAddNewOption, onSetNewCorrectAnswer, onDeleteQuestionOption, onDeleteQuestion }) => {
     const [isNewOptionWanted, setIsNewOptionWanted] = useState(false);
     const [newOption, setNewOption] = useState("");
     const newOptionInputRef = useRef(null);
@@ -159,6 +186,10 @@ const Question = ({ questionTitle, questionOptions, onAddNewOption, onSetNewCorr
         onSetNewCorrectAnswer(newCorrectOptionId);
     };
 
+    const getDeleteQuestionOptionCallback = (questionOptionIdToDelete) => () => {
+        onDeleteQuestionOption(questionOptionIdToDelete);
+    }
+
     return (
         <>
             <article onClick={onCancelNewOptionCreation}>
@@ -185,7 +216,8 @@ const Question = ({ questionTitle, questionOptions, onAddNewOption, onSetNewCorr
                             }
                             <img title="Delete answer"
                                 className="accent-on-question-hover"
-                                src="/static/delete-24px.svg" />
+                                src="/static/delete-24px.svg"
+                                onClick={getDeleteQuestionOptionCallback(questionOption.id)} />
                         </div>
                     )
                 })}
@@ -198,7 +230,7 @@ const Question = ({ questionTitle, questionOptions, onAddNewOption, onSetNewCorr
                     :
                     null
                 }
-                <img title="Delete question" src="/static/delete-24px.svg" className="delete-icon initially-less-visible" />
+                <img title="Delete question" src="/static/delete-24px.svg" className="delete-icon initially-less-visible" onClick={onDeleteQuestion} />
                 <img title="New answer option" src="/static/add-icon.svg" className="add-icon initially-less-visible" onClick={onAddNewOptionButtonClick} />
             </article>
             <style jsx>
