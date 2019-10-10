@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
-import { getQuizesForCourse } from '../../../utils/QuizRequests';
+import { getQuizesForCourse } from '../../../../utils/QuizRequests';
 import { useRouter } from 'next/router';
-import SetupLayout from '../../../components/layoutSetup';
+import { BackOfficeLayoutWrapper } from '../../../../components/BackOfficeLayoutWrapper';
 
 export default () => {
     const { id } = useRouter().query;
@@ -17,25 +17,25 @@ export default () => {
 
     }, [id]);
     return (
-        <>
-            <SetupLayout/>
-            <main>
-               <section className="quizes">
-                    {quizes.map(quiz => 
-                        <div className="quiz" key={quiz.id}>
-                            <span>{quiz.name}</span>
-                        </div>
-                    )}
-               </section>
+        <BackOfficeLayoutWrapper>
+            <>
+                <main>
+                    <section className="quizes">
+                        {quizes.map(quiz =>
+                            <div className="quiz" key={quiz.id}>
+                                <span>{quiz.name}</span>
+                            </div>
+                        )}
+                    </section>
 
-            </main>
-            <style jsx>
-                {`
+                </main>
+                <style jsx>
+                    {`
                     main {
                         width: 100%;
                         display: flex;
                         justify-content: center;
-                        padding: 10px;
+                        padding: 20px;
                     }
                     .quizes {
                         width: 65vw;
@@ -64,7 +64,8 @@ export default () => {
                         background-color: #ebebeb;
                     }
                 `}
-            </style>
-        </>
+                </style>
+            </>
+        </BackOfficeLayoutWrapper>
     )
 }

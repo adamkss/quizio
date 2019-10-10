@@ -3,6 +3,7 @@ import { getAllQuestionsOfAQuiz, saveQuestion, addOptionToQuestion, setNewAnswer
 import LayoutSetup from '../../../../../components/layoutSetup';
 import GenericDialog from '../../../../../components/GenericDailog';
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { BackOfficeLayoutWrapper } from '../../../../../components/BackOfficeLayoutWrapper';
 
 const getNewQuestionsWithUpdatedQuestionOptions = (questions, questionId, newQuestionOptions) => {
     const questionOptionUpdated = questions.find(question => question.id == questionId);
@@ -96,34 +97,34 @@ export default () => {
     }
 
     return (
-        <>
-            <LayoutSetup />
-            <main>
-                {questions.map(question =>
-                    <Question
-                        questionTitle={question.question}
-                        questionOptions={question.questionOptions}
-                        key={question.id}
-                        onAddNewOption={getOnAddNewOptionCallback(question.id)}
-                        onSetNewCorrectAnswer={getOnSetNewCorrectAnswerCallback(question.id)}
-                        onDeleteQuestionOption={getOnDeleteQuestionOptionFromQuestion(question.id)}
-                        onDeleteQuestion={getOnDeleteQuestionCallback(question.id)}
-                    />
-                )}
-                <img
-                    title="Create new question"
-                    className="add-question-fab"
-                    src="/static/create_fab.svg"
-                    onClick={createQuestionCallback} />
-                {isCreatingQuestionNow ?
-                    <CreateQuestionDialog
-                        onDismissDialog={onDismissCreateQuestionDialog}
-                        onSaveQuestion={onSaveQuestion} />
-                    :
-                    null}
-            </main>
-            <style jsx>
-                {`
+        <BackOfficeLayoutWrapper>
+            <>
+                <main>
+                    {questions.map(question =>
+                        <Question
+                            questionTitle={question.question}
+                            questionOptions={question.questionOptions}
+                            key={question.id}
+                            onAddNewOption={getOnAddNewOptionCallback(question.id)}
+                            onSetNewCorrectAnswer={getOnSetNewCorrectAnswerCallback(question.id)}
+                            onDeleteQuestionOption={getOnDeleteQuestionOptionFromQuestion(question.id)}
+                            onDeleteQuestion={getOnDeleteQuestionCallback(question.id)}
+                        />
+                    )}
+                    <img
+                        title="Create new question"
+                        className="add-question-fab"
+                        src="/static/create_fab.svg"
+                        onClick={createQuestionCallback} />
+                    {isCreatingQuestionNow ?
+                        <CreateQuestionDialog
+                            onDismissDialog={onDismissCreateQuestionDialog}
+                            onSaveQuestion={onSaveQuestion} />
+                        :
+                        null}
+                </main>
+                <style jsx>
+                    {`
                 main {
                     width: 100%;
                     display: flex;
@@ -142,8 +143,9 @@ export default () => {
                     border-radius: 50%;
                 }
                 `}
-            </style>
-        </>
+                </style>
+            </>
+        </BackOfficeLayoutWrapper>
     )
 }
 
