@@ -1,6 +1,5 @@
 import { useRouter } from 'next/router'
 import { getAllQuestionsOfAQuiz, saveQuestion, addOptionToQuestion, setNewAnswerOptionAsCorrectAnswer, deleteQuestionOptionFromQuestion, deleteQuestion } from '../../../../../utils/QuizRequests';
-import LayoutSetup from '../../../../../components/layoutSetup';
 import GenericDialog from '../../../../../components/GenericDailog';
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { BackOfficeLayoutWrapper } from '../../../../../components/BackOfficeLayoutWrapper';
@@ -132,12 +131,13 @@ export default () => {
                     flex-wrap: wrap;
                     padding: 20px;
                     margin: -10px;
+                    position: relative;
                 }
                 .add-question-fab {
                     width: 50px;
                     height: 50px;
-                    position: fixed;
-                    bottom: 25px;
+                    position: absolute;
+                    top: 25px;
                     right: 25px;
                     cursor: pointer;
                     border-radius: 50%;

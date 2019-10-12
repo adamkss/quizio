@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { getQuizesForCourse } from '../../../../utils/QuizRequests';
-import { useRouter } from 'next/router';
+import Router, { useRouter } from 'next/router';
 import { BackOfficeLayoutWrapper } from '../../../../components/BackOfficeLayoutWrapper';
 
 export default () => {
@@ -14,8 +14,16 @@ export default () => {
                 setQuizes(quizes);
             }
         })();
-
     }, [id]);
+
+    const getOnClickCallbackForQuizPress = (quizId) => () => {
+        Router.push(`/backoffice/courses/${id}/quizzes/${quizId}`);
+    }
+
+    const onCreateNewQuizPress = () => {
+
+    }
+
     return (
         <BackOfficeLayoutWrapper>
             <>
@@ -23,11 +31,22 @@ export default () => {
                     <section className="quizes">
                         {quizes.map(quiz =>
                             <div className="quiz" key={quiz.id}>
-                                <span>{quiz.name}</span>
+                                <h2>{quiz.name}</h2>
+                                <button className="quiz-operation-button" onClick={getOnClickCallbackForQuizPress(quiz.id)}>
+                                    See questions
+                                </button>
+                                <button className="quiz-operation-button">
+                                    See results of users
+                                </button>
                             </div>
                         )}
                     </section>
-
+                    <img
+                        title="Create new quiz"
+                        className="add-quiz-fab"
+                        src="/static/create_fab.svg"
+                        onClick={onCreateNewQuizPress}
+                         />
                 </main>
                 <style jsx>
                     {`
@@ -36,32 +55,57 @@ export default () => {
                         display: flex;
                         justify-content: center;
                         padding: 20px;
+                        position: relative;
                     }
                     .quizes {
-                        width: 65vw;
-                        border-radius: 5px;
-                        box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.4);
+                        width: 100%;
+                        display: flex;
+                        flex-wrap: wrap;
+                        justify-content: center;
                     }
                     .quiz {
-                        padding-top: 8px;
-                        padding-bottom: 8px;
-                        padding-left: 15px;
-                        width: 100%;
-                        height: 50px;
-                        font-size: 1.3em;
-                        border-bottom: 1px solid #cfcccc;
-                        cursor: pointer;
-                    }
-                    .quiz:first-child {
-                        border-top-right-radius: 5px;
-                        border-top-left-radius: 5px;
-                    }
-                    .quiz:last-child {
-                        border-bottom-right-radius: 5px;
-                        border-bottom-left-radius: 5px;
+                        padding: 25px;
+                        font-size: 1.9em;
+                        box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.2);
+                        border-radius: 5px;
+                        transition: all 0.3s;
                     }
                     .quiz:hover {
-                        background-color: #ebebeb;
+                        box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+                    }
+                    .quiz h2 {
+                        padding: 0;
+                        margin: 0;
+                        margin-bottom: 10px;
+                    }
+                    .quiz-operation-button {
+                        width: 100%;
+                        display: block;
+                        outline: none;
+                        border: none;
+                        font-family: inherit;
+                        font-size: 0.7em;
+                        padding: 10px;
+                        margin: 0;
+                        cursor: pointer;
+                        border-radius: 5px;
+                        transition: all 0.3s;
+                        margin-bottom: 10px;
+                        text-align: left;
+                    }
+                    .quiz-operation-button:hover {
+                        background-color: #103A67;
+                        color: white;
+                        box-shadow: 0px 0px 5px #103A67;
+                    }
+                    .add-quiz-fab {
+                        width: 50px;
+                        height: 50px;
+                        position: absolute;
+                        top: 25px;
+                        right: 25px;
+                        cursor: pointer;
+                        border-radius: 50%;
                     }
                 `}
                 </style>

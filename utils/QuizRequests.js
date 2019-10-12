@@ -31,7 +31,6 @@ export const verifyAnswer = (quizId, questionId, answerId) => {
 }
 
 export const saveQuestion = (quizId, questionTitle, questionOptions, rightAnswer) => {
-    console.log(quizId, questionTitle, questionOptions, rightAnswer)
     return axios.post(`/courses/quizes/${quizId}/questions`, {
         questionTitle,
         options: questionOptions,

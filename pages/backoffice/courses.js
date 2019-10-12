@@ -124,9 +124,9 @@ const Tile = ({ id, title, color: { colorR = 0, colorG = 0, colorB = 0 }, onClic
                 padding-right: 20px;
             }
             button:hover {
-                background-color: purple;
+                background-color: #669FBD;
                 color: white;
-                box-shadow: 0px 0px 8px purple;
+                box-shadow: 0px 0px 8px #669FBD;
             }
             button:hover::after {
                 content: ">";
