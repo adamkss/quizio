@@ -3,6 +3,8 @@ import { getAllQuestionsOfAQuiz, saveQuestion, addOptionToQuestion, setNewAnswer
 import GenericDialog from '../../../../../components/GenericDailog';
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { BackOfficeLayoutWrapper } from '../../../../../components/BackOfficeLayoutWrapper';
+import TextInput from '../../../../../components/TextInput';
+import PrimaryButton from '../../../../../components/PrimaryButton';
 
 const getNewQuestionsWithUpdatedQuestionOptions = (questions, questionId, newQuestionOptions) => {
     const questionOptionUpdated = questions.find(question => question.id == questionId);
@@ -365,17 +367,15 @@ const CreateQuestionDialog = ({ onDismissDialog, onSaveQuestion }) => {
 
     return (
         <>
-            <GenericDialog onDismissDialog={onDismissDialog} >
-                <h1>Create new question</h1>
+            <GenericDialog onDismissDialog={onDismissDialog} title="Create new question" >
                 <form>
-                    <label htmlFor="question-title">Question:</label>
-                    <input
-                        id="question-title"
+                    <TextInput
+                        title="Question:"
                         value={questionTitle}
                         onChange={getCallbackForInputChange(setQuestionTitle)}
                         name="question-title"
                         type="text"
-                        placeholder="Type question here..."></input>
+                        placeholder="Type question here..." />
                     <label>Options:</label>
                     {questionOptions.length === 0 ?
                         <div className="horizontally-centered">
@@ -385,8 +385,7 @@ const CreateQuestionDialog = ({ onDismissDialog, onSaveQuestion }) => {
                         null}
                     {questionOptions.map((questionOption, index) =>
                         <div className="option-input-wrapper" key={index}>
-                            <input
-                                className="option-input"
+                            <TextInput
                                 key={index}
                                 type="text"
                                 placeholder="Option here..."
@@ -402,34 +401,15 @@ const CreateQuestionDialog = ({ onDismissDialog, onSaveQuestion }) => {
                     <div className="horizontally-centered">
                         <button className="add-option" onClick={createNewEmptyOption}>Add option</button>
                     </div>
-                    <div className="horizontally-end-positioned">
-                        <button
-                            className={`save-question${isNewQuestionReadyToBeCreated ? "" : " inactive"}`}
-                            onClick={isNewQuestionReadyToBeCreated ? onSaveQuestionClicked : null}>Save question</button>
-                    </div>
+                    <PrimaryButton
+                        title="Save question"
+                        inactive={!isNewQuestionReadyToBeCreated}
+                        onClick={isNewQuestionReadyToBeCreated ? onSaveQuestionClicked : null}
+                        rightAligned />
                 </form>
             </GenericDialog>
             <style jsx>
                 {`
-                  h1 {
-                      font-size: 1.7em;
-                      font-weight: 500;
-                  }
-                  form label {
-                      font-size: 1.2em;
-                      display: block;
-                  }
-                  form input {
-                      display: block;
-                      width: 400px;
-                      outline: none;
-                      border: 1px solid rgba(0, 0, 0, 0.4);
-                      border-radius: 5px;
-                      padding: 10px;
-                      font-size: 1em;
-                      margin-top: 5px;
-                      margin-bottom: 10px;
-                  }
                   .option-input-wrapper {
                       display: flex;
                       flex-direction: row;
@@ -465,28 +445,6 @@ const CreateQuestionDialog = ({ onDismissDialog, onSaveQuestion }) => {
                   }
                   button.add-option:hover {
                       box-shadow: 1px 1px 12px purple;
-                  }
-                  button.save-question {
-                      width: 100px;
-                      height: 30px;
-                      border: 0;
-                      outline: none;
-                      font-family: 'Oswald', serif;
-                      border-radius: 8px;
-                      background-color: #4BAC60;
-                      color: white;
-                      box-shadow: 1px 1px 8px #4BAC60;
-                      cursor: pointer;
-                      font-size: .9em;
-                      transition: all 0.3s;
-                  }
-                  button.save-question.inactive {
-                      background-color: grey;
-                      box-shadow: 1px 1px 8px grey;
-                      cursor: default;
-                  }
-                  button.save-question:not(.inactive):hover {
-                      box-shadow: 1px 1px 12px #4BAC60;
                   }
                 `}
             </style>

@@ -14,6 +14,7 @@ export default () => {
                 body, html {
                     margin: 0;
                     padding: 0;
+                    overflow: hidden;
                     font-family: 'Oswald', sans-serif;
                 }
                 .fancy-shiny-button {

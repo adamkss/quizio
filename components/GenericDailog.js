@@ -1,4 +1,4 @@
-export default ({ children, onDismissDialog }) => {
+export default ({ children, title, onDismissDialog }) => {
     const onContentWrapperClick = React.useCallback((event) => {
         event.preventDefault();
         event.stopPropagation();
@@ -8,6 +8,7 @@ export default ({ children, onDismissDialog }) => {
         <>
             <div className="dialog-wrapper" onClick={onDismissDialog}>
                 <div className="dialog-content-wrapper" onClick={onContentWrapperClick}>
+                    {title ? <h1>{title}</h1> : null}
                     {children}
                 </div>
             </div>
@@ -32,6 +33,10 @@ export default ({ children, onDismissDialog }) => {
                 padding: 25px;
                 background-color: white;
             }
+            h1 {
+                      font-size: 1.7em;
+                      font-weight: 500;
+                  }
         `}
             </style>
         </>

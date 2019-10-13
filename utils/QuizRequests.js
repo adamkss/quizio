@@ -11,6 +11,12 @@ export const getAllCourses = () => {
     return axios.get('/courses').then(getDataFromResponseAsPromise);
 }
 
+export const createCourse = (courseName) => {
+    return axios.post('/courses', {
+        courseName
+    }).then(getDataFromResponseAsPromise);
+}
+
 export const getQuizesForCourse = (courseId) => {
     return axios.get(`/courses/${courseId}/quizes`).then(getDataFromResponseAsPromise);
 }
@@ -19,8 +25,8 @@ export const getAllQuestionsOfAQuiz = (quizId) => {
     return axios.get(`/courses/quizes/${quizId}/questions`).then(getDataFromResponseAsPromise);
 }
 
-export const getNextQuizQuestion = (quizId) => {
-    return axios.get(`/quiz/${quizId}/nextQuestion`);
+export const getNextQuizQuestion = (sessionId) => {
+    return axios.get(`/quizzes/quizSessions/${sessionId}`);
 }
 
 export const verifyAnswer = (quizId, questionId, answerId) => {

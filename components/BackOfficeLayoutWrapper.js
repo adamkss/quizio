@@ -110,6 +110,7 @@ export const BackOfficeLayoutWrapper = ({ children }) => {
                         padding: 10px 20px;
                         display: flex;
                         align-items: center;
+                        z-index: 2;
                     }   
                     section.breadcrumbs {
                         display: flex;
@@ -132,6 +133,11 @@ export const BackOfficeLayoutWrapper = ({ children }) => {
                         100% {
                             opacity: 1;
                         }
+                    }
+                    main {
+                        height: calc(100vh - 50px);
+                        overflow: auto;
+                        z-index: 1;
                     }
                 `}
             </style>

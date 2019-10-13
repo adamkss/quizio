@@ -1,17 +1,15 @@
 import { useEffect, useState, useCallback } from 'react';
-import { getAllCourses } from '../../utils/QuizRequests';
+import { getAllCourses, createCourse } from '../../utils/QuizRequests';
 import Router from 'next/router';
 import { BackOfficeLayoutWrapper } from '../../components/BackOfficeLayoutWrapper';
-
-const blueColor = {
-    colorR: 78,
-    colorG: 103,
-    colorB: 235
-}
+import GenericDailog from '../../components/GenericDailog';
+import TextInput from '../../components/TextInput';
+import PrimaryButton from '../../components/PrimaryButton';
 
 export default () => {
 
     const [courses, setCourses] = useState([]);
+    const [isCreateNewCourseInProgress, setIsCreateNewCourseInProgress] = useState(false);
 
     useEffect(() => {
         (async () => {
@@ -24,6 +22,20 @@ export default () => {
         Router.push(`/backoffice/courses/${courseId}/quizzes`);
     }, []);
 
+    const createCourseCallback = useCallback(() => {
+        setIsCreateNewCourseInProgress(true);
+    }, []);
+
+    const onDismissCreateCourseProcess = useCallback(() => {
+        setIsCreateNewCourseInProgress(false);
+    }, []);
+
+    const onCreateCourseCallback = useCallback(async (newCourseName) => {
+        setIsCreateNewCourseInProgress(false);
+        const newCourse = await createCourse(newCourseName);
+        setCourses([...courses, newCourse]);
+    }, [courses]);
+
     return (
         <BackOfficeLayoutWrapper>
             <>
@@ -35,15 +47,25 @@ export default () => {
                                     id={course.id}
                                     title={course.courseName}
                                     key={index}
-                                    color={blueColor}
                                     onClick={onTileClick} />
                             )
                         })}
                     </div>
+                    <img
+                        title="Create new course"
+                        className="add-course-fab"
+                        src="/static/create_fab.svg"
+                        onClick={createCourseCallback} />
+                    {isCreateNewCourseInProgress ?
+                        <CreateCourseDialog
+                            onDismissDialog={onDismissCreateCourseProcess}
+                            onCreateCourse={onCreateCourseCallback} />
+                        :
+                        null}
                 </main>
                 <style jsx>
                     {`
-                    header{
+                    header {
                         height: 140px;
                     } 
                     main {
@@ -51,6 +73,8 @@ export default () => {
                         display: flex;
                         justify-content: center;
                         padding: 20px;
+                        padding-bottom: 0px;
+                        position: relative;
                     }
                     
                     .tiles-container { 
@@ -60,6 +84,15 @@ export default () => {
                         justify-content: center;
                         margin: -13px -13px;
                     }
+                    .add-course-fab {
+                        width: 50px;
+                        height: 50px;
+                        position: absolute;
+                        top: 25px;
+                        right: 25px;
+                        cursor: pointer;
+                        border-radius: 50%;
+                    }
                 `}
                 </style>
             </>
@@ -67,7 +100,7 @@ export default () => {
     )
 }
 
-const Tile = ({ id, title, color: { colorR = 0, colorG = 0, colorB = 0 }, onClick }) => {
+const Tile = ({ id, title, onClick }) => {
     const onTileClick = useCallback(() => {
         onClick(id);
     }, [id, onClick]);
@@ -141,6 +174,32 @@ const Tile = ({ id, title, color: { colorR = 0, colorG = 0, colorB = 0 }, onClic
     )
 }
 
-// background: linear-gradient(180deg, rgb(${colorR}, ${colorG}, ${colorB}) 0%, rgb(${colorR + Tile.colorDifference}, ${colorG + Tile.colorDifference}, ${colorB + Tile.colorDifference}) 100%);
+const CreateCourseDialog = ({ onDismissDialog, onCreateCourse }) => {
+    const [newCourseTitle, setNewCourseTitle] = useState("");
 
-Tile.colorDifference = 30;
+    const onCreateCourseClick = useCallback(() => {
+        onCreateCourse(newCourseTitle);
+    }, [newCourseTitle, onCreateCourse]);
+
+    return (
+        <>
+            <GenericDailog onDismissDialog={onDismissDialog} title="Create new course">
+                <TextInput
+                    title="New course name:"
+                    value={newCourseTitle}
+                    valueSetter={setNewCourseTitle}
+                    placeholder="New course name here..." />
+                <PrimaryButton
+                    title="Create course"
+                    inactive={!newCourseTitle}
+                    rightAligned
+                    onClick={newCourseTitle ? onCreateCourseClick : null}
+                />
+            </GenericDailog>
+            <style jsx>
+                {`
+                `}
+            </style>
+        </>
+    )
+}

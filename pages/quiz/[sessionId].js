@@ -5,44 +5,42 @@ import Router, { useRouter } from 'next/router';
 
 export default ({ }) => {
     const router = useRouter();
-    const { quizId } = router.query;
+    const { sessionId } = router.query;
 
     const [progress, setProgress] = useState(0);
     const [currentQuestion, setCurrentQuestion] = useState(null);
     const [nextQuestionAvailable, setNextQuestionAvailable] = useState(false);
-    const [currentlySelectedAnswerId, setCurrentlySelectedAnswerId] = useState(null);
+    const [currentlySelectedAnswerOrderNr, setCurrentlySelectedAnswerOrderNr] = useState(null);
     const [isCurrentAnswerCorrect, setIsCurrentAnswerCorrect] = useState(false);
 
-    const getAndSetNextQuizQuestion = async () => {
-        const { data: { question, done } } = await getNextQuizQuestion(quizId);
+    const getAndSetNextQuizQuestion = async (shouldISetProgress) => {
+        const { data: { question, done, progress } } = await getNextQuizQuestion(sessionId);
         if (done) {
             Router.push('/quiz/done');
         }
         setCurrentQuestion(question);
+        shouldISetProgress ? setProgress(progress) : null;
     }
 
     //TODO: This loads the first question from the server
     useEffect(() => {
-        if (quizId)
-            getAndSetNextQuizQuestion();
-    }, [quizId]);
+        if (sessionId)
+            getAndSetNextQuizQuestion(true);
+    }, [sessionId]);
 
-    const onAnswerSelected = useCallback(async (selectedAnswerId) => {
-        setCurrentlySelectedAnswerId(selectedAnswerId);
-        const { data: { valid, progress: progressUnit } } = await verifyAnswer(quizId, currentQuestion.id, selectedAnswerId);
+    const onAnswerSelected = useCallback(async (selectedAnswerOrderNr) => {
+        setCurrentlySelectedAnswerOrderNr(selectedAnswerOrderNr);
+        const { data: { valid, progress } } = await verifyAnswer(sessionId, currentQuestion.id, selectedAnswerOrderNr);
         setIsCurrentAnswerCorrect(valid);
         if (valid) {
-            setProgress((progress) => {
-                const totalProgress = progress + progressUnit;
-                return totalProgress > 99 ? 100 : totalProgress;
-            });
+            setProgress(progress);
         }
         setNextQuestionAvailable(true);
-    }, [currentQuestion, quizId]);
+    }, [currentQuestion, sessionId]);
 
     const onNextPressed = () => {
         setNextQuestionAvailable(false);
-        setCurrentlySelectedAnswerId(null);
+        setCurrentlySelectedAnswerOrderNr(null);
         setIsCurrentAnswerCorrect(false);
         getAndSetNextQuizQuestion();
     }
@@ -61,9 +59,9 @@ export default ({ }) => {
                         {currentQuestion ?
                             <Question
                                 question={currentQuestion.question}
-                                options={currentQuestion.options}
+                                options={currentQuestion.questionOptions}
                                 onAnswerSelected={onAnswerSelected}
-                                currentlySelectedAnswerId={currentlySelectedAnswerId}
+                                currentlySelectedAnswerOrderNr={currentlySelectedAnswerOrderNr}
                                 isSelectedAnswerCorrect={isCurrentAnswerCorrect}
                             />
                             :
@@ -79,7 +77,7 @@ export default ({ }) => {
                     </div>
                 </main>
                 <footer>
-                    {currentlySelectedAnswerId ?
+                    {currentlySelectedAnswerOrderNr != null ?
                         <AnswerFooter isItCorrect={isCurrentAnswerCorrect} />
                         : ""}
                 </footer>
@@ -154,7 +152,6 @@ const ProgressBar = ({ progress }) => {
         <>
             <div className="shell">
                 <div className="progress"></div>
-
             </div>
             <style jsx>
                 {`
@@ -163,14 +160,16 @@ const ProgressBar = ({ progress }) => {
                     height: 20px;
                     border-radius: 12px;
                     box-shadow: 0px 0px 10px grey;
+                    display: flex;
+                    align-items:center;
                     padding: 2px;
                 }
 
                 .progress {
                     width: 100%;
-                    height: 20px;
+                    height: 18px;
                     border-radius: 12px;
-                    ${progress > 0 && progress < 100 ?
+                    ${progress > 0 && progress < 99 ?
                         "border-top-right-radius: 0px;border-bottom-right-radius: 0px;"
                         :
                         ""
@@ -190,27 +189,23 @@ const ProgressBar = ({ progress }) => {
     )
 }
 
-const Question = ({ question, options = [], onAnswerSelected, currentlySelectedAnswerId, isSelectedAnswerCorrect }) => {
+const Question = ({ question, options = [], onAnswerSelected, currentlySelectedAnswerOrderNr, isSelectedAnswerCorrect }) => {
     return (
         <>
             <div className="outer-container">
                 <span className="question">{question}</span>
                 {options.map((option, index) => {
-                    // const extraClassNames = option.id === currentlySelectedAnswerId ?
-                    //     isSelectedAnswerCorrect ? "correct-answer" : "incorrect-answer"
-                    //     : "";
-
-                    const extraClassNames = currentlySelectedAnswerId ?
-                        option.id === currentlySelectedAnswerId ?
+                    const extraClassNames = currentlySelectedAnswerOrderNr != null ?
+                        index === currentlySelectedAnswerOrderNr ?
                             isSelectedAnswerCorrect ? "correct-answer" : "incorrect-answer"
                             : "inactive"
                         : "";
 
                     return (
-                        <div className={`option ${extraClassNames}`} key={option.id} onClick={() => !currentlySelectedAnswerId ? onAnswerSelected(option.id) : ""}>
+                        <div className={`option ${extraClassNames}`} key={option.id} onClick={() => !currentlySelectedAnswerOrderNr ? onAnswerSelected(index) : ""}>
                             <span className="nr">{index + 1}.</span>
                             <span className="answer">
-                                {option.answer}
+                                {option.title}
                             </span>
                         </div>
                     )
