@@ -8,22 +8,19 @@ export default ({ rightAligned = false, ...rest }) => {
                     {primaryButton}
                 </div>
                 :
-                { primaryButton }
+                primaryButton
             }
-            <style jsx>
-                {`
-        `}
-            </style>
         </>
     )
 }
 
-const PrimaryButton = ({ title, inactive = false, ...rest }) => {
+const PrimaryButton = ({ title, inactive = false, marginRight = false, red = false, ...rest }) => {
     return (
         <>
             <button
                 className={`save-question${!inactive ? "" : " inactive"}`}
-                {...rest}>
+                {...rest}
+                title={title}>
                 {title}
             </button>
             <style jsx>
@@ -35,12 +32,25 @@ const PrimaryButton = ({ title, inactive = false, ...rest }) => {
                       outline: none;
                       font-family: 'Oswald', serif;
                       border-radius: 8px;
-                      background-color: #4BAC60;
+                      ${red ?
+                        "background-color: #ba2232;"
+                        :
+                        "background-color: #4BAC60;"
+                    }
                       color: white;
-                      box-shadow: 1px 1px 8px #4BAC60;
+                      ${red ?
+                        "box-shadow: 1px 1px 8px #ba2232;"
+                        :
+                        "box-shadow: 1px 1px 8px #4BAC60;"
+                    }
                       cursor: pointer;
                       font-size: .9em;
                       transition: all 0.3s;
+                      ${marginRight ?
+                        "margin-right: 10px;"
+                        :
+                        null
+                    }
                   }
                   button.save-question.inactive {
                       background-color: grey;
@@ -48,7 +58,11 @@ const PrimaryButton = ({ title, inactive = false, ...rest }) => {
                       cursor: default;
                   }
                   button.save-question:not(.inactive):hover {
-                      box-shadow: 1px 1px 12px #4BAC60;
+                    ${red ?
+                        "box-shadow: 1px 1px 12px #ba2232;"
+                        :
+                        "box-shadow: 1px 1px 12px #4BAC60;"
+                    }
                   }
                 `}
             </style>

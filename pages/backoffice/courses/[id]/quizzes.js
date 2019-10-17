@@ -1,28 +1,62 @@
-import { useEffect } from 'react';
-import { getQuizesForCourse } from '../../../../utils/QuizRequests';
+import { useEffect, useState, useCallback } from 'react';
+import { getQuizesForCourse, createNewQuiz, deleteQuiz, getAllCourses } from '../../../../utils/QuizRequests';
 import Router, { useRouter } from 'next/router';
 import { BackOfficeLayoutWrapper } from '../../../../components/BackOfficeLayoutWrapper';
+import GenericDialog from '../../../../components/GenericDailog';
+import TextInput from '../../../../components/TextInput';
+import PrimaryButton from '../../../../components/PrimaryButton';
+import ConfirmationDialog from '../../../../components/ConfirmationDialog';
 
 export default () => {
     const { id } = useRouter().query;
     const [quizes, setQuizes] = React.useState([]);
+    const [isCreatingNewDialogInProgress, setIsCreatingNewDialogInProgress] = useState(false);
+    const [quizIdToDelete, setQuizIdToDelete] = useState(null);
+
+    const getAllQuizes = useCallback(async () => {
+        if (id) {
+            const quizes = await getQuizesForCourse(id);
+            setQuizes(quizes);
+        }
+    }, [id]);
 
     useEffect(() => {
-        (async () => {
-            if (id) {
-                const quizes = await getQuizesForCourse(id);
-                setQuizes(quizes);
-            }
-        })();
+        getAllQuizes();
     }, [id]);
 
     const getOnClickCallbackForQuizPress = (quizId) => () => {
         Router.push(`/backoffice/courses/${id}/quizzes/${quizId}`);
     }
 
-    const onCreateNewQuizPress = () => {
+    const onCreateNewQuizPress = useCallback(() => {
+        setIsCreatingNewDialogInProgress(true);
+    }, []);
 
-    }
+    const onDismissDialogPress = useCallback(() => {
+        setIsCreatingNewDialogInProgress(false);
+    }, []);
+
+    const onCreateNewQuiz = useCallback(async (newQuizName) => {
+        const newQuiz = await createNewQuiz(id, newQuizName);
+        setQuizes((quizes) => [...quizes, newQuiz]);
+        onDismissDialogPress();
+    }, [id]);
+
+    const getDeleteQuizCallback = useCallback((quizId) => async () => {
+        setQuizIdToDelete(quizId);
+    }, []);
+
+    const abandonDeletionOfQuiz = useCallback(() => {
+        setQuizIdToDelete(null);
+    }, []);
+
+    const onDeleteQuizConfirm = useCallback(async () => {
+        const wasDeleted = await deleteQuiz(id, quizIdToDelete);
+        if (wasDeleted) {
+            getAllQuizes();
+            setQuizIdToDelete(null);
+        }
+    }, [id, quizIdToDelete]);
 
     return (
         <BackOfficeLayoutWrapper>
@@ -38,6 +72,12 @@ export default () => {
                                 <button className="quiz-operation-button">
                                     See results of users
                                 </button>
+                                <img
+                                    title="Delete quiz"
+                                    className="delete-quiz-icon"
+                                    src="/static/delete-24px.svg"
+                                    onClick={getDeleteQuizCallback(quiz.id)}
+                                />
                             </div>
                         )}
                     </section>
@@ -46,8 +86,21 @@ export default () => {
                         className="add-quiz-fab"
                         src="/static/create_fab.svg"
                         onClick={onCreateNewQuizPress}
-                         />
+                    />
                 </main>
+                {isCreatingNewDialogInProgress ?
+                    <CreateNewQuizDialog
+                        onDismissDialog={onDismissDialogPress}
+                        onCreateNewQuiz={onCreateNewQuiz} />
+                    :
+                    null}
+                {quizIdToDelete ?
+                    <ConfirmationDialog
+                        title="Are you sure you want to delete the quiz?"
+                        onCancel={abandonDeletionOfQuiz}
+                        onConfirm={onDeleteQuizConfirm} />
+                    :
+                    null}
                 <style jsx>
                     {`
                     main {
@@ -62,6 +115,7 @@ export default () => {
                         display: flex;
                         flex-wrap: wrap;
                         justify-content: center;
+                        margin: -13px;
                     }
                     .quiz {
                         padding: 25px;
@@ -69,6 +123,30 @@ export default () => {
                         box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.2);
                         border-radius: 5px;
                         transition: all 0.3s;
+                        margin: 13px;
+                        animation: SlideUp 0.3s;
+                        position: relative;
+                    }
+                    .delete-quiz-icon {
+                        position: absolute;
+                        top: 15px;
+                        right: 15px;
+                        cursor: pointer;
+                        opacity: 0.5;
+                        transition: all 0.3s;
+                    }
+                    .quiz:hover .delete-quiz-icon {
+                        opacity: 1;
+                    }
+                    @keyframes SlideUp {
+                        0% {
+                            transform: translateY(20px);
+                            opacity: 0;
+                        }
+                        100% {
+                            transform: translateY(0px);
+                            opacity: 1;
+                        }
                     }
                     .quiz:hover {
                         box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
@@ -111,5 +189,27 @@ export default () => {
                 </style>
             </>
         </BackOfficeLayoutWrapper>
+    )
+}
+
+const CreateNewQuizDialog = ({ onDismissDialog, onCreateNewQuiz }) => {
+    const [newQuizName, setNewQuizName] = useState("");
+    const onSavePress = useCallback(() => {
+        onCreateNewQuiz(newQuizName);
+    }, [newQuizName, onCreateNewQuiz]);
+
+    return (
+        <GenericDialog title="Create new quiz" onDismissDialog={onDismissDialog}>
+            <TextInput title="New quiz name:"
+                value={newQuizName}
+                autoFocus
+                placeholder="New quiz name here..."
+                valueSetter={setNewQuizName} />
+            <PrimaryButton
+                rightAligned
+                title="Create quiz"
+                inactive={newQuizName === ""}
+                onClick={onSavePress} />
+        </GenericDialog>
     )
 }

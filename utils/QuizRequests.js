@@ -63,3 +63,13 @@ export const deleteQuestionOptionFromQuestion = (questionId, questionOptionId) =
 export const deleteQuestion = (questionId) => {
     return axios.delete(`/courses/questions/${questionId}`);
 }
+
+export const createNewQuiz = (courseId, quizName) => {
+    return axios.post(`/courses/${courseId}/quizzes`, {quizName})
+        .then(getDataFromResponseAsPromise);
+}
+
+export const deleteQuiz = async (courseId, quizId) => {
+    const res = await axios.delete(`/courses/${courseId}/quizzes/${quizId}`);
+    return res.status === 204;
+}

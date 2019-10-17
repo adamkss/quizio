@@ -283,8 +283,18 @@ const Question = ({ questionTitle, questionOptions, onAddNewOption, onSetNewCorr
                         flex-direction: column;
                         box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.3);
                         margin: 10px;
+                        animation: SlideUp 0.3s;
                     }
-                    
+                    @keyframes SlideUp {
+                        0% {
+                            transform: translateY(20px);
+                            opacity: 0;
+                        }
+                        100% {
+                            transform: translateY(0px);
+                            opacity: 1;
+                        }
+                    }
                     .delete-icon {
                         position: absolute;
                         right: 10px;

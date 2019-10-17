@@ -119,6 +119,7 @@ const Tile = ({ id, title, onClick }) => {
             .course-tile {
                         width: 350px;
                         padding: 25px;
+                        position: relative;
                         box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.4);
                         border-radius: 5px;
                         margin: 13px;

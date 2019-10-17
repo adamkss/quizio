@@ -48,6 +48,16 @@ export default () => {
                     display: flex;
                     justify-content: flex-end;
                 }
+                @keyframes SlideUp {
+                0% {
+                    transform: translateY(20px);
+                    opacity: 0;
+                }
+                100% {
+                    transform: translateY(0px);
+                    opacity: 1;
+                }
+            }
             `}
         </style>
         </>

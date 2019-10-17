@@ -1,5 +1,6 @@
+
 export default () => {
     return (
-        <div></div>
+        <div>{process.env.DEMO_KEY}</div>
     )
 }
