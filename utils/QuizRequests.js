@@ -1,5 +1,6 @@
 import axios from 'axios';
-const baseURL = 'http://localhost:4000';
+// const baseURL = 'https://ec2-18-221-120-157.us-east-2.compute.amazonaws.com';
+const baseURL = 'https://localhost';
 
 axios.defaults.baseURL = baseURL;
 
@@ -22,22 +23,22 @@ export const getQuizesForCourse = (courseId) => {
 }
 
 export const getAllQuestionsOfAQuiz = (quizId) => {
-    return axios.get(`/courses/quizes/${quizId}/questions`).then(getDataFromResponseAsPromise);
+    return axios.get(`/quizzes/${quizId}/questions`).then(getDataFromResponseAsPromise);
 }
 
 export const getNextQuizQuestion = (sessionId) => {
-    return axios.get(`/quizzes/quizSessions/${sessionId}`);
+    return axios.get(`/quizzes/quizSessions/${sessionId}/nextQuestion`);
 }
 
 export const verifyAnswer = (quizId, questionId, answerId) => {
-    return axios.post(`/quiz/${quizId}/addClientAnswer`, {
+    return axios.post(`/quizzes/${quizId}/clientAnswers`, {
         questionId,
         answerId
     })
 }
 
 export const saveQuestion = (quizId, questionTitle, questionOptions, rightAnswer) => {
-    return axios.post(`/courses/quizes/${quizId}/questions`, {
+    return axios.post(`/quizzes/${quizId}/questions`, {
         questionTitle,
         options: questionOptions,
         rightAnswer
@@ -45,23 +46,23 @@ export const saveQuestion = (quizId, questionTitle, questionOptions, rightAnswer
 }
 
 export const addOptionToQuestion = (questionId, questionOption) => {
-    return axios.post(`/courses/questions/${questionId}/questionOptions`, {
+    return axios.post(`/questions/${questionId}/questionOptions`, {
         questionOption
     }).then(getDataFromResponseAsPromise)
 }
 
 export const setNewAnswerOptionAsCorrectAnswer = (questionId, newCorrectQuestionOptionId) => {
-    return axios.put(`/courses/questions/${questionId}/rightAnswer`, {
+    return axios.put(`/questions/${questionId}/rightAnswer`, {
         newCorrectQuestionOptionId
     }).then(getDataFromResponseAsPromise);
 }
 
 export const deleteQuestionOptionFromQuestion = (questionId, questionOptionId) => {
-    return axios.delete(`/courses/questions/${questionId}/questionOptions/${questionOptionId}`).then(getDataFromResponseAsPromise);
+    return axios.delete(`/questions/${questionId}/questionOptions/${questionOptionId}`).then(getDataFromResponseAsPromise);
 }
 
 export const deleteQuestion = (questionId) => {
-    return axios.delete(`/courses/questions/${questionId}`);
+    return axios.delete(`/questions/${questionId}`);
 }
 
 export const createNewQuiz = (courseId, quizName) => {
@@ -70,6 +71,6 @@ export const createNewQuiz = (courseId, quizName) => {
 }
 
 export const deleteQuiz = async (courseId, quizId) => {
-    const res = await axios.delete(`/courses/${courseId}/quizzes/${quizId}`);
+    const res = await axios.delete(`/quizzes/${quizId}`);
     return res.status === 204;
 }
