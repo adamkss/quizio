@@ -6,8 +6,8 @@ import { useEffect, useState } from 'react';
 const getRouteNameAfterPath = (path) => {
     switch (path) {
         case "/backoffice/courses": return "courses";
-        case "/backoffice/courses/[id]/quizzes": return "quizzes";
-        case "/backoffice/courses/[id]/quizzes/[quizId]": return "questions";
+        case "/backoffice/courses/[courseId]/quizzes": return "quizzes";
+        case "/backoffice/courses/[courseId]/quizzes/[quizId]": return "questions";
     }
 }
 

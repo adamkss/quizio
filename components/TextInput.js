@@ -1,4 +1,4 @@
-export default ({ noMarginTop, noMarginBottom, title, onChange, valueSetter = null, ...rest }) => {
+export default ({ noMarginTop, noMarginBottom, title, onChange, valueSetter = null, width = "400px", marginTop = "5px", ...rest }) => {
     const onValueChangeCallback = React.useCallback((event) => {
         valueSetter(event.target.value);
     }, [valueSetter]);
@@ -16,7 +16,7 @@ export default ({ noMarginTop, noMarginBottom, title, onChange, valueSetter = nu
                   }
                  input {
                       display: block;
-                      width: 400px;
+                      width: ${width};
                       outline: none;
                       border: 1px solid rgba(0, 0, 0, 0.4);
                       border-radius: 5px;
@@ -25,7 +25,7 @@ export default ({ noMarginTop, noMarginBottom, title, onChange, valueSetter = nu
                       ${noMarginTop ?
                         null
                         :
-                        "margin-top: 5px;"
+                        `margin-top: ${marginTop};`
                     }
                     ${noMarginBottom ?
                         null

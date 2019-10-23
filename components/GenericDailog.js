@@ -26,8 +26,11 @@ export default ({ children, title, onDismissDialog }) => {
                 align-items: center;
             }
             .dialog-content-wrapper {
+                width: calc(100% - 30px);
                 min-width: 300px;
                 min-height: 300px;
+                max-width: 500px;
+                max-height: 500px;
                 border-radius: 8px;
                 box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.3);
                 padding: 25px;

@@ -1,6 +1,6 @@
 import axios from 'axios';
-// const baseURL = 'https://ec2-18-221-120-157.us-east-2.compute.amazonaws.com';
-const baseURL = 'https://localhost';
+const baseURL = 'https://ec2-18-221-120-157.us-east-2.compute.amazonaws.com';
+// const baseURL = 'https://localhost';
 
 axios.defaults.baseURL = baseURL;
 
@@ -37,7 +37,7 @@ export const verifyAnswer = (quizId, questionId, answerId) => {
     })
 }
 
-export const saveQuestion = (quizId, questionTitle, questionOptions, rightAnswer) => {
+export const saveQuestion = (quizId, questionTitle, questionOptions, rightAnswer = "") => {
     return axios.post(`/quizzes/${quizId}/questions`, {
         questionTitle,
         options: questionOptions,
@@ -73,4 +73,10 @@ export const createNewQuiz = (courseId, quizName) => {
 export const deleteQuiz = async (courseId, quizId) => {
     const res = await axios.delete(`/quizzes/${quizId}`);
     return res.status === 204;
+}
+
+export const createNewGenericQuiz = (quizName) => {
+    return axios.post(`/genericQuizzes`, {
+        newQuizName: quizName
+    }).then(getDataFromResponseAsPromise);
 }

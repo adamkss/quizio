@@ -8,24 +8,24 @@ import PrimaryButton from '../../../../components/PrimaryButton';
 import ConfirmationDialog from '../../../../components/ConfirmationDialog';
 
 export default () => {
-    const { id } = useRouter().query;
+    const { courseId } = useRouter().query;
     const [quizes, setQuizes] = React.useState([]);
     const [isCreatingNewDialogInProgress, setIsCreatingNewDialogInProgress] = useState(false);
     const [quizIdToDelete, setQuizIdToDelete] = useState(null);
 
     const getAllQuizes = useCallback(async () => {
-        if (id) {
-            const quizes = await getQuizesForCourse(id);
+        if (courseId) {
+            const quizes = await getQuizesForCourse(courseId);
             setQuizes(quizes);
         }
-    }, [id]);
+    }, [courseId]);
 
     useEffect(() => {
         getAllQuizes();
-    }, [id]);
+    }, [courseId]);
 
     const getOnClickCallbackForQuizPress = (quizId) => () => {
-        Router.push(`/backoffice/courses/${id}/quizzes/${quizId}`);
+        Router.push(`/backoffice/courses/${courseId}/quizzes/${quizId}`);
     }
 
     const onCreateNewQuizPress = useCallback(() => {
@@ -37,10 +37,10 @@ export default () => {
     }, []);
 
     const onCreateNewQuiz = useCallback(async (newQuizName) => {
-        const newQuiz = await createNewQuiz(id, newQuizName);
+        const newQuiz = await createNewQuiz(courseId, newQuizName);
         setQuizes((quizes) => [...quizes, newQuiz]);
         onDismissDialogPress();
-    }, [id]);
+    }, [courseId]);
 
     const getDeleteQuizCallback = useCallback((quizId) => async () => {
         setQuizIdToDelete(quizId);
@@ -51,12 +51,12 @@ export default () => {
     }, []);
 
     const onDeleteQuizConfirm = useCallback(async () => {
-        const wasDeleted = await deleteQuiz(id, quizIdToDelete);
+        const wasDeleted = await deleteQuiz(courseId, quizIdToDelete);
         if (wasDeleted) {
             getAllQuizes();
             setQuizIdToDelete(null);
         }
-    }, [id, quizIdToDelete]);
+    }, [courseId, quizIdToDelete]);
 
     return (
         <BackOfficeLayoutWrapper>
