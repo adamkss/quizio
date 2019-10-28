@@ -1,6 +1,6 @@
 import axios from 'axios';
-// const baseURL = 'http://ec2-18-221-120-157.us-east-2.compute.amazonaws.com:4000';
-const baseURL = 'http://localhost:4000';
+const baseURL = 'http://ec2-18-221-120-157.us-east-2.compute.amazonaws.com:4000';
+// const baseURL = 'http://localhost:4000';
 
 axios.defaults.baseURL = baseURL;
 
