@@ -99,7 +99,7 @@ export default () => {
     const onTryQuizOutLinkClick = useCallback(async () => {
         const {sessionId} = await getNewSessionForQuiz(genericQuizId);
         Router.push(`/quiz/${sessionId}`);
-    }, []);
+    }, [genericQuizId]);
 
     return (
         <>
