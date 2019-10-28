@@ -10,7 +10,6 @@ import { useState, useCallback } from 'react';
 const getNewQuestionsWithUpdatedQuestionOptions = (questions, questionId, newQuestionOptions) => {
     const questionOptionUpdated = questions.find(question => question.id == questionId);
     const questionToAlterIndex = questions.indexOf(questionOptionUpdated);
-
     if (questionOptionUpdated) {
         return [
             ...questions.slice(0, questionToAlterIndex),
@@ -29,11 +28,13 @@ export default () => {
     const [questions, setQuestions] = React.useState([]);
     const { genericQuizId } = useRouter().query;
     const [isCreatingQuestionInProgress, setIsCreatingQuestionInProgress] = useState(false);
+    const [wereQuestionsLoaded, setWereQuestionsLoaded] = useState(false);
 
     React.useEffect(() => {
         (async () => {
             if (genericQuizId) {
                 setQuestions(await getAllQuestionsOfAQuiz(genericQuizId));
+                setWereQuestionsLoaded(true);
             }
         })();
     }, [genericQuizId]);
@@ -112,13 +113,24 @@ export default () => {
                         />
                     )}
                 </section>
+                {questions.length === 0 && wereQuestionsLoaded ?
+                    <section className="no-questions-yet-section">
+                        <span>Create a question with the</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="#422d74"><path d="M0 0h24v24H0z" fill="none" /><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" /></svg>
+                        <span>
+                            button.
+                        </span>
+                    </section>
+                    :
+                    null
+                }
                 <FloatingActionButton
                     title="Create question"
                     onClick={onCreateQuestionClick} />
                 {isCreatingQuestionInProgress ?
-                    <CreateQuestionDialog 
+                    <CreateQuestionDialog
                         onSaveQuestion={onSaveQuestion}
-                        onDismissDialog={onCancelCreateNewQuestion}/>
+                        onDismissDialog={onCancelCreateNewQuestion} />
                     :
                     null
                 }
@@ -129,6 +141,24 @@ export default () => {
                         display: flex;
                         flex-wrap: wrap;
                         justify-content: center;
+                    }
+                    .no-questions-yet-section {
+                        position: fixed;
+                        top: 50%;
+                        left: 50%;
+                        width: 100%;
+                        transform: translate(-50%, -50%);
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        flex-wrap: wrap;
+                    }
+                    .no-questions-yet-section svg {
+                        margin: 0px 3px;
+                    }
+                    .no-questions-yet-section span {
+                        font-size: 1.6em;
+                        white-space: nowrap;
                     }
                 `}
             </style>

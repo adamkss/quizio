@@ -6,7 +6,7 @@ const Question = ({ questionTitle, questionOptions, onAddNewOption, onSetNewCorr
     const newOptionInputRef = useRef(null);
     const [areSetRightAnswerVisible, setAreSetRightAnswerVisible] = useState(false);
     const [areDeleteOptionVisible, setAreDeleteOptionVisible] = useState(false);
-    
+
     const onAddNewOptionButtonClick = useCallback((event) => {
         setIsNewOptionWanted(true);
         event.stopPropagation();
@@ -23,19 +23,27 @@ const Question = ({ questionTitle, questionOptions, onAddNewOption, onSetNewCorr
         }
     }, []);
 
+    const onSaveNewOption = useCallback(() => {
+        onAddNewOption(newOption);
+        setIsNewOptionWanted(false);
+        setNewOption("");
+    }, [newOption]);
+
+    const onCancelAddNewOption = useCallback(() => {
+        setIsNewOptionWanted(false);
+        setNewOption("");
+    }, []);
+
     const onKeyDownNewOptionInput = useCallback((event) => {
         //Exit is pressed
         if (event.keyCode === 27) {
-            setIsNewOptionWanted(false);
-            setNewOption("");
+            onCancelAddNewOption();
         }
         //Enter was pressed
         if (event.keyCode === 13) {
-            onAddNewOption(newOption);
-            setIsNewOptionWanted(false);
-            setNewOption("");
+            onSaveNewOption();
         }
-    }, [newOption]);
+    }, [onSaveNewOption, onCancelAddNewOption]);
 
     const getSetNewCorrectQuestionOptionCallback = (newCorrectOptionId) => async () => {
         onSetNewCorrectAnswer(newCorrectOptionId);
@@ -89,14 +97,16 @@ const Question = ({ questionTitle, questionOptions, onAddNewOption, onSetNewCorr
                         <input autoFocus ref={newOptionInputRef} type="text" value={newOption}
                             onChange={onNewOptionValueChange}
                             onKeyDown={onKeyDownNewOptionInput} />
+                        <img title="Cancel" src="/static/delete-24px.svg" className="new-option-operation cancel-new-option" onClick={onCancelAddNewOption} />
+                        <img title="Save question option" src="/static/add-icon.svg" className="new-option-operation save-new-option" onClick={onSaveNewOption} />
                     </div>
                     :
                     null
                 }
                 <img title="Delete question" src="/static/delete-24px.svg" className="delete-icon initially-less-visible" onClick={onDeleteQuestion} />
                 <img title="New answer option" src="/static/add-icon.svg" className="add-icon initially-less-visible" onClick={onAddNewOptionButtonClick} />
-                <img title="New right answer" className="new-right-answer-icon initially-less-visible visible-only-mobile" src="/static/check_circle_black.svg" onClick={onAreAllSetAsRightAnswerOptionsVisibleTogglePress}/>
-                <img title="Delete answer option" className="delete-answer-icon initially-less-visible visible-only-mobile" src="/static/delete-24px.svg" onClick={onAreAllDeleteOptionsVisibleTogglePress}/>
+                <img title="New right answer" className="new-right-answer-icon initially-less-visible visible-only-mobile" src="/static/check_circle_black.svg" onClick={onAreAllSetAsRightAnswerOptionsVisibleTogglePress} />
+                <img title="Delete answer option" className="delete-answer-icon initially-less-visible visible-only-mobile" src="/static/delete-24px.svg" onClick={onAreAllDeleteOptionsVisibleTogglePress} />
             </article>
             <style jsx>
                 {`
@@ -157,6 +167,7 @@ const Question = ({ questionTitle, questionOptions, onAddNewOption, onSetNewCorr
                             display: block;
                         }
                     }
+
                     .visible {
                         display: block;
                     }
@@ -167,6 +178,7 @@ const Question = ({ questionTitle, questionOptions, onAddNewOption, onSetNewCorr
                         min-width: 330px;
                         border-radius: 8px;
                         padding: 25px;
+                        padding-bottom: 50px;
                         display: flex;
                         flex-direction: column;
                         box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.3);
@@ -212,14 +224,27 @@ const Question = ({ questionTitle, questionOptions, onAddNewOption, onSetNewCorr
                     .right-answer-icon {
                         margin-left: 5px;
                     }
+                    .add-new-option-section {
+                        display: flex;
+                    }
                     .add-new-option-section input {
-                        width: 300px;
+                        flex-grow: 1;
                         font-family: 'Arial', sans-serif;
                         font-size: 1.1em;
                         outline: none;
                         border: none;
                         border-bottom: 1px solid grey;
+                        display: flex;
                     }
+
+                    .new-option-operation {
+                        padding: 0px 3px;
+                    }
+
+                    .cancel-new-option {
+
+                    }
+
                 `}
             </style>
         </>
