@@ -29,8 +29,8 @@ export default ({ }) => {
     }, [sessionId]);
 
     const onAnswerSelected = useCallback(async (selectedAnswerOrderNr) => {
-        setCurrentlySelectedAnswerOrderNr(selectedAnswerOrderNr);
         const { data: { valid, progress } } = await verifyAnswer(sessionId, currentQuestion.id, selectedAnswerOrderNr);
+        setCurrentlySelectedAnswerOrderNr(selectedAnswerOrderNr);
         setIsCurrentAnswerCorrect(valid);
         if (valid) {
             setProgress(progress);
