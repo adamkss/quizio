@@ -90,18 +90,13 @@ export default ({ }) => {
                     }
                     header {
                         width: 100%;
-                        min-width: 700px;
                         display: flex;
                         justify-content: center;
                         align-items: center;
                     }
                     .progress-container {
-                        width: 70%;
-                        min-width: 700px;
-                    }
-                    .question-container {
-                        width: 70%;
-                        min-width: 700px;
+                        width: 100%;
+                        max-width: 1200px;
                     }
                     main {
                         width: 100%;
@@ -109,11 +104,18 @@ export default ({ }) => {
                         align-items: center;
                         flex-direction: column;
                     }
+                    .question-container {
+                        width: 100%;
+                        max-width: 1200px;
+                        padding: 10px;
+                        padding-top: 100px;
+                    }
                     .button-container {
+                        position: fixed;
+                        bottom: 110px;
                         width:70%;
                         display: flex;
                         flex-direction: row-reverse;
-                        padding-top: 50px;
                     }
                     button.go-forward {
                         width: 150px;
@@ -215,7 +217,6 @@ const Question = ({ question, options = [], onAnswerSelected, currentlySelectedA
                 {`
                     .outer-container {
                         width: 100%;
-                        padding-top: 100px;
                         display:flex;
                         flex-direction: column;
                     }
@@ -225,7 +226,8 @@ const Question = ({ question, options = [], onAnswerSelected, currentlySelectedA
                         margin-bottom: 30px;
                     }
                     .option {
-                        width: 500px;
+                        width: 100%;
+                        max-width: 700px;
                         box-shadow: 0px 0px 3px grey;
                         border-radius: 5px;
                         display: flex;

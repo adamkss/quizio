@@ -1,6 +1,6 @@
 import Question from '../../../components/quizzes/adminComponents/Question';
-import { useRouter } from 'next/router';
-import { getAllQuestionsOfAQuiz, saveQuestion } from '../../../utils/QuizRequests';
+import Router, { useRouter } from 'next/router';
+import { getAllQuestionsOfAQuiz, saveQuestion, getNewSessionForQuiz } from '../../../utils/QuizRequests';
 import LayoutSetup from '../../../components/layoutSetup';
 import { addOptionToQuestion, setNewAnswerOptionAsCorrectAnswer, deleteQuestionOptionFromQuestion, deleteQuestion } from '../../../utils/QuizRequests';
 import FloatingActionButton from '../../../components/FloatingActionButton';
@@ -96,6 +96,11 @@ export default () => {
         setQuestions(await getAllQuestionsOfAQuiz(genericQuizId));
     }, [genericQuizId]);
 
+    const onTryQuizOutLinkClick = useCallback(async () => {
+        const {sessionId} = await getNewSessionForQuiz(genericQuizId);
+        Router.push(`/quiz/${sessionId}`);
+    }, []);
+
     return (
         <>
             <LayoutSetup />
@@ -134,6 +139,9 @@ export default () => {
                     :
                     null
                 }
+                <footer onClick={onTryQuizOutLinkClick}>
+                    <span>Try the quiz out!</span>
+                </footer>
             </main>
             <style jsx>
                 {`
@@ -159,6 +167,18 @@ export default () => {
                     .no-questions-yet-section span {
                         font-size: 1.6em;
                         white-space: nowrap;
+                    }
+                    footer {
+                        position: fixed;
+                        bottom: 0px;
+                        height: 30px;
+                        background-color: skyblue;
+                        z-index: -1;
+                        width: 100%;
+                        display: flex;
+                        justify-content: center;
+                        color: black;
+                        cursor: pointer;
                     }
                 `}
             </style>

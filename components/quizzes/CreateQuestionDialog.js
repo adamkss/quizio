@@ -55,7 +55,8 @@ export default ({ onDismissDialog, onSaveQuestion }) => {
                         name="question-title"
                         type="text"
                         placeholder="Type question here..."
-                        width="100%" />
+                        width="100%"
+                        autoFocus />
                     <label>Options:</label>
                     {questionOptions.length === 0 ?
                         <div className="horizontally-centered">

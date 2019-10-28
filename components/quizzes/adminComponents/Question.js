@@ -98,7 +98,7 @@ const Question = ({ questionTitle, questionOptions, onAddNewOption, onSetNewCorr
                             onChange={onNewOptionValueChange}
                             onKeyDown={onKeyDownNewOptionInput} />
                         <img title="Cancel" src="/static/delete-24px.svg" className="new-option-operation cancel-new-option" onClick={onCancelAddNewOption} />
-                        <img title="Save question option" src="/static/add-icon.svg" className="new-option-operation save-new-option" onClick={onSaveNewOption} />
+                        <img title="Save question option" src="/static/check_circle_black.svg" className="new-option-operation save-new-option" onClick={onSaveNewOption} />
                     </div>
                     :
                     null
@@ -178,7 +178,6 @@ const Question = ({ questionTitle, questionOptions, onAddNewOption, onSetNewCorr
                         min-width: 330px;
                         border-radius: 8px;
                         padding: 25px;
-                        padding-bottom: 50px;
                         display: flex;
                         flex-direction: column;
                         box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.3);
@@ -226,6 +225,7 @@ const Question = ({ questionTitle, questionOptions, onAddNewOption, onSetNewCorr
                     }
                     .add-new-option-section {
                         display: flex;
+                        padding-bottom: 35px;
                     }
                     .add-new-option-section input {
                         flex-grow: 1;
@@ -240,11 +240,6 @@ const Question = ({ questionTitle, questionOptions, onAddNewOption, onSetNewCorr
                     .new-option-operation {
                         padding: 0px 3px;
                     }
-
-                    .cancel-new-option {
-
-                    }
-
                 `}
             </style>
         </>
