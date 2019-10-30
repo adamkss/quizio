@@ -5,7 +5,7 @@ import PrimaryButton from '../PrimaryButton';
 
 export default ({ onDismissDialog, onSaveQuestion }) => {
     const [questionTitle, setQuestionTitle] = useState("");
-    const [questionOptions, setQuestionOptions] = useState([]);
+    const [questionOptions, setQuestionOptions] = useState([""]);
     const [isNewQuestionReadyToBeCreated, setIsNewQuestionReadyToBeCreated] = useState(false);
 
     const getCallbackForInputChange = useCallback((setter) => (event) => {

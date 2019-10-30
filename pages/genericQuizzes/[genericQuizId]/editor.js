@@ -6,6 +6,8 @@ import { addOptionToQuestion, setNewAnswerOptionAsCorrectAnswer, deleteQuestionO
 import FloatingActionButton from '../../../components/FloatingActionButton';
 import CreateQuestionDialog from '../../../components/quizzes/CreateQuestionDialog';
 import { useState, useCallback } from 'react';
+import LoadingSpinner from '../../../components/LoadingSpinner';
+import { executeAsyncFunctionAndObserveState } from '../../../utils/AsyncUtils';
 
 const getNewQuestionsWithUpdatedQuestionOptions = (questions, questionId, newQuestionOptions) => {
     const questionOptionUpdated = questions.find(question => question.id == questionId);
@@ -23,24 +25,32 @@ const getNewQuestionsWithUpdatedQuestionOptions = (questions, questionId, newQue
     return questions;
 }
 
-
 export default () => {
     const [questions, setQuestions] = React.useState([]);
     const { genericQuizId } = useRouter().query;
     const [isCreatingQuestionInProgress, setIsCreatingQuestionInProgress] = useState(false);
     const [wereQuestionsLoaded, setWereQuestionsLoaded] = useState(false);
+    const [isAsyncOperationInProgress, setIsAsyncOperationInProgress] = useState(false);
 
     React.useEffect(() => {
         (async () => {
             if (genericQuizId) {
-                setQuestions(await getAllQuestionsOfAQuiz(genericQuizId));
+                setQuestions(await executeAsyncFunctionAndObserveState(
+                    setIsAsyncOperationInProgress,
+                    getAllQuestionsOfAQuiz,
+                    genericQuizId
+                ));
                 setWereQuestionsLoaded(true);
             }
         })();
     }, [genericQuizId]);
 
     const getOnAddNewOptionCallback = (questionId) => async (newQuestionOption) => {
-        const newQuestionOptions = await addOptionToQuestion(questionId, newQuestionOption);
+        const newQuestionOptions = await executeAsyncFunctionAndObserveState(
+            setIsAsyncOperationInProgress,
+            addOptionToQuestion,
+            questionId,
+            newQuestionOption);
         setQuestions(getNewQuestionsWithUpdatedQuestionOptions(
             questions,
             questionId,
@@ -49,7 +59,12 @@ export default () => {
     };
 
     const getOnSetNewCorrectAnswerCallback = (questionId) => async (questionOptionId) => {
-        const newQuestionOptions = await setNewAnswerOptionAsCorrectAnswer(questionId, questionOptionId);
+        const newQuestionOptions = await executeAsyncFunctionAndObserveState(
+            setIsAsyncOperationInProgress,
+            setNewAnswerOptionAsCorrectAnswer,
+            questionId,
+            questionOptionId
+        );
         setQuestions(getNewQuestionsWithUpdatedQuestionOptions(
             questions,
             questionId,
@@ -58,7 +73,12 @@ export default () => {
     };
 
     const getOnDeleteQuestionOptionFromQuestion = (questionId) => async (questionOptionId) => {
-        const newQuestionOptions = await deleteQuestionOptionFromQuestion(questionId, questionOptionId);
+        const newQuestionOptions = await executeAsyncFunctionAndObserveState(
+            setIsAsyncOperationInProgress,
+            deleteQuestionOptionFromQuestion,
+            questionId,
+            questionOptionId
+        );
         setQuestions(getNewQuestionsWithUpdatedQuestionOptions(
             questions,
             questionId,
@@ -67,7 +87,11 @@ export default () => {
     }
 
     const getOnDeleteQuestionCallback = (questionId) => async () => {
-        const { status } = await deleteQuestion(questionId);
+        const { status } = await executeAsyncFunctionAndObserveState(
+            setIsAsyncOperationInProgress,
+            deleteQuestion,
+            questionId
+        );
         if (status >= 200 && status <= 300) {
             const question = questions.find(question => question.id === questionId);
             if (question) {
@@ -91,19 +115,35 @@ export default () => {
     }, []);
 
     const onSaveQuestion = useCallback(async (questionTitle, questionOptions) => {
-        await saveQuestion(genericQuizId, questionTitle, questionOptions);
         setIsCreatingQuestionInProgress(false);
-        setQuestions(await getAllQuestionsOfAQuiz(genericQuizId));
+        await executeAsyncFunctionAndObserveState(
+            setIsAsyncOperationInProgress,
+            saveQuestion,
+            genericQuizId,
+            questionTitle,
+            questionOptions,
+            questionOptions[0]
+        );
+        setQuestions(await executeAsyncFunctionAndObserveState(
+            setIsAsyncOperationInProgress,
+            getAllQuestionsOfAQuiz,
+            genericQuizId
+        ));
     }, [genericQuizId]);
 
     const onTryQuizOutLinkClick = useCallback(async () => {
-        const {sessionId} = await getNewSessionForQuiz(genericQuizId);
+        const { sessionId } = await getNewSessionForQuiz(genericQuizId);
         Router.push(`/quiz/${sessionId}`);
     }, [genericQuizId]);
 
     return (
         <>
             <LayoutSetup />
+            {isAsyncOperationInProgress ?
+                <LoadingSpinner />
+                :
+                null
+            }
             <main>
                 <section className="questions">
                     {questions.map(question =>

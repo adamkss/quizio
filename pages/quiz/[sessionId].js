@@ -16,6 +16,7 @@ export default ({ }) => {
     const getAndSetNextQuizQuestion = async (shouldISetProgress) => {
         const { data: { question, done, progress } } = await getNextQuizQuestion(sessionId);
         if (done) {
+            window.localStorage.setItem('sessionId', sessionId);
             Router.push('/quiz/done');
         }
         setCurrentQuestion(question);
