@@ -5,9 +5,10 @@ import LayoutSetup from '../../../components/layoutSetup';
 import { addOptionToQuestion, setNewAnswerOptionAsCorrectAnswer, deleteQuestionOptionFromQuestion, deleteQuestion } from '../../../utils/QuizRequests';
 import FloatingActionButton from '../../../components/FloatingActionButton';
 import CreateQuestionDialog from '../../../components/quizzes/CreateQuestionDialog';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import LoadingSpinner from '../../../components/LoadingSpinner';
 import { executeAsyncFunctionAndObserveState } from '../../../utils/AsyncUtils';
+import GenericDailog from '../../../components/GenericDailog';
 
 const getNewQuestionsWithUpdatedQuestionOptions = (questions, questionId, newQuestionOptions) => {
     const questionOptionUpdated = questions.find(question => question.id == questionId);
@@ -31,6 +32,10 @@ export default () => {
     const [isCreatingQuestionInProgress, setIsCreatingQuestionInProgress] = useState(false);
     const [wereQuestionsLoaded, setWereQuestionsLoaded] = useState(false);
     const [isAsyncOperationInProgress, setIsAsyncOperationInProgress] = useState(false);
+    const [isDoneDialogShown, setIsDoneDialogShown] = useState(false);
+    const quizDoneLinkRef = useRef(null);
+    const quizzDoneLink = `localhost:3000/takeQuizz/${genericQuizId}`;
+    const [wasQuizDoneURLCopied, setWasQuizDoneURLCopied] = useState(false);
 
     React.useEffect(() => {
         (async () => {
@@ -44,6 +49,8 @@ export default () => {
             }
         })();
     }, [genericQuizId]);
+
+
 
     const getOnAddNewOptionCallback = (questionId) => async (newQuestionOption) => {
         const newQuestionOptions = await executeAsyncFunctionAndObserveState(
@@ -136,6 +143,21 @@ export default () => {
         Router.push(`/quiz/${sessionId}`);
     }, [genericQuizId]);
 
+    const onQuizzDoneButtonPress = useCallback(() => {
+        setIsDoneDialogShown(true);
+    }, []);
+
+    const closeIsDoneDialog = useCallback(() => {
+        setIsDoneDialogShown(false);
+        setWasQuizDoneURLCopied(false);
+    }, []);
+
+    const onQuizDoneLinkClick = useCallback(() => {
+        quizDoneLinkRef.current.select();
+        document.execCommand("copy");
+        setWasQuizDoneURLCopied(true);
+    }, [quizDoneLinkRef, quizzDoneLink]);
+
     return (
         <>
             <LayoutSetup />
@@ -144,6 +166,12 @@ export default () => {
                 :
                 null
             }
+            <header>
+                <div className="absolutely-centered">
+                    <h1>Quizzio</h1>
+                </div>
+                <button onClick={onQuizzDoneButtonPress}>Done</button>
+            </header>
             <main>
                 <section className="questions">
                     {questions.map(question =>
@@ -183,8 +211,70 @@ export default () => {
                     <span>Try the quiz out!</span>
                 </footer>
             </main>
+            {isDoneDialogShown ?
+                <GenericDailog title="Are you done?" onDismissDialog={closeIsDoneDialog}>
+                    <p className="done-dialog__description">Copy this link and give to others to take this quizz:</p>
+                    <input
+                        ref={quizDoneLinkRef}
+                        type="text"
+                        className="done-dialog__quiz-link"
+                        value={quizzDoneLink}
+                        onClick={onQuizDoneLinkClick} />
+                        {
+                            wasQuizDoneURLCopied ? 
+                            <div className="done-dialog__copied-to-clipboard-shell">
+                                <img src="/static/clipboard.svg" />
+                                <p className="done-dialog__copied-to-clipboard-text">Copied to clipboard.</p>
+                            </div>
+                            :
+                            null
+                        }
+                </GenericDailog>
+                :
+                null
+            }
             <style jsx>
                 {`
+                    header {
+                        height: 50px;
+                        background-color: white;
+                        box-shadow: 0px 0px 10px #9a9a9a;
+                        position: fixed;
+                        left: 0;
+                        right: 0;
+                        display: flex;
+                        justify-content: flex-end;
+                        align-items: center;
+                        padding: 0px 20px;
+                    }
+                    header h1 {
+                        color: black;
+                    }
+                    header button {
+                        width: 100px;
+                        height: 30px;
+                        outline: none;
+                        border: none;
+                        background-color: #951750;
+                        box-shadow: 0px 0px 7px #951750;
+                        font-family: inherit;
+                        color: white;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        font-size: 1em;
+                        transition: all 0.3s;
+                    }
+                    header button:hover {
+                        box-shadow: 0px 0px 12px #951750;
+                    }
+                    .absolutely-centered{
+                        position: absolute;
+                        left: 50%;
+                        transform: translateX(-50%);
+                    }
+                    main {
+                        padding-top: 60px;
+                    }
                     .questions {
                         display: flex;
                         flex-wrap: wrap;
@@ -219,6 +309,33 @@ export default () => {
                         justify-content: center;
                         color: black;
                         cursor: pointer;
+                    }
+                    .done-dialog__description {
+                        font-size: 1.3em;
+                        font-weight: 300;
+                    }
+                    .done-dialog__quiz-link {
+                        width: 100%;
+                        height: 50px;
+                        font-family: inherit;
+                        font-size: 1.3em;
+                        text-align: center;
+                        margin-top: 50px;
+                        outline: none;
+                        border: 1px solid grey;
+                    }
+                    .done-dialog__quiz-link:focus {
+                        border: 1px solid transparent;
+                        box-shadow: 0px 0px 10px grey;
+                    }
+                    .done-dialog__copied-to-clipboard-shell {
+                        display: flex;
+                        justify-content: center;
+                        align-items:center;
+                        margin-top: 10px;
+                    }
+                    .done-dialog__copied-to-clipboard-shell img{
+                        width: 25px;
                     }
                 `}
             </style>

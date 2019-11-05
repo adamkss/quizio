@@ -3,11 +3,12 @@ import Head from 'next/head';
 export default () => {
     return (
         <>
-        <Head>
-            <link href="https://fonts.googleapis.com/css?family=Oswald:300,400,500,600,700&display=swap" rel="stylesheet" />
-        </Head>
-        <style jsx global>
-            {`
+            <Head>
+                <link href="https://fonts.googleapis.com/css?family=Oswald:300,400,500,600,700&display=swap" rel="stylesheet" />
+                <link href="https://fonts.googleapis.com/css?family=Reenie+Beanie&display=swap" rel="stylesheet"></link>
+            </Head>
+            <style jsx global>
+                {`
                 * {
                     box-sizing: border-box;
                     margin: 0;
@@ -59,9 +60,9 @@ export default () => {
                     transform: translateY(0px);
                     opacity: 1;
                 }
-            }
+                }
             `}
-        </style>
+            </style>
         </>
     )
 }

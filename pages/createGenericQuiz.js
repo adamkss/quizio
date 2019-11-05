@@ -8,6 +8,11 @@ import Router from 'next/router';
 export default ({ }) => {
     const [title, setTitle] = React.useState("");
     const [isForwardButtonVisible, setIsForwardButtonVisible] = React.useState(false);
+    const [wasEnteringEffectShown, setWasEnteringEffectShown] = React.useState(false);
+
+    React.useEffect(() => {
+        setWasEnteringEffectShown(true);
+    }, []);
 
     React.useEffect(() => {
         if (title !== "") {
@@ -25,7 +30,7 @@ export default ({ }) => {
     return (
         <>
             <LayoutSetup />
-            <main>
+            <main className={`${wasEnteringEffectShown ? null : "fade-in"}`}>
                 <section className="dialog">
                     <h1>Name your quiz</h1>
                     <div className="horizontally-centered">
@@ -72,6 +77,18 @@ export default ({ }) => {
                         bottom: 30px;
                         opacity: ${isForwardButtonVisible ? "1" : "0"};
                         transition: all 0.2s;
+                    }
+                    .fade-in { 
+                    }
+                    @keyframes SlideAndFadeIn {
+                        0% {
+                            opacity: 0;
+                            transform: translateY(-20px);
+                        }
+                        100% {
+                            opacity: 1;
+                            transform: translateY(0px);
+                        }
                     }
             `}
             </style>
