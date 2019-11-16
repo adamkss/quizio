@@ -61,6 +61,19 @@ export default () => {
                     opacity: 1;
                 }
                 }
+                .fade-and-slide-in {
+                    animation: FadeAndSlideIn 1s;
+                }
+                @keyframes FadeAndSlideIn {
+                    0% {
+                        transform: translateY(-20px);
+                        opacity: 0;
+                    }
+                    100% {
+                        transform: translateY(0px);
+                        opacity: 1;
+                    }
+                }
             `}
             </style>
         </>

@@ -1,4 +1,4 @@
-export default ({ rightAligned = false, ...rest }) => {
+export default ({ rightAligned = false, centered = false, ...rest }) => {
     const primaryButton = <PrimaryButton {...rest} />;
 
     return (
@@ -8,13 +8,18 @@ export default ({ rightAligned = false, ...rest }) => {
                     {primaryButton}
                 </div>
                 :
-                primaryButton
+                centered ?
+                    <div className="horizontally-centered">
+                        {primaryButton}
+                    </div>
+                    :
+                    primaryButton
             }
         </>
     )
 }
 
-const PrimaryButton = ({ title, inactive = false, marginRight = false, red = false, ...rest }) => {
+const PrimaryButton = ({ title, inactive = false, marginRight = false, marginTop = false, red = false, ...rest }) => {
     return (
         <>
             <button
@@ -49,7 +54,12 @@ const PrimaryButton = ({ title, inactive = false, marginRight = false, red = fal
                       ${marginRight ?
                         "margin-right: 10px;"
                         :
-                        null
+                        ""
+                    }
+                     ${marginTop ?
+                        "margin-top: 10px;"
+                        :
+                        ""
                     }
                   }
                   button.save-question.inactive {

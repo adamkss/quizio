@@ -1,91 +1,56 @@
-import { TweenMax } from 'gsap';
 import LayoutSetup from '../components/layoutSetup';
+import TextInput from '../components/TextInput';
+import React from 'react';
+import PrimaryButton from '../components/PrimaryButton';
 
 export default () => {
+    const [username, setUsername] = React.useState("");
+    const [password, setPassword] = React.useState("");
     return (
         <>
             <LayoutSetup />
             <main>
-                <div className="login-window">
+                <div className="login-window fade-and-slide-in">
+                    <h1>Quizio</h1>
                     <form>
-                        <label for="email-input">E-mail:</label>
-                        <input id="email-input" type="text" name="email" />
-                        <label for="email-input">Parola:</label>
-                        <input type="password" name="password" />
+                        <TextInput title="Username:" width="100%" value={username} valueSetter={setUsername} />
+                        <TextInput title="Password:" width="100%" value={password} valueSetter={setPassword} password />
                     </form>
-                    <div className="horizontal-centered">
-                        <button id="login-button" className="fancy-shiny-button">Autentificare</button>
-                    </div>
+                    <PrimaryButton title="Login" centered marginTop />
                 </div>
             </main>
 
             <style jsx>
                 {`
                 main {
-                    background: linear-gradient(270deg, rgba(0,27,103,1) 0%, rgba(78,103,235,1) 100%);
                     width: 100vw;
                     height: 100vh;
                     display: flex;
                     justify-content: center;
                     align-items: center;
                 }
-
+                h1 {
+                    padding: 0;
+                    margin: 0;
+                    border-bottom: 2px solid black;
+                }
                 .login-window {
-                    width: 400px;
-                    height: 400px;
+                    width: 93%;
+                    max-width: 450px;
+                    min-width: 300px;
                     border-radius: 5px;
                     background-color: white;
-                    box-shadow: 0px 0px 10px grey;
-                    padding: 30px;
+                    box-shadow: 0px 0px 4px grey;
+                    padding: 20px;
+                    padding-top: 10px;
                     position: relative;
                 }
 
                 .login-window > form {
                     display: flex;
                     flex-direction: column;
+                    padding-top: 25px;
                 }
-
-                .login-window > form > input {
-                    outline: none;
-                    height: 30px;
-                    border-radius: 10px;
-                    border: none;
-                    box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
-                    transition: all 0.3s;
-                    margin-top: 10px;
-                    margin-bottom: 20px;
-                    font-family: 'Oswald', sans-serif;
-                    font-size: 1em;
-                    padding: 10px;
-                    font-weight: 300;
-                    
-                }
-
-                .login-window > form > input:hover {
-                    box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
-                }
-
-                .login-window > form > input:focus {
-                    box-shadow: 0px 0px 10px rgba(0,0,255,0.5);
-                }
-
-                #login-button.fancy-shiny-button {
-                    height: 40px;
-                    padding-left: 20px;
-                    padding-right: 20px;
-                    background: none;
-                    background-color: #E74C54;
-                    box-shadow: 0px 0px 9px rgba(255,0,0,0.5);
-                    font-size: 1.2em;
-                }
-
-                #login-button.fancy-shiny-button:hover {
-                    box-shadow: 0px 0px 9px rgba(0,0,255,0.5);
-                    background: none;
-                    background-color: #092477;
-                }
-            
-                
             `}
             </style>
         </>

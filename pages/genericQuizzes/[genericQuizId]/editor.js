@@ -138,11 +138,6 @@ export default () => {
         ));
     }, [genericQuizId]);
 
-    const onTryQuizOutLinkClick = useCallback(async () => {
-        const { sessionId } = await getNewSessionForQuiz(genericQuizId);
-        Router.push(`/quiz/${sessionId}`);
-    }, [genericQuizId]);
-
     const onQuizzDoneButtonPress = useCallback(() => {
         setIsDoneDialogShown(true);
     }, []);
@@ -168,7 +163,7 @@ export default () => {
             }
             <header>
                 <div className="absolutely-centered">
-                    <h1>Quizzio</h1>
+                    <h1>Quizio</h1>
                 </div>
                 <button onClick={onQuizzDoneButtonPress}>Done</button>
             </header>
@@ -207,13 +202,10 @@ export default () => {
                     :
                     null
                 }
-                <footer onClick={onTryQuizOutLinkClick}>
-                    <span>Try the quiz out!</span>
-                </footer>
             </main>
             {isDoneDialogShown ?
                 <GenericDailog title="Are you done?" onDismissDialog={closeIsDoneDialog}>
-                    <p className="done-dialog__description">Copy this link and give to others to take this quizz:</p>
+                    <p className="done-dialog__description">Copy this link and give it to others to take this quizz:</p>
                     <input
                         ref={quizDoneLinkRef}
                         type="text"
@@ -237,7 +229,7 @@ export default () => {
                 {`
                     header {
                         height: 50px;
-                        background-color: white;
+                        background-color: rgba(255, 255, 255, 1);
                         box-shadow: 0px 0px 10px #9a9a9a;
                         position: fixed;
                         left: 0;
@@ -246,6 +238,7 @@ export default () => {
                         justify-content: flex-end;
                         align-items: center;
                         padding: 0px 20px;
+                        z-index: 1;
                     }
                     header h1 {
                         color: black;
@@ -254,31 +247,33 @@ export default () => {
                         width: 100px;
                         height: 30px;
                         outline: none;
-                        border: none;
-                        background-color: #951750;
-                        box-shadow: 0px 0px 7px #951750;
+                        border: 1px solid rgba(0, 0, 0, 0.3);
                         font-family: inherit;
-                        color: white;
                         border-radius: 5px;
                         cursor: pointer;
                         font-size: 1em;
                         transition: all 0.3s;
+                        background-color: white;
                     }
                     header button:hover {
-                        box-shadow: 0px 0px 12px #951750;
+                        background-color: #2BAE66;
+                        box-shadow: 0px 0px 4px #2BAE66;
+                        color: white;
+                        border: none;
                     }
                     .absolutely-centered{
                         position: absolute;
                         left: 50%;
                         transform: translateX(-50%);
                     }
-                    main {
-                        padding-top: 60px;
-                    }
                     .questions {
+                        height: calc(100vh);
                         display: flex;
                         flex-wrap: wrap;
                         justify-content: center;
+                        padding-bottom: 100px;
+                        padding-top: 50px;
+                        overflow-y: auto;
                     }
                     .no-questions-yet-section {
                         position: fixed;
@@ -297,18 +292,6 @@ export default () => {
                     .no-questions-yet-section span {
                         font-size: 1.6em;
                         white-space: nowrap;
-                    }
-                    footer {
-                        position: fixed;
-                        bottom: 0px;
-                        height: 30px;
-                        background-color: skyblue;
-                        z-index: -1;
-                        width: 100%;
-                        display: flex;
-                        justify-content: center;
-                        color: black;
-                        cursor: pointer;
                     }
                     .done-dialog__description {
                         font-size: 1.3em;

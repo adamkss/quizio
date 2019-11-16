@@ -1,4 +1,4 @@
-export default ({ noMarginTop, noMarginBottom, title, onChange, valueSetter = null, width = "400px", marginTop = "5px", ...rest }) => {
+export default ({ noMarginTop, noMarginBottom, title, onChange, valueSetter = null, width = "400px", marginTop = "5px", password, ...rest }) => {
     const onValueChangeCallback = React.useCallback((event) => {
         valueSetter(event.target.value);
     }, [valueSetter]);
@@ -7,7 +7,7 @@ export default ({ noMarginTop, noMarginBottom, title, onChange, valueSetter = nu
     return (
         <>
             <label>{title}</label>
-            <input type="text" {...rest} onChange={valueSetter ? onValueChangeCallback : onChange}></input>
+            <input type={password ? "password" : "text"} {...rest} onChange={valueSetter ? onValueChangeCallback : onChange}></input>
             <style jsx>
                 {`
                 label {

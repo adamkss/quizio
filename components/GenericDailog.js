@@ -24,6 +24,7 @@ export default ({ children, title, onDismissDialog }) => {
                 display: flex;
                 justify-content: center;
                 align-items: center;
+                z-index: 99999;
             }
             .dialog-content-wrapper {
                 width: calc(100% - 30px);
@@ -37,8 +38,8 @@ export default ({ children, title, onDismissDialog }) => {
                 background-color: white;
             }
             h1 {
-                      font-size: 1.7em;
-                      font-weight: 500;
+                font-size: 1.7em;
+                font-weight: 500;
                   }
         `}
             </style>

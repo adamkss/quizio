@@ -30,7 +30,7 @@ export default () => {
         <>
             <LayoutSetup />
             <header className={`${isHeaderSticky ? "sticky" : ""}`}>
-                <h1>Quizzio</h1>
+                <h1>Quizio</h1>
                 <nav>
                     <ul>
                         <li><a>Home</a></li>
@@ -42,10 +42,10 @@ export default () => {
             </header>
             <main ref={mainContentRef}>
                 <section className="entry-stuff-container">
-                    <h1>Quizzio</h1>
+                    <h1>Quizio</h1>
                     <p className="subtitle">Design the most beautiful quizzes</p>
                     <button className="primary-button" onClick={onClickCreateQuiz}>
-                        Create quiz now
+                        Create quizz now
                     </button>
                     <p>...or</p>
                     <button className="secondary-button">
