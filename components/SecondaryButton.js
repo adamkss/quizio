@@ -1,25 +1,25 @@
 export default ({ rightAligned = false, centered = false, ...rest }) => {
-    const primaryButton = <PrimaryButton {...rest} />;
+    const secondaryButton = <SecondaryButton {...rest} />;
 
     return (
         <>
             {rightAligned ?
                 <div className="horizontally-end-positioned">
-                    {primaryButton}
+                    {secondaryButton}
                 </div>
                 :
                 centered ?
                     <div className="horizontally-centered">
-                        {primaryButton}
+                        {secondaryButton}
                     </div>
                     :
-                    primaryButton
+                    secondaryButton
             }
         </>
     )
 }
 
-const PrimaryButton = ({ title, inactive = false, marginRight = false, marginTop = false, red = false, ...rest }) => {
+const SecondaryButton = ({ title, inactive = false, marginRight = false, marginTop = false, ...rest }) => {
     return (
         <>
             <button
@@ -33,21 +33,12 @@ const PrimaryButton = ({ title, inactive = false, marginRight = false, marginTop
                 button {
                       width: 100px;
                       height: 30px;
-                      border: 0;
+                      border: 1px solid rgba(0, 0, 0, 0.3);
                       outline: none;
                       font-family: 'Oswald', serif;
                       border-radius: 8px;
-                      ${red ?
-                        "background-color: #ba2232;"
-                        :
-                        "background-color: #4BAC60;"
-                    }
-                      color: white;
-                      ${red ?
-                        "box-shadow: 1px 1px 8px #ba2232;"
-                        :
-                        "box-shadow: 1px 1px 8px #4BAC60;"
-                    }
+                      color: black;
+                      background-color: white;
                       cursor: pointer;
                       font-size: .9em;
                       transition: all 0.3s;
@@ -68,20 +59,12 @@ const PrimaryButton = ({ title, inactive = false, marginRight = false, marginTop
                       cursor: default;
                   }
                   button.save-question:not(.inactive):hover {
-                    ${red ?
-                        "box-shadow: 1px 1px 12px #ba2232;"
-                        :
-                        "box-shadow: 1px 1px 12px #4BAC60;"
-                    }
+                   background-color: #FF0070;
+                   color: white;
+                   border: 1px solid transparent;
                   }
                   button.save-question:not(.inactive):active {
-                    ${red ?
-                        `box-shadow: 1px 1px 12px #ba2232;
-                         background-color: purple;`
-                        :
-                        `box-shadow: 1px 1px 12px darkgreen;
-                         background-color: darkgreen;`
-                    }
+                   background-color: #900050;
                   }
                 `}
             </style>

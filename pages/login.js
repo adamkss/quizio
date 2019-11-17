@@ -2,6 +2,7 @@ import LayoutSetup from '../components/layoutSetup';
 import TextInput from '../components/TextInput';
 import React from 'react';
 import PrimaryButton from '../components/PrimaryButton';
+import SecondaryButton from '../components/SecondaryButton';
 
 export default () => {
     const [username, setUsername] = React.useState("");
@@ -13,10 +14,11 @@ export default () => {
                 <div className="login-window fade-and-slide-in">
                     <h1>Quizio</h1>
                     <form>
-                        <TextInput title="Username:" width="100%" value={username} valueSetter={setUsername} />
+                        <TextInput title="E-mail:" width="100%" value={username} valueSetter={setUsername} />
                         <TextInput title="Password:" width="100%" value={password} valueSetter={setPassword} password />
                     </form>
                     <PrimaryButton title="Login" centered marginTop />
+                    <SecondaryButton title="Register" centered marginTop/>
                 </div>
             </main>
 
@@ -49,7 +51,7 @@ export default () => {
                 .login-window > form {
                     display: flex;
                     flex-direction: column;
-                    padding-top: 25px;
+                    padding: 50px 0px;
                 }
             `}
             </style>
