@@ -1,6 +1,6 @@
 import axios from 'axios';
-const baseURL = 'http://ec2-3-133-200-212.us-east-2.compute.amazonaws.com:4000';
-// const baseURL = 'http://localhost:4000';
+// const baseURL = 'http://ec2-3-133-200-212.us-east-2.compute.amazonaws.com:4000';
+const baseURL = 'http://localhost:4000';
 
 axios.defaults.baseURL = baseURL;
 
@@ -87,4 +87,8 @@ export const createNewGenericQuiz = (quizName) => {
 
 export const getStatisticsForQuizSession = (sessionId) => {
     return axios.get(`/quiz-sessions/${sessionId}/statistics`).then(getDataFromResponseAsPromise);
+}
+
+export const registerUser = ({email, password}) => {
+    return axios.post('/register', {email, password}).then(getDataFromResponseAsPromise);
 }

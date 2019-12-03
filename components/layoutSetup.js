@@ -46,6 +46,12 @@ export default () => {
                     display: flex;
                     justify-content: center;
                 }
+                .horizontally-centered-vertical {
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    flex-direction: column;
+                }
                 .horizontally-end-positioned {
                     width: 100%;
                     display: flex;
@@ -71,6 +77,17 @@ export default () => {
                     }
                     100% {
                         transform: translateY(0px);
+                        opacity: 1;
+                    }
+                }
+                .fade-in {
+                    animation: FadeIn 1s;
+                }
+                @keyframes FadeIn {
+                    0% {
+                        opacity: 0;
+                    }
+                    100% {
                         opacity: 1;
                     }
                 }

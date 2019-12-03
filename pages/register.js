@@ -2,12 +2,15 @@ import LayoutSetup from "../components/layoutSetup";
 import React from 'react';
 import TextInput from "../components/TextInput";
 import PrimaryButton from "../components/PrimaryButton";
+import LoadingSpinner from '../components/LoadingSpinner';
+import axios from 'axios';
+import { registerUser } from "../utils/QuizRequests";
 
-const stepOneValidator = ({email, password, confirmedPassword}) => {
-    return email !== "";
+const stepOneValidator = ({ email }) => {
+    return /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/.test(email);
 }
 
-const stepTwoValidator = ({email, password, confirmedPassword}) => {
+const stepTwoValidator = ({ password, confirmedPassword }) => {
     return password !== "" && password === confirmedPassword;
 }
 
@@ -20,18 +23,33 @@ export default () => {
     const emailReactState = React.useState("");
     const passwordReactState = React.useState("");
     const confirmPasswordReactState = React.useState("");
+    const [isWaiting, setIsWaiting] = React.useState(false);
+    const [newUser, setNewUser] = React.useState(null);
+
+    const register = React.useCallback(async () => {
+        setIsWaiting(true);
+        const user = await registerUser({ email: emailReactState[0], password: passwordReactState[0] });
+        setIsWaiting(false);
+        if (user) {
+            setNewUser(user);
+            setStep(step => step + 1);
+        }
+    }, [emailReactState[0], passwordReactState[0]]);
 
     const onNextClick = React.useCallback(() => {
         setStep(step => step + 1);
         setIsNextValid(false);
-    }, []);
+        if (step == 2) {
+            register();
+        }
+    }, [step, register]);
 
     React.useEffect(() => {
         const email = emailReactState[0];
         const password = passwordReactState[0];
         const confirmedPassword = confirmPasswordReactState[0];
 
-        setIsNextValid(validators[step - 1]({email, password, confirmedPassword}));
+        setIsNextValid(validators[step - 1]({ email, password, confirmedPassword }));
     }, [emailReactState[0], passwordReactState[0], confirmPasswordReactState[0]]);
 
     return (
@@ -50,14 +68,22 @@ export default () => {
                             passwordReactState={passwordReactState}
                             confirmPasswordReactState={confirmPasswordReactState} />
                         :
-                        ""
+                        newUser ?
+                            <ThirdRegistrationStep />
+                            :
+                            ""
                 }
-                <PrimaryButton
-                    onClick={isNextValid ? onNextClick : null}
-                    title="Next"
-                    rightAligned
-                    marginTop
-                    inactive={!isNextValid} />
+                {step !== 3 ?
+                    <PrimaryButton
+                        onClick={isNextValid ? onNextClick : null}
+                        title="Next"
+                        rightAligned
+                        marginTop
+                        inactive={!isNextValid} />
+                    :
+                    ""
+                }
+                {isWaiting && <LoadingSpinner />}
             </main>
             <style jsx>
                 {`
@@ -141,11 +167,13 @@ const FirstRegistrationStep = ({ emailReactState }) => {
     return (
         <>
             <LayoutSetup />
-            <TextInput
-                title="E-mail:"
-                width="100%"
-                value={emailReactState[0]}
-                valueSetter={emailReactState[1]} />
+            <div className="horizontally-centered">
+                <TextInput
+                    title="E-mail:"
+                    width="100%"
+                    value={emailReactState[0]}
+                    valueSetter={emailReactState[1]} />
+            </div>
             <style jsx>
                 {`
             `}
@@ -158,20 +186,47 @@ const SecondRegistrationStep = ({ passwordReactState, confirmPasswordReactState 
     return (
         <>
             <LayoutSetup />
-            <TextInput
-                password
-                title="Password:"
-                width="100%"
-                value={passwordReactState[0]}
-                valueSetter={passwordReactState[1]} />
-            <TextInput
-                password
-                title="Confirm password:"
-                width="100%"
-                value={confirmPasswordReactState[0]}
-                valueSetter={confirmPasswordReactState[1]} />
+            <div className="horizontally-centered-vertical">
+                <TextInput
+                    password
+                    title="Password:"
+                    width="100%"
+                    value={passwordReactState[0]}
+                    valueSetter={passwordReactState[1]} />
+                <TextInput
+                    password
+                    title="Confirm password:"
+                    width="100%"
+                    value={confirmPasswordReactState[0]}
+                    valueSetter={confirmPasswordReactState[1]} />
+            </div>
             <style jsx>
                 {`
+            `}
+            </style>
+        </>
+    )
+}
+
+const ThirdRegistrationStep = ({ }) => {
+    return (
+        <>
+            <LayoutSetup />
+            <div className="horizontally-centered-vertical">
+                <img className="fade-and-slide-in" src="/static/check_circle-24px.svg" />
+                <span className="fade-in">You registered successfully!</span>
+            </div>
+            <style jsx>
+                {`
+                    div {
+                        margin-top: 20px;
+                    }
+                    img {
+                        width: 100px;
+                    }
+                    span {
+                        font-size: 1.2em;
+                    }
             `}
             </style>
         </>

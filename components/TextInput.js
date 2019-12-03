@@ -5,18 +5,22 @@ export default ({ noMarginTop, noMarginBottom, title, onChange, valueSetter = nu
 
     //TODO: Implement htmlFor attribute with lodash _uniqueId method
     return (
-        <>
+        <div>
             <label>{title}</label>
             <input type={password ? "password" : "text"} {...rest} onChange={valueSetter ? onValueChangeCallback : onChange}></input>
             <style jsx>
                 {`
+                div {
+                    width: ${width};
+                    max-width: 500px;
+                }
                 label {
                       font-size: 1.2em;
                       display: block;
                   }
                  input {
                       display: block;
-                      width: ${width};
+                      width: 100%;
                       outline: none;
                       border: 1px solid rgba(0, 0, 0, 0.4);
                       border-radius: 5px;
@@ -39,6 +43,6 @@ export default ({ noMarginTop, noMarginBottom, title, onChange, valueSetter = nu
                   }
             `}
             </style>
-        </>
+        </div>
     )
 }
