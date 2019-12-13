@@ -1,3 +1,5 @@
+import Router from 'next/router';
+
 export default ({ rightAligned = false, centered = false, ...rest }) => {
     const secondaryButton = <SecondaryButton {...rest} />;
 
@@ -19,11 +21,17 @@ export default ({ rightAligned = false, centered = false, ...rest }) => {
     )
 }
 
-const SecondaryButton = ({ title, inactive = false, marginRight = false, marginTop = false, ...rest }) => {
+const SecondaryButton = ({ title, inactive = false, marginRight = false, marginTop = false, big = false, linkTo = null, ...rest }) => {
+    const onClickHandler = React.useCallback(() => {
+        if (linkTo) {
+            Router.push(linkTo);
+        }
+    }, [linkTo]);
     return (
         <>
             <button
                 className={`save-question${!inactive ? "" : " inactive"}`}
+                onClick={onClickHandler}
                 {...rest}
                 title={title}>
                 {title}
@@ -32,15 +40,25 @@ const SecondaryButton = ({ title, inactive = false, marginRight = false, marginT
                 {`
                 button {
                       width: 100px;
-                      height: 30px;
                       border: 1px solid rgba(0, 0, 0, 0.3);
                       outline: none;
                       font-family: 'Oswald', serif;
-                      border-radius: 8px;
+                      border-radius: 12px;
                       color: black;
                       background-color: white;
                       cursor: pointer;
-                      font-size: .9em;
+                      ${big ?
+                        `
+                            width: 200px;
+                            font-size: 1.15em;
+                            padding: 9px;
+                        `
+                        :
+                        `
+                            font-size: 0.9em;
+                            padding: 5px;
+                        `
+                    }
                       transition: all 0.3s;
                       ${marginRight ?
                         "margin-right: 10px;"

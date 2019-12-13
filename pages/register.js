@@ -3,8 +3,9 @@ import React from 'react';
 import TextInput from "../components/TextInput";
 import PrimaryButton from "../components/PrimaryButton";
 import LoadingSpinner from '../components/LoadingSpinner';
-import axios from 'axios';
 import { registerUser } from "../utils/QuizRequests";
+import SecondaryButton from "../components/SecondaryButton";
+import Router from 'next/router';
 
 const stepOneValidator = ({ email }) => {
     return /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/.test(email);
@@ -73,7 +74,7 @@ export default () => {
                             :
                             ""
                 }
-                {step !== 3 ?
+                {step !== 4 ?
                     <PrimaryButton
                         onClick={isNextValid ? onNextClick : null}
                         title="Next"
@@ -167,7 +168,7 @@ const FirstRegistrationStep = ({ emailReactState }) => {
     return (
         <>
             <LayoutSetup />
-            <div className="horizontally-centered">
+            <div className="horizontally-centered fade-in">
                 <TextInput
                     title="E-mail:"
                     width="100%"
@@ -186,7 +187,7 @@ const SecondRegistrationStep = ({ passwordReactState, confirmPasswordReactState 
     return (
         <>
             <LayoutSetup />
-            <div className="horizontally-centered-vertical">
+            <div className="horizontally-centered-vertical fade-in">
                 <TextInput
                     password
                     title="Password:"
@@ -212,9 +213,16 @@ const ThirdRegistrationStep = ({ }) => {
     return (
         <>
             <LayoutSetup />
-            <div className="horizontally-centered-vertical">
+            <div className="horizontally-centered-vertical fade-in">
                 <img className="fade-and-slide-in" src="/static/check_circle-24px.svg" />
                 <span className="fade-in">You registered successfully!</span>
+                <SecondaryButton
+                    title="Login"
+                    marginTop
+                    onClick={React.useCallback(() => {
+                        Router.push('/login');
+                    }, [])}
+                    />
             </div>
             <style jsx>
                 {`

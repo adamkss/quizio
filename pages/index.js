@@ -1,12 +1,9 @@
 import LayoutSetup from "../components/layoutSetup"
 import React, { useRef, useEffect, useState } from 'react';
-import Router from 'next/router';
+import SecondaryButton from "../components/SecondaryButton";
+import PrimaryButton from "../components/PrimaryButton";
 
 export default () => {
-    const onClickCreateQuiz = React.useCallback(() => {
-        Router.push('/createGenericQuiz');
-    }, []);
-
     const mainContentRef = useRef(null);
     const [isHeaderSticky, setIsHeaderSticky] = useState(false);
 
@@ -44,13 +41,26 @@ export default () => {
                 <section className="entry-stuff-container">
                     <h1>Quizio</h1>
                     <p className="subtitle">Design the most beautiful quizzes</p>
-                    <button className="primary-button" onClick={onClickCreateQuiz}>
-                        Create quizz now
-                    </button>
+                    <PrimaryButton
+                        title="Create quizz now"
+                        big
+                        color="blue"
+                        extraMarginTop
+                        linkTo="/createGenericQuiz"
+                        />
                     <p>...or</p>
-                    <button className="secondary-button">
-                        Login
-                    </button>
+                    <PrimaryButton
+                        title="Login"
+                        big
+                        color="pink"
+                        linkTo="/login"
+                        marginTop/>
+                    <SecondaryButton
+                        title="Register"
+                        marginTop
+                        big
+                        linkTo='/register'
+                        />
                 </section>
                 <section className="quiz-illustration-container">
                     <QuizzIllustration />
@@ -97,38 +107,6 @@ export default () => {
                     height: calc(100vh - 50px);
                     position: relative;
                     overflow-y: auto;
-                }
-                main button{
-                    font-family: inherit;
-                    border: 0;
-                    outline: none;
-                    width: 200px;
-                    border-radius: 12px;
-                    color: white;
-                    font-size: 1.15em;
-                    padding: 9px;
-                    cursor: pointer;
-                    transition: all 0.3s;
-                }
-                .primary-button {
-                    box-shadow: 1px 1px 5px blue;
-                    background-color: blue;
-                    margin-top: 50px;
-                }
-                .primary-button:hover,
-                .primary-button:active {
-                    background-color: #0040FF;
-                    box-shadow: 1px 1px 5px #0040FF;
-                }
-                .secondary-button {
-                    margin-top: 10px;
-                    background-color: #F64D72;
-                    box-shadow: 1px 1px 5px #F64D72;
-                }
-                .secondary-button:hover,
-                .secondary-button:active {
-                    background-color: #FF4D90;
-                    box-shadow: 1px 1px 5px #FF4D90;
                 }
                 main p {
                     font-size: 1.5em;

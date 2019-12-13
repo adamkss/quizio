@@ -1,3 +1,5 @@
+import Router from 'next/router';
+
 export default ({ rightAligned = false, centered = false, ...rest }) => {
     const primaryButton = <PrimaryButton {...rest} />;
 
@@ -19,11 +21,59 @@ export default ({ rightAligned = false, centered = false, ...rest }) => {
     )
 }
 
-const PrimaryButton = ({ title, inactive = false, marginRight = false, marginTop = false, red = false, ...rest }) => {
+const getColorBehaviorsForColor = (color) => {
+    switch (color) {
+        case "green":
+            return {
+                backgroundColorDefault: "#4BAC60",
+                backgroundColorHover: "#4BAC60",
+                backgroundColorActive: "darkgreen",
+                boxShadowDefault: "1px 1px 8px #4BAC60",
+                boxShadowHover: "1px 1px 12px #4BAC60",
+                boxShadowActive: "1px 1px 12px darkgreen"
+            }
+        case "red":
+            return {
+                backgroundColorDefault: "#ba2232",
+                backgroundColorHover: "#ba2232",
+                backgroundColorActive: "purple",
+                boxShadowDefault: "1px 1px 8px #ba2232",
+                boxShadowHover: "1px 1px 12px #ba2232",
+                boxShadowActive: "1px 1px 12px purple"
+            }
+        case "blue":
+            return {
+                backgroundColorDefault: "blue",
+                backgroundColorHover: "#0040FF",
+                backgroundColorActive: "blue",
+                boxShadowDefault: "1px 1px 8px blue",
+                boxShadowHover: "1px 1px 12px #0040FF",
+                boxShadowActive: "1px 1px 12px blue"
+            }
+        case "pink":
+            return {
+                backgroundColorDefault: "#F64D72",
+                backgroundColorHover: "#FF4D90",
+                backgroundColorActive: "#b51b45",
+                boxShadowDefault: "1px 1px 8px #F64D72",
+                boxShadowHover: "1px 1px 12px #FF4D90",
+                boxShadowActive: "1px 1px 12px #b51b45"
+            }
+    }
+}
+
+const PrimaryButton = ({ title, color = "green", inactive = false, marginRight = false, marginTop = false, extraMarginTop = false, big = false, linkTo = null, ...rest }) => {
+    const colorsForDifferentStates = getColorBehaviorsForColor(color);
+    const onClickHandler = React.useCallback(() => {
+        if(linkTo) {
+            Router.push(linkTo);
+        }
+    }, [linkTo]);
     return (
         <>
             <button
                 className={`save-question${!inactive ? "" : " inactive"}`}
+                onClick={onClickHandler}
                 {...rest}
                 title={title}>
                 {title}
@@ -32,24 +82,26 @@ const PrimaryButton = ({ title, inactive = false, marginRight = false, marginTop
                 {`
                 button {
                       width: 100px;
-                      height: 30px;
                       border: 0;
                       outline: none;
                       font-family: 'Oswald', serif;
-                      border-radius: 8px;
-                      ${red ?
-                        "background-color: #ba2232;"
-                        :
-                        "background-color: #4BAC60;"
-                    }
+                      border-radius: 12px;
+                      background-color: ${colorsForDifferentStates.backgroundColorDefault};
                       color: white;
-                      ${red ?
-                        "box-shadow: 1px 1px 8px #ba2232;"
+                      box-shadow: ${colorsForDifferentStates.boxShadowDefault};
+                    ${big ?
+                        `
+                            width: 200px;
+                            font-size: 1.15em;
+                            padding: 9px;
+                        `
                         :
-                        "box-shadow: 1px 1px 8px #4BAC60;"
+                        `
+                            font-size: 0.9em;
+                            padding: 5px;
+                        `
                     }
                       cursor: pointer;
-                      font-size: .9em;
                       transition: all 0.3s;
                       ${marginRight ?
                         "margin-right: 10px;"
@@ -61,6 +113,11 @@ const PrimaryButton = ({ title, inactive = false, marginRight = false, marginTop
                         :
                         ""
                     }
+                     ${extraMarginTop ?
+                        "margin-top: 50px;"
+                        :
+                        ""
+                    }
                   }
                   button.save-question.inactive {
                       background-color: grey;
@@ -68,20 +125,12 @@ const PrimaryButton = ({ title, inactive = false, marginRight = false, marginTop
                       cursor: default;
                   }
                   button.save-question:not(.inactive):hover {
-                    ${red ?
-                        "box-shadow: 1px 1px 12px #ba2232;"
-                        :
-                        "box-shadow: 1px 1px 12px #4BAC60;"
-                    }
+                    background-color: ${colorsForDifferentStates.backgroundColorHover};
+                    box-shadow: ${colorsForDifferentStates.boxShadowHover};
                   }
                   button.save-question:not(.inactive):active {
-                    ${red ?
-                        `box-shadow: 1px 1px 12px #ba2232;
-                         background-color: purple;`
-                        :
-                        `box-shadow: 1px 1px 12px darkgreen;
-                         background-color: darkgreen;`
-                    }
+                    background-color: ${colorsForDifferentStates.backgroundColorActive};
+                    box-shadow: ${colorsForDifferentStates.boxShadowActive};
                   }
                 `}
             </style>
