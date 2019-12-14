@@ -1,6 +1,15 @@
+import React from 'react';
+import { getUserDetails } from '../utils/UserRequests';
+import withAuthSetUp from '../hocs/withAuthSetUp';
 
-export default () => {
+const Homepage = () => {
+    React.useEffect(() => {
+        getUserDetails();
+    }, []);
+
     return (
-        <div>{process.env.DEMO_KEY}</div>
+        <div></div>
     )
 }
+
+export default withAuthSetUp(Homepage);
