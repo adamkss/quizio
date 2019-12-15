@@ -75,9 +75,9 @@ export const deleteQuiz = async (courseId, quizId) => {
     return res.status === 204;
 }
 
-export const createNewGenericQuiz = (quizName) => {
+export const createNewGenericQuizz = (quizzName) => {
     return axios.post(`/genericQuizzes`, {
-        newQuizName: quizName
+        newQuizName: quizzName
     }).then(getDataFromResponseAsPromise);
 }
 
@@ -87,4 +87,8 @@ export const getStatisticsForQuizSession = (sessionId) => {
 
 export const registerUser = ({email, password}) => {
     return axios.post('/register', {email, password}).then(getDataFromResponseAsPromise);
+}
+
+export const getQuizzesOfCurrentUser = () => {
+    return axios.get('/genericQuizzes/myQuizzes').then(getDataFromResponseAsPromise);
 }
