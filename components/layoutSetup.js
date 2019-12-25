@@ -91,6 +91,10 @@ export default () => {
                         opacity: 1;
                     }
                 }
+                .icon-button {
+                    border: none;
+                    outline: none;
+                }
             `}
             </style>
         </>

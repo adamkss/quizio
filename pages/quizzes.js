@@ -23,7 +23,7 @@ const Quizzes = () => {
     }, []);
 
     const getOnClickCallbackForQuizPress = (quizId) => () => {
-        // Router.push(`/backoffice/courses/${courseId}/quizzes/${quizId}`);
+        Router.push(`/genericQuizzes/${quizId}/editor`);
     }
 
     const onCreateNewQuizPress = useCallback(() => {
@@ -49,11 +49,11 @@ const Quizzes = () => {
     }, []);
 
     const onDeleteQuizConfirm = useCallback(async () => {
-        // const wasDeleted = await deleteQuiz(courseId, quizIdToDelete);
-        // if (wasDeleted) {
-        //     getAllQuizes();
-        //     setQuizIdToDelete(null);
-        // }
+        const wasDeleted = await deleteQuiz(quizIdToDelete);
+        if (wasDeleted) {
+            getAllQuizzes();
+            setQuizIdToDelete(null);
+        }
     }, [quizIdToDelete]);
 
     return (
@@ -79,12 +79,14 @@ const Quizzes = () => {
                             </div>
                         )}
                     </section>
-                    <img
-                        title="Create new quiz"
-                        className="add-quiz-fab"
-                        src="/static/create_fab.svg"
-                        onClick={onCreateNewQuizPress}
-                    />
+                    <button className="icon-button">
+                        <img
+                            title="Create new quiz"
+                            className="add-quiz-fab"
+                            src="/static/create_fab.svg"
+                            onClick={onCreateNewQuizPress}
+                        />
+                    </button>
                 </main>
                 {isCreatingNewDialogInProgress ?
                     <CreateNewQuizDialog
@@ -121,6 +123,7 @@ const Quizzes = () => {
                         box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.2);
                         border-radius: 5px;
                         transition: all 0.3s;
+                        background-color: white;
                         margin: 13px;
                         animation: SlideUp 0.3s;
                         position: relative;

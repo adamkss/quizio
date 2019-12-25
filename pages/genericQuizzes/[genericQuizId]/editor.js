@@ -9,6 +9,7 @@ import { useState, useCallback, useRef } from 'react';
 import LoadingSpinner from '../../../components/LoadingSpinner';
 import { executeAsyncFunctionAndObserveState } from '../../../utils/AsyncUtils';
 import GenericDailog from '../../../components/GenericDailog';
+import Link from 'next/link';
 
 const getNewQuestionsWithUpdatedQuestionOptions = (questions, questionId, newQuestionOptions) => {
     const questionOptionUpdated = questions.find(question => question.id == questionId);
@@ -162,10 +163,13 @@ export default () => {
                 null
             }
             <header>
-                <div className="absolutely-centered">
-                    <h1>Quizio</h1>
-                </div>
-                <button onClick={onQuizzDoneButtonPress}>Done</button>
+                <Link href="/quizzes">
+                    <a className="header__back-button" title="Back">
+                        <img src="/static/left-arrow.svg" alt="Back"/>
+                    </a>
+                </Link>
+                <h1 className="header__title">Quizio</h1>
+                <button className="header__done-button" onClick={onQuizzDoneButtonPress}>Done</button>
             </header>
             <main>
                 <section className="questions">
@@ -212,15 +216,15 @@ export default () => {
                         className="done-dialog__quiz-link"
                         value={quizzDoneLink}
                         onClick={onQuizDoneLinkClick} />
-                        {
-                            wasQuizDoneURLCopied ? 
+                    {
+                        wasQuizDoneURLCopied ?
                             <div className="done-dialog__copied-to-clipboard-shell">
                                 <img src="/static/clipboard.svg" />
                                 <p className="done-dialog__copied-to-clipboard-text">Copied to clipboard.</p>
                             </div>
                             :
                             null
-                        }
+                    }
                 </GenericDailog>
                 :
                 null
@@ -235,7 +239,6 @@ export default () => {
                         left: 0;
                         right: 0;
                         display: flex;
-                        justify-content: flex-end;
                         align-items: center;
                         padding: 0px 20px;
                         z-index: 1;
@@ -261,10 +264,17 @@ export default () => {
                         color: white;
                         border: none;
                     }
-                    .absolutely-centered{
-                        position: absolute;
-                        left: 50%;
-                        transform: translateX(-50%);
+                    .header_back-button {
+                        width: 25px;
+                    }
+                    .header__title {
+                        flex-grow: 1;
+                        text-align: center;
+                    }
+                    .header__back-button{
+                        width: 25px;
+                        height: 25px;
+                        padding: 3px;
                     }
                     .questions {
                         height: calc(100vh);

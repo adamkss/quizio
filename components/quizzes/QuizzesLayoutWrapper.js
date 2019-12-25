@@ -6,8 +6,7 @@ import { useEffect, useState } from 'react';
 const getRouteNameAfterPath = (path) => {
     switch (path) {
         case "/quizzes": return "quizzes";
-        case "/backoffice/courses/[courseId]/quizzes": return "quizzes";
-        case "/backoffice/courses/[courseId]/quizzes/[quizId]": return "questions";
+        case "/homepage": return "homepage";
     }
 }
 
@@ -21,9 +20,8 @@ export const QuizzesLayoutWrapper = ({ children }) => {
             const routeName = getRouteNameAfterPath(pathName);
             setPage(routeName);
             switch (routeName) {
+                case "homepage": setBreadcrumbParts(["Homepage"]); break;
                 case "quizzes": setBreadcrumbParts(["My quizzes"]); break;
-                case "quizzes": setBreadcrumbParts(["Courses", "Course", "Quizzes"]); break;
-                case "questions": setBreadcrumbParts(["Courses", "Course", "Quizzes", "Quiz", "Questions"]); break;
             }
         }
     }, [pathName]);
@@ -33,12 +31,18 @@ export const QuizzesLayoutWrapper = ({ children }) => {
             <LayoutSetup />
             <div className="main-layout-orchestrator">
                 <aside>
-                    <h1>Quizzio</h1>
-                    <h2>- Most beautiful quizzes -</h2>
-                    <div className="divider" />
+                    <section className="aside__app-title-container">
+                        <h1>Quizio</h1>
+                    </section>
                     <section className="menu-items">
-                        <Link href="/backoffice/courses">
-                            <MenuItem name="Courses" isSelected={page === "courses"} />
+                        <Link href="/homepage">
+                            <MenuItem name="Homepage" isSelected={page === "homepage"} />
+                        </Link>
+                        <Link href="/quizzes">
+                            <MenuItem name="Quizzes" isSelected={page === "quizzes"} />
+                        </Link>
+                        <Link href="/quizzes">
+                            <MenuItem name="Quiz Results" isSelected={page === "asd"} />
                         </Link>
                     </section>
                 </aside>
@@ -61,52 +65,45 @@ export const QuizzesLayoutWrapper = ({ children }) => {
                     .main-layout-orchestrator {
                         display: flex;
                         flex-direction: row;
+                        background-color: #F5F6F8;
                     }
                     aside {
                         width: 250px;
                         height: 100vh;
-                        background-color: #123c69;
-                        z-index: 2;
-                        box-shadow: 0px 0px 5px #123c69;
+                        color: #212B36;
+                        display: flex;
+                        flex-direction: column;
                     }
                     aside h1,
                     aside h2 {
-                        color: white;
-                        width: 100%;
                         text-align: center;
+                        margin: 0;
                     }
-                    aside h1 {
-                        font-size: 1.7em;
-                        margin-bottom: 0;
-                    }
-                    aside h2 {
-                        font-size: 1.1em;
-                        margin-top: 0;
-                        font-weight: 400;
-                    }
-                    .divider {
-                        width: 100%;
+                    .aside__app-title-container {
+                        height: 50px;
+                        color: white;
+                        background-color: hsl(210,12%,16%);
                         display: flex;
+                        flex-direction: column;
+                        overflow: hidden;
                         justify-content: center;
                     }
-                    .divider::after {
-                        content: "";
-                        width: 90%;
-                        border-bottom: 1px solid white;
-                    }
+                    .aside__app-title-container > h1{
+                        font-size: 25px;
+                    }   
                     .right-column {
                         width: calc(100% - 250px);
-                        z-index: 1;
                     }
                     .menu-items {
                         padding: 20px;
                         display: flex;
                         flex-direction: column;
+                        border-right: 1px solid #DFE3E8;
+                        flex-grow: 1;
                     }
                     header {
                         height: 50px;
-                        background-color: #24292E;
-                        box-shadow: 0px 0px 5px #24292E;
+                        background-color: hsl(210,12%,23%);;
                         padding: 10px 20px;
                         display: flex;
                         align-items: center;
@@ -156,9 +153,9 @@ const MenuItem = ({ name, onClick, isSelected }) => {
             <style jsx>
                 {`
                     .menu-name {
-                        color: white;
-                        font-size: 1.7em;
+                        font-size: 1.2em;
                         cursor: pointer;
+                        font-weight: 400;
                     }
                     article {
                         display: inline-block;
@@ -168,7 +165,7 @@ const MenuItem = ({ name, onClick, isSelected }) => {
                         content: "";
                         display: block;
                         width: ${isSelected ? "100%" : "0%"};
-                        border-bottom: 1px solid white;
+                        border-bottom: 1px solid #212B36;
                         transition: all 0.3s ease-in;
                         opacity: ${isSelected ? "1" : "0"};
                     }

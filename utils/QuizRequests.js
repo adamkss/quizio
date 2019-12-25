@@ -70,7 +70,7 @@ export const createNewQuiz = (courseId, quizName) => {
         .then(getDataFromResponseAsPromise);
 }
 
-export const deleteQuiz = async (courseId, quizId) => {
+export const deleteQuiz = async (quizId) => {
     const res = await axios.delete(`/quizzes/${quizId}`);
     return res.status === 204;
 }

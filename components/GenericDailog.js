@@ -29,7 +29,6 @@ export default ({ children, title, onDismissDialog }) => {
             .dialog-content-wrapper {
                 width: calc(100% - 30px);
                 min-width: 300px;
-                min-height: 300px;
                 max-width: 500px;
                 max-height: 500px;
                 border-radius: 8px;
@@ -40,7 +39,8 @@ export default ({ children, title, onDismissDialog }) => {
             h1 {
                 font-size: 1.7em;
                 font-weight: 500;
-                  }
+                margin-bottom: 10px;
+            }
         `}
             </style>
         </>

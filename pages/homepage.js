@@ -1,14 +1,15 @@
 import React from 'react';
-import { getUserDetails } from '../utils/UserRequests';
 import withAuthSetUp from '../hocs/withAuthSetUp';
+import {QuizzesLayoutWrapper} from '../components/quizzes/QuizzesLayoutWrapper';
 
 const Homepage = () => {
     React.useEffect(() => {
-        getUserDetails();
     }, []);
 
     return (
-        <div></div>
+        <QuizzesLayoutWrapper>
+            
+        </QuizzesLayoutWrapper>
     )
 }
 
