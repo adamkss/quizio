@@ -95,6 +95,9 @@ export default () => {
                     border: none;
                     outline: none;
                 }
+                .flex-space {
+                    flex-grow: 1;
+                }
             `}
             </style>
         </>

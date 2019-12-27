@@ -10,6 +10,10 @@ import LoadingSpinner from '../../../components/LoadingSpinner';
 import { executeAsyncFunctionAndObserveState } from '../../../utils/AsyncUtils';
 import GenericDailog from '../../../components/GenericDailog';
 import Link from 'next/link';
+import TextInput from '../../../components/TextInput';
+import CheckBox from '../../../components/CheckBox';
+import PrimaryButton from '../../../components/PrimaryButton';
+import ConfirmationDialog from '../../../components/ConfirmationDialog';
 
 const getNewQuestionsWithUpdatedQuestionOptions = (questions, questionId, newQuestionOptions) => {
     const questionOptionUpdated = questions.find(question => question.id == questionId);
@@ -37,15 +41,16 @@ export default () => {
     const quizDoneLinkRef = useRef(null);
     const quizzDoneLink = `localhost:3000/takeQuizz/${genericQuizId}`;
     const [wasQuizDoneURLCopied, setWasQuizDoneURLCopied] = useState(false);
+    const [isQuizBeingCustomized, setIsBeingQuizCustomized] = useState(true);
 
     React.useEffect(() => {
         (async () => {
             if (genericQuizId) {
-                setQuestions(await executeAsyncFunctionAndObserveState(
-                    setIsAsyncOperationInProgress,
-                    getAllQuestionsOfAQuiz,
-                    genericQuizId
-                ));
+                // setQuestions(await executeAsyncFunctionAndObserveState(
+                //     setIsAsyncOperationInProgress,
+                //     getAllQuestionsOfAQuiz,
+                //     genericQuizId
+                // ));
                 setWereQuestionsLoaded(true);
             }
         })();
@@ -154,6 +159,21 @@ export default () => {
         setWasQuizDoneURLCopied(true);
     }, [quizDoneLinkRef, quizzDoneLink]);
 
+    const onQuizSettingsClick = useCallback(() => {
+        setIsBeingQuizCustomized(value => !value);
+    }, []);
+
+    const onQuizSettingsDialogDismiss = useCallback(() => {
+        setIsBeingQuizCustomized(false);
+    }, []);
+
+    const onQuizSettingsSaveClick = useCallback((
+        newQuizName,
+        newRequestNameOnQuizStartPreference,
+        newShowResultPreference) => {
+        setIsBeingQuizCustomized(false);
+    }, []);
+
     return (
         <>
             <LayoutSetup />
@@ -165,10 +185,15 @@ export default () => {
             <header>
                 <Link href="/quizzes">
                     <a className="header__back-button" title="Back">
-                        <img src="/static/left-arrow.svg" alt="Back"/>
+                        <img src="/static/left-arrow.svg" alt="Back" />
                     </a>
                 </Link>
+                <div className="flex-space" />
                 <h1 className="header__title">Quizio</h1>
+                <button className="header__quiz-settings-button" onClick={onQuizSettingsClick}>
+                    <img src="/static/settings.svg"></img>
+                    <span>Quiz Settings</span>
+                </button>
                 <button className="header__done-button" onClick={onQuizzDoneButtonPress}>Done</button>
             </header>
             <main>
@@ -229,6 +254,13 @@ export default () => {
                 :
                 null
             }
+            {isQuizBeingCustomized ?
+                <QuizSettingsDialog
+                    onCancel={onQuizSettingsDialogDismiss}
+                    onSave={onQuizSettingsSaveClick} />
+                :
+                ""
+            }
             <style jsx>
                 {`
                     header {
@@ -247,8 +279,8 @@ export default () => {
                         color: black;
                     }
                     header button {
-                        width: 100px;
                         height: 30px;
+                        padding: 0px 8px;
                         outline: none;
                         border: 1px solid rgba(0, 0, 0, 0.3);
                         font-family: inherit;
@@ -258,18 +290,29 @@ export default () => {
                         transition: all 0.3s;
                         background-color: white;
                     }
-                    header button:hover {
+                    .header__done-button:hover {
                         background-color: #2BAE66;
                         box-shadow: 0px 0px 4px #2BAE66;
                         color: white;
-                        border: none;
+                        border: 1px solid transparent;
                     }
-                    .header_back-button {
+                    .header__back-button {
                         width: 25px;
                     }
                     .header__title {
-                        flex-grow: 1;
-                        text-align: center;
+                        position: absolute;
+                        left: 50%;
+                        transform: translateX(-50%);
+                    }
+                    .header__quiz-settings-button {
+                        margin-right: 10px;
+                    }
+                    .header__quiz-settings-button:hover {
+                        background-color: hsl(0, 0%, 85%);
+                    }
+                    .header__quiz-settings-button > img {
+                        width: 15px;
+                        margin-right: 5px;
                     }
                     .header__back-button{
                         width: 25px;
@@ -333,5 +376,91 @@ export default () => {
                 `}
             </style>
         </>
+    )
+}
+
+const QuizSettingsDialog = (
+    {
+        initialQuizName = "",
+        initialIsNameOfClientRequired = false,
+        initialIsShowingOfFinalProcentEnabled = false,
+        onSave,
+        onCancel,
+        ...restGenericDialogProps
+    }) => {
+    const [quizName, setQuizName] = useState(initialQuizName);
+    const [isNameOfClientRequired, setIsNameOfClientRequired] = useState(false);
+    const [isShowingOfFinalProcentEnabled, setIsShowingOfFinalProcentEnabled] = useState(initialIsShowingOfFinalProcentEnabled);
+
+    const nameRequiredCheckBoxStateChangeCallback = React.useCallback((evt) => {
+        setIsNameOfClientRequired(evt.target.checked);
+    }, []);
+
+    const showingOfFinalProcentCheckBoxStateChangeCallback = React.useCallback((evt) => {
+        setIsShowingOfFinalProcentEnabled(evt.target.checked);
+    });
+
+    const [isCancellationConfirmationShown, setIsCancellationConfirmationShown] = useState(false);
+    const onCancelClick = React.useCallback(() => {
+        const wereChangesMade = initialQuizName !== quizName
+            || initialIsNameOfClientRequired !== isNameOfClientRequired
+            || initialIsShowingOfFinalProcentEnabled !== isShowingOfFinalProcentEnabled;
+        if (wereChangesMade)
+            setIsCancellationConfirmationShown(true);
+        else
+            onCancel();
+    }, [initialQuizName, quizName, initialIsNameOfClientRequired, isNameOfClientRequired, initialIsShowingOfFinalProcentEnabled, isShowingOfFinalProcentEnabled, onCancel]);
+
+    const onConfirmationDialogCancel = React.useCallback(() => {
+        setIsCancellationConfirmationShown(false);
+    }, []);
+
+    const onDoneClick = React.useCallback(() => {
+        onSave(quizName, isNameOfClientRequired, isShowingOfFinalProcentEnabled);
+    }, [onSave, quizName, isNameOfClientRequired, isShowingOfFinalProcentEnabled]);
+    return (
+        !isCancellationConfirmationShown ?
+            <GenericDailog
+                title="Customize Your Quiz"
+                onDismissDialog={onCancelClick}
+                {...restGenericDialogProps}>
+                <TextInput
+                    title="Quiz name:"
+                    value={quizName}
+                    valueSetter={setQuizName} />
+                <CheckBox
+                    title={"Ask for name before taking the quiz."}
+                    checked={isNameOfClientRequired}
+                    onChange={nameRequiredCheckBoxStateChangeCallback}
+                />
+                <CheckBox
+                    title={"Show result of the quiz to the user."}
+                    checked={isShowingOfFinalProcentEnabled}
+                    onChange={showingOfFinalProcentCheckBoxStateChangeCallback}
+                    marginTop
+                />
+                <div className="horizontally-end-positioned">
+                    <PrimaryButton
+                        title="Done"
+                        marginRight
+                        marginTop
+                        onClick={onDoneClick}
+                    />
+                    <PrimaryButton
+                        title="Cancel"
+                        color="red"
+                        marginTop
+                        onClick={onCancelClick}
+                    />
+                </div>
+            </GenericDailog>
+            :
+            <ConfirmationDialog
+                title="You made changes to the quiz. Abandon them?"
+                negativeAnswer="No"
+                positiveAnswer="Abandon"
+                positiveIsRed
+                onConfirm={onCancel}
+                onCancel={onConfirmationDialogCancel} />
     )
 }

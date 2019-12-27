@@ -1,13 +1,14 @@
 export default ({ children, title, onDismissDialog }) => {
     const onContentWrapperClick = React.useCallback((event) => {
-        event.preventDefault();
-        event.stopPropagation();
-    }, []);
+        if (event.target.dataset.clickToQuit) {
+            onDismissDialog();
+        }
+    }, [onDismissDialog]);
 
     return (
         <>
-            <div className="dialog-wrapper" onClick={onDismissDialog}>
-                <div className="dialog-content-wrapper" onClick={onContentWrapperClick}>
+            <div className="dialog-wrapper" onClick={onContentWrapperClick} data-click-to-quit>
+                <div className="dialog-content-wrapper">
                     {title ? <h1>{title}</h1> : null}
                     {children}
                 </div>
