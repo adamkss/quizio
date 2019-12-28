@@ -1,6 +1,6 @@
 import Question from '../../../components/quizzes/adminComponents/Question';
 import Router, { useRouter } from 'next/router';
-import { getAllQuestionsOfAQuiz, saveQuestion, getNewSessionForQuiz } from '../../../utils/QuizRequests';
+import { getAllQuestionsOfAQuiz, saveQuestion, getNewSessionForQuiz, updateQuizSettings, getQuizInfoById } from '../../../utils/QuizRequests';
 import LayoutSetup from '../../../components/layoutSetup';
 import { addOptionToQuestion, setNewAnswerOptionAsCorrectAnswer, deleteQuestionOptionFromQuestion, deleteQuestion } from '../../../utils/QuizRequests';
 import FloatingActionButton from '../../../components/FloatingActionButton';
@@ -34,6 +34,7 @@ const getNewQuestionsWithUpdatedQuestionOptions = (questions, questionId, newQue
 export default () => {
     const [questions, setQuestions] = React.useState([]);
     const { genericQuizId } = useRouter().query;
+    const [quizInfo, setQuizInfo] = useState(null);
     const [isCreatingQuestionInProgress, setIsCreatingQuestionInProgress] = useState(false);
     const [wereQuestionsLoaded, setWereQuestionsLoaded] = useState(false);
     const [isAsyncOperationInProgress, setIsAsyncOperationInProgress] = useState(false);
@@ -41,22 +42,29 @@ export default () => {
     const quizDoneLinkRef = useRef(null);
     const quizzDoneLink = `localhost:3000/takeQuizz/${genericQuizId}`;
     const [wasQuizDoneURLCopied, setWasQuizDoneURLCopied] = useState(false);
-    const [isQuizBeingCustomized, setIsBeingQuizCustomized] = useState(true);
+    const [isQuizBeingCustomized, setIsBeingQuizCustomized] = useState(false);
 
     React.useEffect(() => {
         (async () => {
             if (genericQuizId) {
-                // setQuestions(await executeAsyncFunctionAndObserveState(
-                //     setIsAsyncOperationInProgress,
-                //     getAllQuestionsOfAQuiz,
-                //     genericQuizId
-                // ));
+                setQuestions(await executeAsyncFunctionAndObserveState(
+                    setIsAsyncOperationInProgress,
+                    getAllQuestionsOfAQuiz,
+                    genericQuizId
+                ));
+                await executeAsyncFunctionAndObserveState(
+                    setIsAsyncOperationInProgress,
+                    loadQuizInfo
+                );
                 setWereQuestionsLoaded(true);
             }
         })();
     }, [genericQuizId]);
 
-
+    const loadQuizInfo = useCallback(async () => {
+        const quizInfo = await getQuizInfoById(genericQuizId);
+        setQuizInfo(quizInfo);
+    }, [genericQuizId]);
 
     const getOnAddNewOptionCallback = (questionId) => async (newQuestionOption) => {
         const newQuestionOptions = await executeAsyncFunctionAndObserveState(
@@ -167,12 +175,26 @@ export default () => {
         setIsBeingQuizCustomized(false);
     }, []);
 
-    const onQuizSettingsSaveClick = useCallback((
+    const onQuizSettingsSaveClick = useCallback(async (
         newQuizName,
         newRequestNameOnQuizStartPreference,
         newShowResultPreference) => {
         setIsBeingQuizCustomized(false);
-    }, []);
+        await executeAsyncFunctionAndObserveState(
+            setIsAsyncOperationInProgress,
+            updateQuizSettings,
+            genericQuizId,
+            {
+                quizName: newQuizName,
+                askForQuiztakerName: newRequestNameOnQuizStartPreference,
+                showResultAtEndOfQuiz: newShowResultPreference
+            }
+        );
+        await executeAsyncFunctionAndObserveState(
+            setIsAsyncOperationInProgress,
+            loadQuizInfo
+        );
+    }, [setIsAsyncOperationInProgress, genericQuizId]);
 
     return (
         <>
@@ -256,6 +278,9 @@ export default () => {
             }
             {isQuizBeingCustomized ?
                 <QuizSettingsDialog
+                    initialQuizName={quizInfo.name}
+                    initialIsNameOfClientRequired={quizInfo.askForQuizTakerName}
+                    initialIsShowingOfFinalProcentEnabled={quizInfo.showResultAtTheEnd}
                     onCancel={onQuizSettingsDialogDismiss}
                     onSave={onQuizSettingsSaveClick} />
                 :
@@ -296,9 +321,6 @@ export default () => {
                         color: white;
                         border: 1px solid transparent;
                     }
-                    .header__back-button {
-                        width: 25px;
-                    }
                     .header__title {
                         position: absolute;
                         left: 50%;
@@ -315,9 +337,17 @@ export default () => {
                         margin-right: 5px;
                     }
                     .header__back-button{
-                        width: 25px;
-                        height: 25px;
-                        padding: 3px;
+                        width: 34px;
+                        height: 34px;
+                        padding: 7px;
+                        border-radius: 50%;
+                        transition: all 0.3s;
+                    }
+                    .header__back-button:hover {
+                        background-color: hsl(0, 0%, 85%);
+                    }
+                    .header__back-button:active {
+                        background-color: hsl(0, 0%, 75%);
                     }
                     .questions {
                         height: calc(100vh);
@@ -389,7 +419,7 @@ const QuizSettingsDialog = (
         ...restGenericDialogProps
     }) => {
     const [quizName, setQuizName] = useState(initialQuizName);
-    const [isNameOfClientRequired, setIsNameOfClientRequired] = useState(false);
+    const [isNameOfClientRequired, setIsNameOfClientRequired] = useState(initialIsNameOfClientRequired);
     const [isShowingOfFinalProcentEnabled, setIsShowingOfFinalProcentEnabled] = useState(initialIsShowingOfFinalProcentEnabled);
 
     const nameRequiredCheckBoxStateChangeCallback = React.useCallback((evt) => {

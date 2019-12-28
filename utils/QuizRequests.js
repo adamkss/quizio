@@ -66,7 +66,7 @@ export const deleteQuestion = (questionId) => {
 }
 
 export const createNewQuiz = (courseId, quizName) => {
-    return axios.post(`/courses/${courseId}/quizzes`, {quizName})
+    return axios.post(`/courses/${courseId}/quizzes`, { quizName })
         .then(getDataFromResponseAsPromise);
 }
 
@@ -85,10 +85,22 @@ export const getStatisticsForQuizSession = (sessionId) => {
     return axios.get(`/quiz-sessions/${sessionId}/statistics`).then(getDataFromResponseAsPromise);
 }
 
-export const registerUser = ({email, password}) => {
-    return axios.post('/register', {email, password}).then(getDataFromResponseAsPromise);
+export const registerUser = ({ email, password }) => {
+    return axios.post('/register', { email, password }).then(getDataFromResponseAsPromise);
 }
 
 export const getQuizzesOfCurrentUser = () => {
     return axios.get('/genericQuizzes/myQuizzes').then(getDataFromResponseAsPromise);
+}
+
+export const getQuizInfoById = (quizId) => {
+    return axios.get(`/genericQuizzes/${quizId}`).then(getDataFromResponseAsPromise);
+}
+
+export const updateQuizSettings = (quizId, { quizName, askForQuiztakerName, showResultAtEndOfQuiz }) => {
+    return axios.put(`/genericQuizzes/${quizId}/settings`, {
+        quizName,
+        askForQuiztakerName,
+        showResultAtEndOfQuiz
+    }).then(getDataFromResponseAsPromise);
 }

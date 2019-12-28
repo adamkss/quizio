@@ -47,48 +47,46 @@ export default ({ onDismissDialog, onSaveQuestion }) => {
     return (
         <>
             <GenericDialog onDismissDialog={onDismissDialog} title="Create new question" >
-                <form>
-                    <TextInput
-                        title="Question:"
-                        value={questionTitle}
-                        onChange={getCallbackForInputChange(setQuestionTitle)}
-                        name="question-title"
-                        type="text"
-                        placeholder="Type question here..."
-                        width="100%"
-                        autoFocus />
-                    <label>Options:</label>
-                    {questionOptions.length === 0 ?
-                        <div className="horizontally-centered">
-                            <span className="no-options-yet">No options defined yet.</span>
-                        </div>
-                        :
-                        null}
-                    {questionOptions.map((questionOption, index) =>
-                        <div className="option-input-wrapper" key={index}>
-                            <TextInput
-                                key={index}
-                                type="text"
-                                placeholder="Option here..."
-                                value={questionOption}
-                                onChange={getQuestionOptionValueUpdateCallback(index)}
-                                width="100%" />
-                            <img
-                                title="Delete option"
-                                className="delete-option-icon"
-                                src="/static/delete-24px.svg"
-                                onClick={getQuestionOptionsDeleteCallback(index)} />
-                        </div>
-                    )}
+                <TextInput
+                    title="Question:"
+                    value={questionTitle}
+                    onChange={getCallbackForInputChange(setQuestionTitle)}
+                    name="question-title"
+                    type="text"
+                    placeholder="Type question here..."
+                    width="100%"
+                    autoFocus />
+                <label>Options:</label>
+                {questionOptions.length === 0 ?
                     <div className="horizontally-centered">
-                        <button className="add-option" onClick={createNewEmptyOption}>Add option</button>
+                        <span className="no-options-yet">No options defined yet.</span>
                     </div>
-                    <PrimaryButton
-                        title="Save question"
-                        inactive={!isNewQuestionReadyToBeCreated}
-                        onClick={isNewQuestionReadyToBeCreated ? onSaveQuestionClicked : null}
-                        rightAligned />
-                </form>
+                    :
+                    null}
+                {questionOptions.map((questionOption, index) =>
+                    <div className="option-input-wrapper" key={index}>
+                        <TextInput
+                            key={index}
+                            type="text"
+                            placeholder="Option here..."
+                            value={questionOption}
+                            onChange={getQuestionOptionValueUpdateCallback(index)}
+                            width="100%" />
+                        <img
+                            title="Delete option"
+                            className="delete-option-icon"
+                            src="/static/delete-24px.svg"
+                            onClick={getQuestionOptionsDeleteCallback(index)} />
+                    </div>
+                )}
+                <div className="horizontally-centered">
+                    <button className="add-option" onClick={createNewEmptyOption}>Add option</button>
+                </div>
+                <PrimaryButton
+                    title="Save question"
+                    inactive={!isNewQuestionReadyToBeCreated}
+                    onClick={isNewQuestionReadyToBeCreated ? onSaveQuestionClicked : null}
+                    rightAligned />
             </GenericDialog>
             <style jsx>
                 {`
