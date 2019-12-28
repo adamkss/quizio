@@ -446,8 +446,14 @@ const QuizSettingsDialog = (
     }, []);
 
     const onDoneClick = React.useCallback(() => {
-        onSave(quizName, isNameOfClientRequired, isShowingOfFinalProcentEnabled);
-    }, [onSave, quizName, isNameOfClientRequired, isShowingOfFinalProcentEnabled]);
+        const wereChangesMade = initialQuizName !== quizName
+            || initialIsNameOfClientRequired !== isNameOfClientRequired
+            || initialIsShowingOfFinalProcentEnabled !== isShowingOfFinalProcentEnabled;
+        if (wereChangesMade)
+            onSave(quizName, isNameOfClientRequired, isShowingOfFinalProcentEnabled);
+        else
+            onCancel();
+    }, [onSave, initialQuizName, quizName, initialIsNameOfClientRequired, isNameOfClientRequired, initialIsShowingOfFinalProcentEnabled, isShowingOfFinalProcentEnabled]);
     return (
         !isCancellationConfirmationShown ?
             <GenericDailog
