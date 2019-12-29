@@ -22,8 +22,8 @@ export const getAllQuestionsOfAQuiz = (quizId) => {
     return axios.get(`/quizzes/${quizId}/questions`).then(getDataFromResponseAsPromise);
 }
 
-export const getNewSessionForQuiz = quizId => {
-    return axios.post(`/quiz-sessions/by-quizzes/${quizId}`).then(getDataFromResponseAsPromise);
+export const getNewSessionForQuiz = (quizId, options) => {
+    return axios.post(`/quiz-sessions/by-quizzes/${quizId}`, options).then(getDataFromResponseAsPromise);
 }
 
 export const getNextQuizQuestion = (sessionId) => {

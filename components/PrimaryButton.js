@@ -62,18 +62,20 @@ const getColorBehaviorsForColor = (color) => {
     }
 }
 
-const PrimaryButton = ({ title, color = "green", inactive = false, marginRight = false, marginTop = false, extraMarginTop = false, big = false, linkTo = null, ...rest }) => {
+const PrimaryButton = ({ title, color = "green", inactive = false, marginRight = false, marginTop = false, extraMarginTop = false, big = false, medium = false, linkTo = null, onClick, ...rest }) => {
     const colorsForDifferentStates = getColorBehaviorsForColor(color);
     const onClickHandler = React.useCallback(() => {
-        if(linkTo) {
+        if (linkTo) {
             Router.push(linkTo);
+        } else {
+            onClick();
         }
-    }, [linkTo]);
+    }, [linkTo, onClick]);
     return (
         <>
             <button
                 className={`save-question${!inactive ? "" : " inactive"}`}
-                onClick={onClickHandler}
+                onClick={inactive ? null : onClickHandler}
                 {...rest}
                 title={title}>
                 {title}
@@ -96,7 +98,14 @@ const PrimaryButton = ({ title, color = "green", inactive = false, marginRight =
                             padding: 9px;
                         `
                         :
+                        medium ?
+                            `
+                            width: 130px;
+                            font-size: 1.15em;
+                            padding: 5px;
                         `
+                            :
+                            `
                             font-size: 0.9em;
                             padding: 5px;
                         `

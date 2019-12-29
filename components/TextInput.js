@@ -13,6 +13,16 @@ export default ({ noMarginTop, noMarginBottom, title, onChange, valueSetter = nu
                 div {
                     width: ${width};
                     max-width: 500px;
+                    ${noMarginTop ?
+                        null
+                        :
+                        `margin-top: ${marginTop};`
+                    }
+                    ${noMarginBottom ?
+                        null
+                        :
+                        "margin-bottom: 10px;"
+                    }
                 }
                 label {
                       font-size: 1.2em;
@@ -26,16 +36,6 @@ export default ({ noMarginTop, noMarginBottom, title, onChange, valueSetter = nu
                       border-radius: 5px;
                       padding: 10px;
                       font-size: 1em;
-                      ${noMarginTop ?
-                        null
-                        :
-                        `margin-top: ${marginTop};`
-                    }
-                    ${noMarginBottom ?
-                        null
-                        :
-                        "margin-bottom: 10px;"
-                    }
                   }
                   input:focus {
                       border: 1px solid transparent;
