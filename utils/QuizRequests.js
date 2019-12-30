@@ -104,3 +104,7 @@ export const updateQuizSettings = (quizId, { quizName, askForQuiztakerName, show
         showResultAtEndOfQuiz
     }).then(getDataFromResponseAsPromise);
 }
+
+export const getQuizResults = (quizId) =>  {
+    return axios.get(`/genericQuizzes/${quizId}/results`).then(getDataFromResponseAsPromise);
+}

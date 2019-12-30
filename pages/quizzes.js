@@ -56,6 +56,10 @@ const Quizzes = () => {
         }
     }, [quizIdToDelete]);
 
+    const getOnSeeResultsOfQuizClickCallback = useCallback((quizId) => () => {
+        Router.push(`/genericQuizzes/${quizId}/results`);
+    }, []);
+
     return (
         <QuizzesLayoutWrapper>
             <>
@@ -67,7 +71,7 @@ const Quizzes = () => {
                                 <button className="quiz-operation-button" onClick={getOnClickCallbackForQuizPress(quiz.id)}>
                                     See questions
                                 </button>
-                                <button className="quiz-operation-button">
+                                <button className="quiz-operation-button" onClick={getOnSeeResultsOfQuizClickCallback(quiz.id)}>
                                     See results of users
                                 </button>
                                 <img

@@ -7,11 +7,13 @@ const getRouteNameAfterPath = (path) => {
     switch (path) {
         case "/quizzes": return "quizzes";
         case "/homepage": return "homepage";
+        case "/genericQuizzes/[genericQuizId]/results" : return "quizResults";
     }
 }
 
-export const QuizzesLayoutWrapper = ({ children }) => {
-    const { pathname: pathName } = useRouter();
+export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
+    const { pathname: pathName, query } = useRouter();
+    console.log(query);
     const [page, setPage] = useState("");
     const [breadcrumbParts, setBreadcrumbParts] = useState([]);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -23,9 +25,10 @@ export const QuizzesLayoutWrapper = ({ children }) => {
             switch (routeName) {
                 case "homepage": setBreadcrumbParts(["Homepage"]); break;
                 case "quizzes": setBreadcrumbParts(["My quizzes"]); break;
+                case "quizResults" : extraParamFromChild && setBreadcrumbParts(["My quizzes", extraParamFromChild, "Results"]); break;
             }
         }
-    }, [pathName]);
+    }, [pathName, extraParamFromChild]);
 
     const toggleMenuCallback = useCallback(() => {
         setIsMenuOpen(isOpen => !isOpen);
@@ -49,10 +52,7 @@ export const QuizzesLayoutWrapper = ({ children }) => {
                             <MenuItem name="Homepage" isSelected={page === "homepage"} />
                         </Link>
                         <Link href="/quizzes">
-                            <MenuItem name="Quizzes" isSelected={page === "quizzes"} />
-                        </Link>
-                        <Link href="/quizzes">
-                            <MenuItem name="Quiz Results" isSelected={page === "asd"} />
+                            <MenuItem name="Quizzes" isSelected={page === "quizzes" || page === "quizResults"} />
                         </Link>
                     </section>
                 </aside>
@@ -115,6 +115,7 @@ export const QuizzesLayoutWrapper = ({ children }) => {
                         background-color: inherit;
                         border: none;
                         outline: none;
+                        cursor: pointer;
                     }
                     .aside__close-menu:active {
                        background-color: hsl(0, 0%, 85%);
@@ -124,6 +125,10 @@ export const QuizzesLayoutWrapper = ({ children }) => {
                         padding: 4px;
                         margin-right: 10px;
                         margin-left: 5px;
+                        background-color: transparent;
+                        border: none;
+                        outline: none;
+                        cursor: pointer;
                     }
                     @media (min-width: 740px) {
                         aside {
