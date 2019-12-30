@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { getQuizesForCourse, createNewQuiz, deleteQuiz, getQuizzesOfCurrentUser, createNewGenericQuizz } from '../utils/QuizRequests';
+import { deleteQuiz, getQuizzesOfCurrentUser, createNewGenericQuizz } from '../utils/QuizRequests';
 import Router from 'next/router';
 import { QuizzesLayoutWrapper } from '../components/quizzes/QuizzesLayoutWrapper';
 import GenericDialog from '../components/GenericDailog';
@@ -118,7 +118,8 @@ const Quizzes = () => {
                         margin: -13px;
                     }
                     .quiz {
-                        padding: 25px;
+                        padding: 25px 25px;
+                        padding-top: 40px;
                         font-size: 1.9em;
                         box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.2);
                         border-radius: 5px;
@@ -160,6 +161,7 @@ const Quizzes = () => {
                     .quiz-operation-button {
                         width: 100%;
                         display: block;
+                        background-color: white;
                         outline: none;
                         border: none;
                         font-family: inherit;
@@ -180,8 +182,8 @@ const Quizzes = () => {
                     .add-quiz-fab {
                         width: 50px;
                         height: 50px;
-                        position: absolute;
-                        top: 25px;
+                        position: fixed;
+                        bottom: 25px;
                         right: 25px;
                         cursor: pointer;
                         border-radius: 50%;
@@ -204,6 +206,7 @@ const CreateNewQuizDialog = ({ onDismissDialog, onCreateNewQuiz }) => {
             <TextInput title="New quiz name:"
                 value={newQuizName}
                 autoFocus
+                width="100%"
                 placeholder="New quiz name here..."
                 valueSetter={setNewQuizName} />
             <PrimaryButton

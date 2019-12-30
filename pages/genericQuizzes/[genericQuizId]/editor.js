@@ -322,9 +322,15 @@ export default () => {
                         border: 1px solid transparent;
                     }
                     .header__title {
-                        position: absolute;
-                        left: 50%;
-                        transform: translateX(-50%);
+                        display: none;
+                    }
+                    @media (min-width: 475px) {
+                        .header__title {
+                            display: block;
+                            position: absolute;
+                            left: 50%;
+                            transform: translateX(-50%);
+                        }
                     }
                     .header__quiz-settings-button {
                         margin-right: 10px;
@@ -463,6 +469,7 @@ const QuizSettingsDialog = (
                 <TextInput
                     title="Quiz name:"
                     value={quizName}
+                    width="100%"
                     valueSetter={setQuizName} />
                 <CheckBox
                     title={"Ask for name before taking the quiz."}

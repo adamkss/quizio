@@ -59,6 +59,7 @@ export default () => {
                         {quiz.askForQuizTakerName ?
                             <TextInput
                                 title="Your name:"
+                                width="100%"
                                 marginTop="15px"
                                 value={quizTakerName}
                                 valueSetter={setQuizTakerName}
