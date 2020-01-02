@@ -7,7 +7,7 @@ const getRouteNameAfterPath = (path) => {
     switch (path) {
         case "/quizzes": return "quizzes";
         case "/homepage": return "homepage";
-        case "/genericQuizzes/[genericQuizId]/results" : return "quizResults";
+        case "/genericQuizzes/[genericQuizId]/results": return "quizResults";
     }
 }
 
@@ -25,7 +25,7 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
             switch (routeName) {
                 case "homepage": setBreadcrumbParts(["Homepage"]); break;
                 case "quizzes": setBreadcrumbParts(["My quizzes"]); break;
-                case "quizResults" : extraParamFromChild && setBreadcrumbParts(["My quizzes", extraParamFromChild, "Results"]); break;
+                case "quizResults": extraParamFromChild && setBreadcrumbParts(["My quizzes", extraParamFromChild, "Results"]); break;
             }
         }
     }, [pathName, extraParamFromChild]);
@@ -44,7 +44,7 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
                     </section>
                     <section>
                         <button className="aside__close-menu" onClick={toggleMenuCallback}>
-                            <img src="/static/letter-x.svg"/>
+                            <img src="/static/letter-x.svg" />
                         </button>
                     </section>
                     <section className="aside__menu-items">
@@ -91,10 +91,10 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
                         z-index: 2;
                         flex-direction: column;
                         ${isMenuOpen ?
-                            "display: flex;"
+                        "display: flex;"
                         :
-                            "display: none;"
-                        }
+                        "display: none;"
+                    }
                     }
                     .aside__menu-items {
                         display: flex;
@@ -196,8 +196,18 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
                     .breadcrumbs span.location-part {
                         font-weight: 300;
                         color: rgba(255, 255, 255, 0.8);
-                        font-size: 1.2em;
+                        white-space: nowrap;
+                        font-size: 0.9em;
                         animation: FadeIn 0.3s;
+                    }
+                    @media (min-width: 430px) {
+                        .breadcrumbs span.location-part {
+                            font-size: 1.1em;
+                        }
+                    }@media (min-width: 610px) {
+                        .breadcrumbs span.location-part {
+                            font-size: 1.2em;
+                        }
                     }
                     .breadcrumbs span.location-part:not(:last-child)::after {
                         margin: 0px 10px;

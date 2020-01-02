@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { getQuizInfoById, getQuizResults } from '../../../utils/QuizRequests';
 import { executeAsyncFunctionAndObserveState } from '../../../utils/AsyncUtils';
 import LoadingSpinner from '../../../components/LoadingSpinner';
+import { getQuizResultIndicator } from '../../../components/visual/QuizResultIndicator';
 
 export default () => {
     const { genericQuizId } = useRouter().query;
@@ -41,11 +42,19 @@ export default () => {
                     <main>
                         <h1>Results of quiz "<span>{quiz.name}" :</span></h1>
                         <div className="list">
+                            <div className="list__element list__header">
+                                <span className="">Quiz taker name</span>
+                                <span className="">Date</span>
+                                <span className="">Result (%)</span>
+                            </div>
                             {quizResults.map(quizResult =>
                                 <div className="list__element" key={quizResult.id}>
-                                    <span>{quizResult.quizTakerName}</span>
-                                    <span>{quizResult.date}</span>
-                                    <span>{quizResult.result}%</span>
+                                    <span className="quiz-taker-name">{quizResult.quizTakerName || "Anonymous"}</span>
+                                    <span className="quiz-taking-date">{quizResult.date}</span>
+                                    <div className="list__quiz-result">
+                                        <span className="quiz-taking-result">{quizResult.result}%</span>
+                                        {getQuizResultIndicator(quizResult.result)}
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -70,6 +79,15 @@ export default () => {
                         max-width: 800px;
                         border-radius: 10px;
                         box-shadow: 0px 0px 8px hsl(0, 0%, 75%);
+                        height: 550px;
+                        max-height: 70vh;
+                        overflow: auto;
+                        font-size: 1.1em;
+                    }
+                    @media (min-width: 650px) {
+                        .list {
+                            font-size: 1.2em;
+                        }
                     }
                     .list__element {
                         width: 100%;
@@ -81,8 +99,12 @@ export default () => {
                         justify-items: center;
                         border-bottom: 1px solid hsl(0, 0%, 85%);
                     }
-                    .list__element > span {
-                        font-size: 1em;
+                    .list__header {
+                        position: sticky;
+                        top: 0;
+                        font-size: 1.1em;
+                        text-align: center;
+                        background-color: hsl(0, 0%, 93%);
                     }
                     .list__element:first-child {
                         border-top-left-radius: 10px;
@@ -91,6 +113,21 @@ export default () => {
                     .list__element:last-child {
                         border-bottom-left-radius: 10px;
                         border-bottom-right-radius: 10px;
+                    }
+                    .list__quiz-result {
+                        display: flex;
+                        justify-content: flex-start;
+                    }
+                    .quiz-taker-name {
+                        font-size: 1.1em;
+                        font-weight: 400;
+                    }
+                    .quiz-taking-date {
+                        font-size: 1em;
+                        font-weight: 300;
+                    }
+                    .quiz-taking-result {
+                        margin-right: 5px;
                     }
             `}
             </style>

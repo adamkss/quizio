@@ -119,6 +119,7 @@ export const BackOfficeLayoutWrapper = ({ children }) => {
                         font-weight: 300;
                         color: rgba(255, 255, 255, 0.8);
                         font-size: 1.2em;
+                        white-space: nowrap;
                         animation: FadeIn 0.3s;
                     }
                     .breadcrumbs span.location-part:not(:last-child)::after {
