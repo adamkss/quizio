@@ -1,7 +1,8 @@
 import LayoutSetup from '../layoutSetup';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import Router, { useRouter } from 'next/router';
 import { useEffect, useState, useCallback } from 'react';
+import { clearToken } from '../../utils/AuthUtils';
 
 const getRouteNameAfterPath = (path) => {
     switch (path) {
@@ -13,7 +14,6 @@ const getRouteNameAfterPath = (path) => {
 
 export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
     const { pathname: pathName, query } = useRouter();
-    console.log(query);
     const [page, setPage] = useState("");
     const [breadcrumbParts, setBreadcrumbParts] = useState([]);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -23,9 +23,30 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
             const routeName = getRouteNameAfterPath(pathName);
             setPage(routeName);
             switch (routeName) {
-                case "homepage": setBreadcrumbParts(["Homepage"]); break;
-                case "quizzes": setBreadcrumbParts(["My quizzes"]); break;
-                case "quizResults": extraParamFromChild && setBreadcrumbParts(["My quizzes", extraParamFromChild, "Results"]); break;
+                case "homepage": setBreadcrumbParts([{
+                    text: "Homepage",
+                    link: null
+                }]); break;
+                case "quizzes": setBreadcrumbParts([
+                    {
+                        text: "My quizzes",
+                        link: "/quizzes"
+                    }
+                ]); break;
+                case "quizResults": extraParamFromChild && setBreadcrumbParts([
+                    {
+                        text: "My quizzes",
+                        link: "/quizzes"
+                    },
+                    {
+                        text: extraParamFromChild,
+                        link: null
+                    },
+                    {
+                        text: "Results",
+                        link: null
+                    }
+                ]); break;
             }
         }
     }, [pathName, extraParamFromChild]);
@@ -33,6 +54,11 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
     const toggleMenuCallback = useCallback(() => {
         setIsMenuOpen(isOpen => !isOpen);
     }, [setIsMenuOpen]);
+
+    const onLogoutClick = useCallback(() => {
+        clearToken();
+        Router.push('/');
+    }, [clearToken, Router]);
 
     return (
         <>
@@ -54,6 +80,8 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
                         <Link href="/quizzes">
                             <MenuItem name="Quizzes" isSelected={page === "quizzes" || page === "quizResults"} />
                         </Link>
+                        <div className="aside__menu-separator" />
+                        <MenuItem name="Logout" onClick={onLogoutClick} />
                     </section>
                 </aside>
                 <div className="right-column">
@@ -63,12 +91,24 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
                                 <img src="/static/menu.svg"></img>
                             </button>
                         </section>
-                        <section className="breadcrumbs">
-                            <span className="location-part">Quizio</span>
-                            {breadcrumbParts.map((breadcrumbPart, index) =>
-                                <span key={index} className="location-part">{breadcrumbPart}</span>
+                        <ol className="breadcrumbs">
+                            <li className="location-part">
+                                <Link href="/homepage" >
+                                    <a>
+                                        Quizio
+                                    </a>
+                                </Link>
+                            </li>
+                            {breadcrumbParts.map((breadcrumbPart) =>
+                                <li key={breadcrumbPart.text} className="location-part">
+                                    <Link href={breadcrumbPart.link}>
+                                        <a>
+                                            {breadcrumbPart.text}
+                                        </a>
+                                    </Link>
+                                </li>
                             )}
-                        </section>
+                        </ol>
                     </header>
                     <main>
                         {children}
@@ -119,6 +159,13 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
                     }
                     .aside__close-menu:active {
                        background-color: hsl(0, 0%, 85%);
+                    }
+                    .aside__menu-separator {
+                        width: 100%;
+                        max-width: 300px;
+                        height: 1px;
+                        background-color: hsl(0, 0%, 85%);
+                        margin: 20px 0px;
                     }
                     .header__menu-opener {
                         width: 35px;
@@ -190,10 +237,11 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
                             padding: 10px 20px;
                         }
                     }
-                    section.breadcrumbs {
+                    .breadcrumbs {
                         display: flex;
+                        list-style: none;
                     }
-                    .breadcrumbs span.location-part {
+                    .breadcrumbs .location-part {
                         font-weight: 300;
                         color: rgba(255, 255, 255, 0.8);
                         white-space: nowrap;
@@ -201,15 +249,16 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
                         animation: FadeIn 0.3s;
                     }
                     @media (min-width: 430px) {
-                        .breadcrumbs span.location-part {
+                        .breadcrumbs .location-part {
                             font-size: 1.1em;
                         }
-                    }@media (min-width: 610px) {
-                        .breadcrumbs span.location-part {
+                    }
+                    @media (min-width: 610px) {
+                        .breadcrumbs .location-part {
                             font-size: 1.2em;
                         }
                     }
-                    .breadcrumbs span.location-part:not(:last-child)::after {
+                    .breadcrumbs .location-part:not(:last-child)::after {
                         margin: 0px 10px;
                         content: ">";
                         animation: FadeIn 0.3s;
@@ -222,7 +271,12 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
                             opacity: 1;
                         }
                     }
+                    .breadcrumbs a {
+                        color: inherit;
+                        text-decoration: none;
+                    }
                     main {
+                        position: relative;
                         height: calc(100vh - 50px);
                         overflow: auto;
                         z-index: 1;

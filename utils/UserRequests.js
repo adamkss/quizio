@@ -5,5 +5,5 @@ const getDataFromResponseAsPromise = (response) => {
 }
 
 export const getUserDetails = () => {
-    axios.get('/profile').then(getDataFromResponseAsPromise);
+    return axios.get('/profile').then(getDataFromResponseAsPromise);
 }

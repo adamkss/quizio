@@ -4,11 +4,12 @@ import LoadingSpinner from '../components/LoadingSpinner';
 
 export default (WrappedComponent) => {
     return (props) => {
-        const authSetUp = useAuthTokenIfExists({ redirectURLIfDoesNotExist: "/login" });
+        const [authSetUp, currentUserDetails] =
+            useAuthTokenIfExists({ redirectURLIfDoesNotExist: "/login" });
         return (
             <>
                 {authSetUp ?
-                    <WrappedComponent {...props} />
+                    <WrappedComponent currentUserDetails={currentUserDetails} {...props} />
                     :
                     <LoadingSpinner />
                 }

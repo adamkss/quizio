@@ -85,8 +85,8 @@ export const getStatisticsForQuizSession = (sessionId) => {
     return axios.get(`/quiz-sessions/${sessionId}/statistics`).then(getDataFromResponseAsPromise);
 }
 
-export const registerUser = ({ email, password }) => {
-    return axios.post('/register', { email, password }).then(getDataFromResponseAsPromise);
+export const registerUser = ({ name, email, password }) => {
+    return axios.post('/register', { name, email, password }).then(getDataFromResponseAsPromise);
 }
 
 export const getQuizzesOfCurrentUser = () => {

@@ -7,8 +7,8 @@ import { registerUser } from "../utils/QuizRequests";
 import SecondaryButton from "../components/SecondaryButton";
 import Router from 'next/router';
 
-const stepOneValidator = ({ email }) => {
-    return /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/.test(email);
+const stepOneValidator = ({ name, email }) => {
+    return /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/.test(email) && name != "";
 }
 
 const stepTwoValidator = ({ password, confirmedPassword }) => {
@@ -22,6 +22,7 @@ export default () => {
     const [isNextValid, setIsNextValid] = React.useState(false);
 
     const emailReactState = React.useState("");
+    const nameReactState = React.useState("");
     const passwordReactState = React.useState("");
     const confirmPasswordReactState = React.useState("");
     const [isWaiting, setIsWaiting] = React.useState(false);
@@ -29,13 +30,13 @@ export default () => {
 
     const register = React.useCallback(async () => {
         setIsWaiting(true);
-        const user = await registerUser({ email: emailReactState[0], password: passwordReactState[0] });
+        const user = await registerUser({ name: nameReactState[0], email: emailReactState[0], password: passwordReactState[0] });
         setIsWaiting(false);
         if (user) {
             setNewUser(user);
             setStep(step => step + 1);
         }
-    }, [emailReactState[0], passwordReactState[0]]);
+    }, [nameReactState[0], emailReactState[0], passwordReactState[0]]);
 
     const onNextClick = React.useCallback(() => {
         setStep(step => step + 1);
@@ -49,9 +50,10 @@ export default () => {
         const email = emailReactState[0];
         const password = passwordReactState[0];
         const confirmedPassword = confirmPasswordReactState[0];
+        const name = nameReactState[0];
 
-        setIsNextValid(validators[step - 1]({ email, password, confirmedPassword }));
-    }, [emailReactState[0], passwordReactState[0], confirmPasswordReactState[0]]);
+        setIsNextValid(validators[step - 1]({ name, email, password, confirmedPassword }));
+    }, [nameReactState[0], emailReactState[0], passwordReactState[0], confirmPasswordReactState[0]]);
 
     return (
         <>
@@ -62,7 +64,9 @@ export default () => {
             <main>
                 <ProgressIndicator numberOfSteps={3} currentStep={step} />
                 {step === 1 ?
-                    <FirstRegistrationStep emailReactState={emailReactState} />
+                    <FirstRegistrationStep
+                        nameReactState={nameReactState}
+                        emailReactState={emailReactState} />
                     :
                     step === 2 ?
                         <SecondRegistrationStep
@@ -80,6 +84,7 @@ export default () => {
                         title="Next"
                         rightAligned
                         marginTop
+                        medium
                         inactive={!isNextValid} />
                     :
                     ""
@@ -164,10 +169,17 @@ const ProgressIndicator = ({ numberOfSteps = 3, currentStep = 2 }) => {
     )
 }
 
-const FirstRegistrationStep = ({ emailReactState }) => {
+const FirstRegistrationStep = ({ nameReactState, emailReactState }) => {
     return (
         <>
             <LayoutSetup />
+            <div className="horizontally-centered fade-in">
+                <TextInput
+                    title="Name:"
+                    width="100%"
+                    value={nameReactState[0]}
+                    valueSetter={nameReactState[1]} />
+            </div>
             <div className="horizontally-centered fade-in">
                 <TextInput
                     title="E-mail:"
@@ -222,7 +234,7 @@ const ThirdRegistrationStep = ({ }) => {
                     onClick={React.useCallback(() => {
                         Router.push('/login');
                     }, [])}
-                    />
+                />
             </div>
             <style jsx>
                 {`

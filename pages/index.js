@@ -2,6 +2,7 @@ import LayoutSetup from "../components/layoutSetup"
 import React, { useRef, useEffect, useState } from 'react';
 import SecondaryButton from "../components/SecondaryButton";
 import PrimaryButton from "../components/PrimaryButton";
+import {SillyHandwritingWithOption} from '../components/visual/SillyHandwriting';
 
 export default () => {
     const mainContentRef = useRef(null);
@@ -207,70 +208,6 @@ const QuizzIllustration = () => {
                         font-weight: 400;
                         font-size: 2em;
                     }
-            `}
-            </style>
-        </>
-    )
-}
-
-const SillyHandwritingWithOption = ({ text, checked }) => {
-    return (
-        <>
-            <div className="shell">
-                <SillyHandwriting text={text} />
-                <Checkmarkplace checked={checked} />
-            </div>
-            <style jsx>
-                {`
-                    .shell {
-                        display: flex;
-                        justify-content: space-between;
-                        align-items: center;
-                        margin-top: 60px;
-                    }
-            `}
-            </style>
-        </>
-    )
-}
-const SillyHandwriting = ({ text = "Lorem impsum dolor" }) => {
-    return (
-        <>
-            <span>{text}</span>
-            <style jsx>
-                {`
-                    span {
-                        font-size: 2em;
-                        font-family: 'Reenie Beanie', cursive;
-                    }
-                `}
-            </style>
-        </>
-    )
-}
-
-const Checkmarkplace = ({ checkmarkplaceColor = "#44318d", checked }) => {
-    return (
-        <>
-            <div className="checkmark-place">
-                {checked ?
-                    <img src="/static/checkmark.svg" />
-                    :
-                    null
-                }
-            </div>
-            <style jsx>
-                {`
-                .checkmark-place {
-                    width: 50px;
-                    height: 50px;
-                    background-color: ${checkmarkplaceColor};
-                    border-radius: 45%;
-                    position: relative;
-                }
-                img {
-                    width: 60px;
-                }
             `}
             </style>
         </>

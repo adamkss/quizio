@@ -69,7 +69,7 @@ const Quizzes = () => {
                             <div className="quiz" key={quiz.id}>
                                 <h2>{quiz.name}</h2>
                                 <button className="quiz-operation-button" onClick={getOnClickCallbackForQuizPress(quiz.id)}>
-                                    See questions
+                                    Open quiz editor
                                 </button>
                                 <button className="quiz-operation-button" onClick={getOnSeeResultsOfQuizClickCallback(quiz.id)}>
                                     See results of users
