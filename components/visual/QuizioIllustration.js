@@ -70,9 +70,12 @@ export const QuizioIllustration = ({ stepDelayMs = 0, animationDurationMs = 400 
                         display: flex;
                         flex-direction: column;
                         justify-content: space-around;
-                        margin-left: -120px;
-                        margin-bottom: 30px;
-                        transform: rotate(10deg) scale(0.9);
+                        margin-left: -130px;
+                        margin-bottom: -100px;
+                        position: relative;
+                        bottom: -40px;
+                        left: -15px;
+                        transform: rotate(10deg) scale(0.75);
                         animation: QuizCardIn ${`${animationDurationMs}ms;`}
                     }
                     @keyframes QuizCardIn { 
@@ -83,7 +86,7 @@ export const QuizioIllustration = ({ stepDelayMs = 0, animationDurationMs = 400 
                         
                         100% {
                             opacity: 1;
-                            transform: rotate(10deg) scale(0.9);
+                            transform: rotate(10deg) scale(0.75);
                         }
                     }
                     .woman-drawing {
