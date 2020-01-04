@@ -2,7 +2,9 @@ import LayoutSetup from "../components/layoutSetup"
 import React, { useRef, useEffect, useState } from 'react';
 import SecondaryButton from "../components/SecondaryButton";
 import PrimaryButton from "../components/PrimaryButton";
-import {SillyHandwritingWithOption} from '../components/visual/SillyHandwriting';
+import { SillyHandwritingWithOption } from '../components/visual/SillyHandwriting';
+import { QuizioIllustrationMain } from "../components/visual/QuizioIllustrationMain";
+import Link from "next/link";
 
 export default () => {
     const mainContentRef = useRef(null);
@@ -31,42 +33,70 @@ export default () => {
                 <h1>Quizio</h1>
                 <nav>
                     <ul>
-                        <li><a>Home</a></li>
-                        <li><a>The flow</a></li>
-                        <li><a>About us</a></li>
+                        <li><a href="#head">Home</a></li>
+                        <li><a href="#quizio-presentation">The flow</a></li>
+                        <li><a href="#about-us">About us</a></li>
                         <li><a>Login</a></li>
                     </ul>
                 </nav>
             </header>
             <main ref={mainContentRef}>
-                <section className="entry-stuff-container">
-                    <h1>Quizio</h1>
-                    <p className="subtitle">Design the most beautiful quizzes</p>
-                    <PrimaryButton
-                        title="Create quizz now"
-                        big
-                        color="blue"
-                        extraMarginTop
-                        linkTo="/createGenericQuiz"
+                <section id="head" className="head">
+                    <div className="entry-stuff-container">
+                        <h1>Quizio</h1>
+                        <p className="subtitle">Design the most beautiful quizzes</p>
+                        <PrimaryButton
+                            title="Create quizz now"
+                            big
+                            color="blue"
+                            extraMarginTop
+                            linkTo="/createGenericQuiz"
                         />
-                    <p>...or</p>
-                    <PrimaryButton
-                        title="Login"
-                        big
-                        color="pink"
-                        linkTo="/login"
-                        marginTop/>
-                    <SecondaryButton
-                        title="Register"
-                        marginTop
-                        big
-                        linkTo='/register'
+                        <p>...or</p>
+                        <PrimaryButton
+                            title="Login"
+                            big
+                            color="pink"
+                            linkTo="/login"
+                            marginTop />
+                        <SecondaryButton
+                            title="Register"
+                            marginTop
+                            big
+                            linkTo='/register'
                         />
+                    </div>
+                    <div className="quiz-illustration-container">
+                        <QuizzIllustration />
+                    </div>
                 </section>
-                <section className="quiz-illustration-container">
-                    <QuizzIllustration />
+                <section id="quizio-presentation" className="quizio-presentation">
+                    <QuizioIllustrationMain />
                 </section>
+                <section id="about-us" className="about-us-container">
+                    <h1>About us</h1>
+                    <span className="about__quizio-title">Quizio</span>
+                    <span className="about__quizio-subtitle">making quizzes beautiful since 2020</span>
+                </section>
+                <footer>
+                    <span>Quizio - 2020</span>
+                    <div className="footer__links">
+                        <Link href="/">
+                            <a>Home</a>
+                        </Link>
+                        <Link href="/#quizio-presentation">
+                            <a>The flow</a>
+                        </Link>
+                        <Link href="/login">
+                            <a>Login</a>
+                        </Link>
+                        <Link href="/register">
+                            <a>Register</a>
+                        </Link>
+                    </div>
+                </footer>
             </main>
+
             <style jsx>
                 {`
                 header {
@@ -86,7 +116,7 @@ export default () => {
                     opacity: 1;
                 }
                 header.sticky {
-                    box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.4);
+                    box-shadow: 0px 0px 12px hsl(0, 0%, 70%);
                 }
                 nav ul {
                     display: flex;
@@ -96,6 +126,10 @@ export default () => {
                     list-style-type: none;
                     font-size: 1em;
                     margin-right: 5px;
+                }
+                nav a {
+                    color: inherit;
+                    text-decoration: none;
                 }
                 @media(min-width: 400px) {
                     nav li {
@@ -108,12 +142,16 @@ export default () => {
                     height: calc(100vh - 50px);
                     position: relative;
                     overflow-y: auto;
+                    overflow-x: hidden;
                 }
                 main p {
                     font-size: 1.5em;
                     margin-top: 10px;
                 }
-                
+                .head {
+                    position: relative;
+                    padding-bottom: 30px;
+                }
                 .quiz-illustration-container {
                     display: flex;
                     justify-content: center;
@@ -124,9 +162,10 @@ export default () => {
                 }
                 @media (min-width: 1195px) {
                     .quiz-illustration-container {
-                        position: fixed;
+                        position: absolute;
                         top: 0px;
                         bottom: 0px;
+                        margin-top: 0px;
                         left: -5px;
                     }
                 }
@@ -144,10 +183,11 @@ export default () => {
                 }
                 .entry-stuff-container {
                     width: 100%;
+                    height: calc(100vh - 50px);
                     display: flex;
                     flex-direction: column;
-                    justify-content: center;
                     align-items: center;
+                    padding-top: 20px;
                     animation: SlideDownAndFadeIn 1s;
                 }
                 .entry-stuff-container h1 {
@@ -168,6 +208,63 @@ export default () => {
                         opacity: 1;
                     }
                 }
+                .quizio-presentation {
+                    margin-top: 25px;
+                    min-height: calc(100vh - 25px);
+                    background-color: hsl(347,90%,97%);
+                    clip-path: polygon(50% 0%, 100% 30px, 100% 100%, 0 100%, 0 30px);
+                    padding-bottom: 20px;
+                }
+                .about-us-container {
+                    width: 100%;
+                    height: 100vh;
+                    clip-path: polygon(50% 0%, 100% 30px, 100% 100%, 0 100%, 0 30px);
+                    background-color: #43318D;
+                    margin-top: -30px;
+                    padding: 30px;
+                    padding-top: 50px;
+                    color: white;
+                    font-size: 1.2em;
+                }
+                .about-us-container h1 {
+                    text-decoration: underline;
+                }
+                .about__quizio-title {
+                    display: block;
+                    width: 100%;
+                    color: transparent;
+                    text-align: center;
+                    font-size: 7em;
+                    margin-top: 40px;
+                    -webkit-text-stroke: 3px yellow;
+                }
+                .about__quizio-subtitle {
+                    display: block;
+                    text-align: center;
+                    font-size: 1.3em;
+                    color: hsl(60,100%,70%);
+                }
+                footer {
+                    background-color: hsl(252,48%,30%);
+                    padding: 25px;
+                    color: hsl(0, 0%, 70%);
+                    text-align: center;
+                    display: grid;
+                    grid-gap: 5px;
+                    grid-template-columns: 1fr 3fr 1fr;
+                }
+                .footer__links { 
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    flex-wrap: wrap;
+                    margin: -5px;
+                }
+                .footer__links * {
+                    margin: 5px;
+                    color: inherit;
+                    text-decoration: inherit;
+                }
             `}
             </style>
         </>
@@ -186,7 +283,8 @@ const QuizzIllustration = () => {
             <style jsx>
                 {`
                     .shell {
-                        width: 300px;
+                        width: 100%;
+                        max-width: 300px;
                         box-shadow: 2px 2px 13px grey;
                         border-radius: 5px;
                         padding: 30px;
@@ -195,12 +293,12 @@ const QuizzIllustration = () => {
                     }
                     @media (min-width: 500px) {
                         .shell {
-                            width: 350px;
+                            max-width: 350px;
                         }
                     }
                     @media (min-width: 1400px) {
                         .shell {
-                            width: 400px;
+                            max-width: 400px;
                         }
                     }
                     h1 {
