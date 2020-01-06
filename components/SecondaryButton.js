@@ -21,7 +21,9 @@ export default ({ rightAligned = false, centered = false, ...rest }) => {
     )
 }
 
-const SecondaryButton = ({ title, inactive = false, marginRight = false, marginTop = false, big = false, linkTo = null, ...rest }) => {
+const SecondaryButton = ({ title, inactive = false, marginRight = false, marginTop = false,
+    big = false, medium = false, linkTo = null, growWithScreenSize = false, ...rest
+}) => {
     const onClickHandler = React.useCallback(() => {
         if (linkTo) {
             Router.push(linkTo);
@@ -54,7 +56,14 @@ const SecondaryButton = ({ title, inactive = false, marginRight = false, marginT
                             padding: 9px;
                         `
                         :
+                        medium ?
+                            `
+                            width: 130px;
+                            font-size: 1.15em;
+                            padding: 5px;
                         `
+                            :
+                            `
                             font-size: 0.9em;
                             padding: 5px;
                         `
@@ -84,6 +93,33 @@ const SecondaryButton = ({ title, inactive = false, marginRight = false, marginT
                   button.save-question:not(.inactive):active {
                    background-color: #900050;
                   }
+                  @media (min-width: 750px) {
+                    button {
+                        ${big && growWithScreenSize ?
+                        `
+                                width: 250px;
+                                font-size: 1.4em;
+                                padding: 8px;
+                            `
+                        :
+                        ""
+                    }
+                    }
+                }
+                
+                 @media (min-width: 1200px) {
+                    button {
+                        ${big && growWithScreenSize ?
+                        `
+                                width: 300px;
+                                font-size: 1.55em;
+                                padding: 8px;
+                            `
+                        :
+                        ""
+                    }
+                    }
+                 }
                 `}
             </style>
         </>

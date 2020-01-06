@@ -245,7 +245,7 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
                         font-weight: 300;
                         color: rgba(255, 255, 255, 0.8);
                         white-space: nowrap;
-                        font-size: 0.9em;
+                        font-size: 1em;
                         animation: FadeIn 0.3s;
                     }
                     @media (min-width: 430px) {

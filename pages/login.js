@@ -13,6 +13,7 @@ export default () => {
     const [username, setUsername] = React.useState("");
     const [password, setPassword] = React.useState("");
     const [isLoginInProgress, setIsLoginInProgress] = React.useState(false);
+    const [isLoginFailed, setIsLoginFailed] = React.useState(false);
     useAuthTokenIfExists({ redirectURLIfExists: '/homepage' });
 
     const onLoginClicked = React.useCallback(async () => {
@@ -20,10 +21,11 @@ export default () => {
         try {
             const loginResponse = await login({ username, password });
             saveSuccessfulLoginInfo(loginResponse["access_token"]);
+            setIsLoginFailed(false);
             Router.push('/homepage');
         }
         catch {
-            alert('no')
+            setIsLoginFailed(true);
         }
         setIsLoginInProgress(false);
     }, [username, password]);
@@ -37,9 +39,12 @@ export default () => {
                     <form>
                         <TextInput title="E-mail:" width="100%" value={username} valueSetter={setUsername} />
                         <TextInput title="Password:" width="100%" value={password} valueSetter={setPassword} password />
+                        <span className="failed-login-indicator">
+                            Sorry, the credentials are wrong.
+                    </span>
                     </form>
-                    <PrimaryButton title="Login" centered marginTop onClick={onLoginClicked} />
-                    <SecondaryButton title="Register" centered marginTop />
+                    <PrimaryButton title="Login" centered medium marginTop onClick={onLoginClicked} />
+                    <SecondaryButton title="Register" centered marginTop medium linkTo="/register" />
                 </div>
             </main>
             {isLoginInProgress ?
@@ -77,6 +82,28 @@ export default () => {
                     display: flex;
                     flex-direction: column;
                     padding: 50px 0px;
+                    padding-bottom: 25px;
+                }
+                .failed-login-indicator {
+                    width: 100%;
+                    text-align: center;
+                    color: red;
+                    font-weight: 500;
+                    transition: all 0.3s;
+                    position: relative;
+                    ${isLoginFailed ?
+                        `
+                        display: inline;
+                        bottom: 0px;
+                        opacity: 1;
+                        `
+                        :
+                        `
+                        display: hidden;
+                        bottom: -10px;
+                        opacity: 0;
+                        `
+                    }
                 }
             `}
             </style>

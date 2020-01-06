@@ -48,6 +48,7 @@ export default () => {
                         <PrimaryButton
                             title="Create quizz now"
                             big
+                            growWithScreenSize
                             color="blue"
                             extraMarginTop
                             linkTo="/createGenericQuiz"
@@ -56,6 +57,7 @@ export default () => {
                         <PrimaryButton
                             title="Login"
                             big
+                            growWithScreenSize
                             color="pink"
                             linkTo="/login"
                             marginTop />
@@ -63,6 +65,7 @@ export default () => {
                             title="Register"
                             marginTop
                             big
+                            growWithScreenSize
                             linkTo='/register'
                         />
                     </div>
@@ -137,6 +140,16 @@ export default () => {
                         margin-right: 10px;
                     }
                 }
+                @media (min-width: 1000px) {
+                    nav li {
+                        font-size: 1.4em;
+                    }
+                }
+                @media (min-width: 1500px) {
+                    nav li {
+                        font-size: 1.5em;
+                    }
+                }
                 main {
                     width: 100%;
                     height: calc(100vh - 50px);
@@ -193,6 +206,16 @@ export default () => {
                 .entry-stuff-container h1 {
                     font-size: 7em;
                     font-weight: 700;
+                }
+                @media (min-width: 1000px) {
+                    .entry-stuff-container h1 {
+                        font-size: 8.2em;
+                    }
+                }
+                @media (min-width: 1400px) {
+                    .entry-stuff-container h1 {
+                        font-size: 9em;
+                    }
                 }
                 .entry-stuff-container p.subtitle  {
                     font-size: 3em;
@@ -291,14 +314,28 @@ const QuizzIllustration = () => {
                         padding-top: 20px;
                         padding-bottom: 100px;
                     }
-                    @media (min-width: 500px) {
+                    @media (min-width: 750px) {
                         .shell {
-                            max-width: 350px;
+                            transform: scale(1.02);
+                            max-width: 400px;
                         }
                     }
                     @media (min-width: 1400px) {
                         .shell {
+                            transform: scale(1.1);
                             max-width: 400px;
+                        }
+                    }
+                    @media (min-width: 1600px) {
+                        .shell {
+                            transform: scale(1.2);
+                            padding-left: 50px;
+                        }
+                    }
+                    @media (min-width: 1800px) {
+                        .shell {
+                            transform: scale(1.3);
+                            padding-left: 60px;
                         }
                     }
                     h1 {
