@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { deleteQuiz, getQuizzesOfCurrentUser, createNewGenericQuizz } from '../utils/QuizRequests';
+import { deleteQuiz, getQuizzesOfCurrentUser, createNewGenericQuiz } from '../utils/QuizRequests';
 import Router from 'next/router';
 import { QuizzesLayoutWrapper } from '../components/quizzes/QuizzesLayoutWrapper';
 import GenericDialog from '../components/GenericDailog';
@@ -35,7 +35,7 @@ const Quizzes = () => {
     }, []);
 
     const onCreateNewQuiz = useCallback(async (newQuizName) => {
-        const newQuiz = await createNewGenericQuizz(newQuizName);
+        const newQuiz = await createNewGenericQuiz(newQuizName);
         setQuizzes((quizes) => [...quizes, newQuiz]);
         onDismissDialogPress();
     }, []);

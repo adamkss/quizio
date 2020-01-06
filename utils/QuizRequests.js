@@ -75,7 +75,7 @@ export const deleteQuiz = async (quizId) => {
     return res.status === 204;
 }
 
-export const createNewGenericQuizz = (quizzName) => {
+export const createNewGenericQuiz = (quizzName) => {
     return axios.post(`/genericQuizzes`, {
         newQuizName: quizzName
     }).then(getDataFromResponseAsPromise);
