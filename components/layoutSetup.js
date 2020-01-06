@@ -20,6 +20,17 @@ export default () => {
                     overflow: hidden;
                     font-family: 'Oswald', sans-serif;
                 }
+                .centered {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+                .full-view-height {
+                    height: 100vh;
+                }
+                .small-lateral-padding {
+                    padding: 0px 10px;
+                }
                 .fancy-shiny-button {
                     outline: none;
                     height: 40px;

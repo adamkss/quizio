@@ -47,6 +47,7 @@ export default () => {
                     <SecondaryButton title="Register" centered marginTop medium linkTo="/register" />
                 </div>
             </main>
+            <img className="illustration" src="/static/illustrations/drawkit-notebook-man-monochrome.svg" />
             {isLoginInProgress ?
                 <LoadingSpinner />
                 :
@@ -68,7 +69,7 @@ export default () => {
                 }
                 .login-window {
                     width: 93%;
-                    max-width: 450px;
+                    max-width: 550px;
                     min-width: 300px;
                     border-radius: 5px;
                     background-color: white;
@@ -103,6 +104,42 @@ export default () => {
                         bottom: -10px;
                         opacity: 0;
                         `
+                    }
+                }
+                .illustration {
+                    position: fixed;
+                    width: 400px;
+                    right: -50px;
+                    bottom: -200px;
+                    transform: rotate(-12deg);
+                    z-index: -1;
+                    opacity: 0.8;
+                    transition: all 0.3s;
+                    animation: IllustrationIn 1s ease-out;
+                }
+                @keyframes IllustrationIn {
+                    0%, 50% {
+                        opacity: 0;
+                        transform: translate(-30px, -10px) scale(1.025) rotate(-12deg);
+                    }
+                    100% {
+                        opacity: 0.8;
+                        transform: translate(0px, 0px) scale(1) rotate(-12deg);
+                    }
+                }
+                @media (min-width: 768px) {
+                    .illustration {
+                        width: 500px;
+                    }
+                }
+                @media (min-width: 1300px) {
+                    .illustration {
+                        width: 600px;
+                    }
+                }
+                @media (min-height: 750px) {
+                    .illustration {
+                        bottom: -130px;
                     }
                 }
             `}

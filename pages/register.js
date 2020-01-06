@@ -58,47 +58,75 @@ export default () => {
     return (
         <>
             <LayoutSetup />
-            <header>
-                <h1>Quizio <span>registration</span></h1>
-            </header>
-            <main>
-                <ProgressIndicator numberOfSteps={3} currentStep={step} />
-                {step === 1 ?
-                    <FirstRegistrationStep
-                        nameReactState={nameReactState}
-                        emailReactState={emailReactState} />
-                    :
-                    step === 2 ?
-                        <SecondRegistrationStep
-                            passwordReactState={passwordReactState}
-                            confirmPasswordReactState={confirmPasswordReactState} />
-                        :
-                        newUser ?
-                            <ThirdRegistrationStep />
+            <div className="centered full-view-height small-lateral-padding">
+                <div className="card fade-and-slide-in">
+                    <header>
+                        <h1>Quizio <span>registration</span></h1>
+                    </header>
+                    <main>
+                        <ProgressIndicator numberOfSteps={3} currentStep={step} />
+                        <div className="step-container">
+                            {step === 1 ?
+                                <FirstRegistrationStep
+                                    nameReactState={nameReactState}
+                                    emailReactState={emailReactState} />
+                                :
+                                step === 2 ?
+                                    <SecondRegistrationStep
+                                        passwordReactState={passwordReactState}
+                                        confirmPasswordReactState={confirmPasswordReactState} />
+                                    :
+                                    newUser ?
+                                        <ThirdRegistrationStep />
+                                        :
+                                        ""
+                            }
+                        </div>
+                        {step !== 4 ?
+                            <PrimaryButton
+                                onClick={isNextValid ? onNextClick : null}
+                                title="Next"
+                                rightAligned
+                                marginTop
+                                medium
+                                inactive={!isNextValid} />
                             :
                             ""
-                }
-                {step !== 4 ?
-                    <PrimaryButton
-                        onClick={isNextValid ? onNextClick : null}
-                        title="Next"
-                        rightAligned
-                        marginTop
-                        medium
-                        inactive={!isNextValid} />
-                    :
-                    ""
-                }
-                {isWaiting && <LoadingSpinner />}
-            </main>
+                        }
+                        {isWaiting && <LoadingSpinner />}
+                    </main>
+                </div>
+            </div>
+            <img className="illustration" src="/static/illustrations/drawing-man.svg" />
             <style jsx>
                 {`
+                .card {
+                    width: 100%;
+                    height: 80vh;
+                    max-height: 700px;
+                    max-width: 1200px;
+                    display: flex;
+                    flex-direction: column;
+                    border-radius: 10px;
+                    box-shadow: 0px 0px 8px hsl(0, 0%, 75%);
+                    background-color: white;
+                }
                 main,
                 header {
                     padding: 20px;
                 }
                 main {
-                    padding-top: 0px;
+                    display: flex;
+                    flex-direction: column;
+                    flex-grow: 1;
+                    padding: 32px;
+                }
+                .step-container {
+                    flex-grow: 1;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
                 }
                 h1 {
                     border-bottom: 2px solid black;
@@ -106,6 +134,35 @@ export default () => {
                 h1 span {
                     font-weight: 300;
                     font-size: 0.65em;
+                }
+                .illustration {
+                    display: none;
+                    position: fixed;
+                    left: -170px;
+                    width: 700px;
+                    top: 60%;
+                    transform: translateY(-50%) rotate(-2deg);
+                    z-index: -1;
+                    opacity: 0.8;
+                    animation: IllustrationIn 2s ease-out;
+                }
+                @keyframes IllustrationIn {
+                    0%, 20% {
+                        opacity: 0;
+                        transform: translateY(-50%) rotate(0deg) translateX(-30px) scale(0.97);
+                    }
+                    75 % {
+                        opacity: 0.3;
+                    }
+                    100% {
+                        opacity: 0.8;
+                        transform: translateY(-50%) rotate(-2deg) translateX(0px) scale(1);
+                    }
+                }
+                @media (min-width: 1430px) {
+                    .illustration {
+                        display: block;
+                    }
                 }
             `}
             </style>
