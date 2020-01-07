@@ -32,7 +32,6 @@ const getNewQuestionsWithUpdatedQuestionOptions = (questions, questionId, newQue
 }
 
 export default () => {
-    console.log(process.env);
     const [questions, setQuestions] = React.useState([]);
     const { genericQuizId } = useRouter().query;
     const [quizInfo, setQuizInfo] = useState(null);

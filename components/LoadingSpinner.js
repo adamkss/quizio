@@ -2,9 +2,9 @@ export default () => {
     return (
         <>
             <div className="container">
-                <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+                <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
             </div>
-            <style jxs>
+            <style jsx>
                 {`
                     .container {
                         position: fixed;

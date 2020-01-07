@@ -6,6 +6,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import { registerUser } from "../utils/QuizRequests";
 import SecondaryButton from "../components/SecondaryButton";
 import Router from 'next/router';
+import { OnEnterPressBoundary } from '../components/OnEnterPressBoundary';
 
 const stepOneValidator = ({ name, email }) => {
     return /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/.test(email) && name != "";
@@ -63,38 +64,40 @@ export default () => {
                     <header>
                         <h1>Quizio <span>registration</span></h1>
                     </header>
-                    <main>
-                        <ProgressIndicator numberOfSteps={3} currentStep={step} />
-                        <div className="step-container">
-                            {step === 1 ?
-                                <FirstRegistrationStep
-                                    nameReactState={nameReactState}
-                                    emailReactState={emailReactState} />
-                                :
-                                step === 2 ?
-                                    <SecondRegistrationStep
-                                        passwordReactState={passwordReactState}
-                                        confirmPasswordReactState={confirmPasswordReactState} />
+                    <OnEnterPressBoundary onEnterPressed={isNextValid && step !== 4 ? onNextClick : null}>
+                        <main>
+                            <ProgressIndicator numberOfSteps={3} currentStep={step} />
+                            <div className="step-container">
+                                {step === 1 ?
+                                    <FirstRegistrationStep
+                                        nameReactState={nameReactState}
+                                        emailReactState={emailReactState} />
                                     :
-                                    newUser ?
-                                        <ThirdRegistrationStep />
+                                    step === 2 ?
+                                        <SecondRegistrationStep
+                                            passwordReactState={passwordReactState}
+                                            confirmPasswordReactState={confirmPasswordReactState} />
                                         :
-                                        ""
+                                        newUser ?
+                                            <ThirdRegistrationStep />
+                                            :
+                                            ""
+                                }
+                            </div>
+                            {step !== 4 ?
+                                <PrimaryButton
+                                    onClick={isNextValid ? onNextClick : null}
+                                    title="Next"
+                                    rightAligned
+                                    marginTop
+                                    medium
+                                    inactive={!isNextValid} />
+                                :
+                                ""
                             }
-                        </div>
-                        {step !== 4 ?
-                            <PrimaryButton
-                                onClick={isNextValid ? onNextClick : null}
-                                title="Next"
-                                rightAligned
-                                marginTop
-                                medium
-                                inactive={!isNextValid} />
-                            :
-                            ""
-                        }
-                        {isWaiting && <LoadingSpinner />}
-                    </main>
+                            {isWaiting && <LoadingSpinner />}
+                        </main>
+                    </OnEnterPressBoundary>
                 </div>
             </div>
             <img className="illustration" src="/static/illustrations/drawing-man.svg" />

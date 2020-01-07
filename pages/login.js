@@ -8,6 +8,7 @@ import { login } from '../utils/AuthUtils';
 import { saveSuccessfulLoginInfo } from '../utils/AuthUtils';
 import useAuthTokenIfExists from '../hooks/useAuthTokenIfExists';
 import Router from 'next/router';
+import { OnEnterPressBoundary } from '../components/OnEnterPressBoundary';
 
 export default () => {
     const [username, setUsername] = React.useState("");
@@ -36,13 +37,15 @@ export default () => {
             <main>
                 <div className="login-window fade-and-slide-in">
                     <h1>Quizio</h1>
-                    <form>
-                        <TextInput title="E-mail:" width="100%" value={username} valueSetter={setUsername} />
-                        <TextInput title="Password:" width="100%" value={password} valueSetter={setPassword} password />
-                        <span className="failed-login-indicator">
-                            Sorry, the credentials are wrong.
-                    </span>
-                    </form>
+                    <OnEnterPressBoundary onEnterPressed={onLoginClicked}>
+                        <form>
+                            <TextInput title="E-mail:" width="100%" value={username} valueSetter={setUsername} />
+                            <TextInput title="Password:" width="100%" value={password} valueSetter={setPassword} password />
+                            <span className="failed-login-indicator">
+                                Sorry, the credentials are wrong.
+                        </span>
+                        </form>
+                    </OnEnterPressBoundary>
                     <PrimaryButton title="Login" centered medium marginTop onClick={onLoginClicked} />
                     <SecondaryButton title="Register" centered marginTop medium linkTo="/register" />
                 </div>

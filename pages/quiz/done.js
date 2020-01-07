@@ -1,6 +1,7 @@
 import LayoutSetup from "../../components/layoutSetup";
 import React from 'react';
 import { getStatisticsForQuizSession } from "../../utils/QuizRequests";
+import PrimaryButton from '../../components/PrimaryButton';
 
 export default () => {
     const [quizPercentage, setQuizPercentage] = React.useState(0);
@@ -20,8 +21,7 @@ export default () => {
                     <h1>Congratulations!</h1>
                     <h2>You finished the quiz with <span>{quizPercentage}%</span> success rate.</h2>
                     <div className="buttons-container">
-                        <button className="take-another-quiz-button">Take another quiz</button>
-                        <button className="continue-learning-button">Continue learning</button>
+                        <PrimaryButton color="blue" medium linkTo="/" title="Back to Quizio"/>
                     </div>
                 </div>
             </main>
@@ -83,22 +83,6 @@ export default () => {
                 .buttons-container button:hover {
                     cursor: pointer;
                 }
-                .take-another-quiz-button {
-                    background-color: purple;
-                    box-shadow: 0px 0px 7px purple;
-                }
-                .take-another-quiz-button:hover {
-                    box-shadow: 0px 0px 12px purple;
-                }
-
-                .continue-learning-button {
-                    background-color: #18c3f8;
-                    box-shadow: 0px 0px 7px #18c3f8;
-                }
-                .continue-learning-button:hover {
-                    box-shadow: 0px 0px 12px #18c3f8;
-                }
-
                 .message * {
                     animation: FadeIn 1.5s ease-in;
                 }

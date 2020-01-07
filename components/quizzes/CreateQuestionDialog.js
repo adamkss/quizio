@@ -2,6 +2,7 @@ import { useCallback, useState, useEffect } from 'react';
 import GenericDialog from '../GenericDailog';
 import TextInput from '../TextInput';
 import PrimaryButton from '../PrimaryButton';
+import { OnEnterPressBoundary } from '../../components/OnEnterPressBoundary';
 
 export default ({ onDismissDialog, onSaveQuestion }) => {
     const [questionTitle, setQuestionTitle] = useState("");
@@ -46,48 +47,51 @@ export default ({ onDismissDialog, onSaveQuestion }) => {
 
     return (
         <>
-            <GenericDialog onDismissDialog={onDismissDialog} title="Create new question" >
-                <TextInput
-                    title="Question:"
-                    value={questionTitle}
-                    onChange={getCallbackForInputChange(setQuestionTitle)}
-                    name="question-title"
-                    type="text"
-                    placeholder="Type question here..."
-                    width="100%"
-                    autoFocus />
-                <label>Options:</label>
-                {questionOptions.length === 0 ?
+            <OnEnterPressBoundary onEnterPressed={isNewQuestionReadyToBeCreated ? onSaveQuestionClicked : null}>
+                <GenericDialog onDismissDialog={onDismissDialog} title="Create new question" >
+                    <TextInput
+                        title="Question:"
+                        value={questionTitle}
+                        onChange={getCallbackForInputChange(setQuestionTitle)}
+                        name="question-title"
+                        type="text"
+                        placeholder="Type question here..."
+                        width="100%"
+                        autoFocus />
+                    <label>Options:</label>
+                    {questionOptions.length === 0 ?
+                        <div className="horizontally-centered">
+                            <span className="no-options-yet">No options defined yet.</span>
+                        </div>
+                        :
+                        null}
+                    {questionOptions.map((questionOption, index) =>
+                        <div className="option-input-wrapper" key={index}>
+                            <TextInput
+                                key={index}
+                                type="text"
+                                placeholder="Option here..."
+                                value={questionOption}
+                                onChange={getQuestionOptionValueUpdateCallback(index)}
+                                width="100%" />
+                            <img
+                                title="Delete option"
+                                className="delete-option-icon"
+                                src="/static/delete-24px.svg"
+                                onClick={getQuestionOptionsDeleteCallback(index)} />
+                        </div>
+                    )}
                     <div className="horizontally-centered">
-                        <span className="no-options-yet">No options defined yet.</span>
+                        <button className="add-option" onClick={createNewEmptyOption}>Add option</button>
                     </div>
-                    :
-                    null}
-                {questionOptions.map((questionOption, index) =>
-                    <div className="option-input-wrapper" key={index}>
-                        <TextInput
-                            key={index}
-                            type="text"
-                            placeholder="Option here..."
-                            value={questionOption}
-                            onChange={getQuestionOptionValueUpdateCallback(index)}
-                            width="100%" />
-                        <img
-                            title="Delete option"
-                            className="delete-option-icon"
-                            src="/static/delete-24px.svg"
-                            onClick={getQuestionOptionsDeleteCallback(index)} />
-                    </div>
-                )}
-                <div className="horizontally-centered">
-                    <button className="add-option" onClick={createNewEmptyOption}>Add option</button>
-                </div>
-                <PrimaryButton
-                    title="Save question"
-                    inactive={!isNewQuestionReadyToBeCreated}
-                    onClick={isNewQuestionReadyToBeCreated ? onSaveQuestionClicked : null}
-                    rightAligned />
-            </GenericDialog>
+                    <PrimaryButton
+                        title="Save question"
+                        inactive={!isNewQuestionReadyToBeCreated}
+                        onClick={isNewQuestionReadyToBeCreated ? onSaveQuestionClicked : null}
+                        rightAligned />
+                </GenericDialog>
+            </OnEnterPressBoundary>
+
             <style jsx>
                 {`
                   .option-input-wrapper {

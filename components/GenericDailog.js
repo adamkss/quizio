@@ -1,4 +1,4 @@
-export default ({ children, title, onDismissDialog }) => {
+export default ({ children, title, onDismissDialog, ...rest }) => {
     const onContentWrapperClick = React.useCallback((event) => {
         if (event.target.dataset.clickToQuit) {
             onDismissDialog();
@@ -7,7 +7,7 @@ export default ({ children, title, onDismissDialog }) => {
 
     return (
         <>
-            <div className="dialog-wrapper" onClick={onContentWrapperClick} data-click-to-quit>
+            <div className="dialog-wrapper" onClick={onContentWrapperClick} data-click-to-quit {...rest} >
                 <div className="dialog-content-wrapper">
                     {title ? <h1>{title}</h1> : null}
                     {children}
