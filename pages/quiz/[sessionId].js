@@ -95,15 +95,17 @@ export default ({ }) => {
                     }
                     main {
                         width: 100%;
+                        height: calc(100vh - 40px);
+                        overflow-y: auto;
                         display: flex;
                         align-items: center;
                         flex-direction: column;
+                        padding-bottom: 50px;
                     }
                     .question-container {
                         width: 100%;
                         max-width: 1200px;
                         padding: 10px;
-                        padding-top: 100px;
                     }
                 `}
             </style>
