@@ -11,7 +11,7 @@ export default ({ }) => {
     const [progress, setProgress] = useState(0);
     const [currentQuestion, setCurrentQuestion] = useState(null);
     const [nextQuestionAvailable, setNextQuestionAvailable] = useState(false);
-    const [currentlySelectedAnswerOrderNr, setCurrentlySelectedAnswerOrderNr] = useState(null);
+    const [currentlySelectedAnswerOrderNr, setCurrentlySelectedAnswerOrderNr] = useState(1);
     const [isCurrentAnswerCorrect, setIsCurrentAnswerCorrect] = useState(false);
 
     const getAndSetNextQuizQuestion = async (shouldISetProgress) => {
@@ -307,8 +307,9 @@ const AnswerFooter = ({ isItCorrect, onNextPressed }) => {
                 justify-content: flex-end;
             }
             .next-button {
-                width: 90px;
-                height: 38px;
+                width: 110px;
+                height: 45px;
+                font-size: 1.2em;
             }
             @media (min-width: 473px) {
                 .next-button {
