@@ -245,17 +245,12 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
                         font-weight: 300;
                         color: rgba(255, 255, 255, 0.8);
                         white-space: nowrap;
-                        font-size: 1em;
+                        font-size: 1.2em;
                         animation: FadeIn 0.3s;
-                    }
-                    @media (min-width: 430px) {
-                        .breadcrumbs .location-part {
-                            font-size: 1.1em;
-                        }
                     }
                     @media (min-width: 610px) {
                         .breadcrumbs .location-part {
-                            font-size: 1.2em;
+                            font-size: 1.25em;
                         }
                     }
                     .breadcrumbs .location-part:not(:last-child)::after {
@@ -280,6 +275,7 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
                         height: calc(100vh - 50px);
                         overflow: auto;
                         z-index: 1;
+                        padding-bottom: 70px;
                     }
                 `}
             </style>
