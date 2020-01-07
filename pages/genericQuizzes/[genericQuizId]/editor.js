@@ -32,6 +32,7 @@ const getNewQuestionsWithUpdatedQuestionOptions = (questions, questionId, newQue
 }
 
 export default () => {
+    console.log(process.env);
     const [questions, setQuestions] = React.useState([]);
     const { genericQuizId } = useRouter().query;
     const [quizInfo, setQuizInfo] = useState(null);
@@ -40,7 +41,7 @@ export default () => {
     const [isAsyncOperationInProgress, setIsAsyncOperationInProgress] = useState(false);
     const [isDoneDialogShown, setIsDoneDialogShown] = useState(false);
     const quizDoneLinkRef = useRef(null);
-    const quizzDoneLink = `localhost:3000/takeQuizz/${genericQuizId}`;
+    const quizzDoneLink = `${process.env.HOST}/takeQuizz/${genericQuizId}`;
     const [wasQuizDoneURLCopied, setWasQuizDoneURLCopied] = useState(false);
     const [isQuizBeingCustomized, setIsBeingQuizCustomized] = useState(false);
 
