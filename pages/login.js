@@ -82,8 +82,12 @@ export default () => {
                 .login-window > form {
                     display: flex;
                     flex-direction: column;
-                    padding: 50px 0px;
-                    padding-bottom: 25px;
+                    padding-top: 20px;
+                }
+                @media (min-height: 650px) {
+                    .login-window > form {
+                        padding: 25px 0px;
+                    }
                 }
                 .failed-login-indicator {
                     width: 100%;
@@ -110,7 +114,7 @@ export default () => {
                     position: fixed;
                     width: 400px;
                     right: -50px;
-                    bottom: -200px;
+                    bottom: -230px;
                     transform: rotate(-12deg);
                     z-index: -1;
                     opacity: 0.8;
