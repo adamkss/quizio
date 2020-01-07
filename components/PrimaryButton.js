@@ -64,7 +64,7 @@ const getColorBehaviorsForColor = (color) => {
 
 const PrimaryButton = ({
     title, color = "green", inactive = false, marginRight = false, marginTop = false, extraMarginTop = false,
-    big = false, medium = false, linkTo = null, onClick, growWithScreenSize = false, ...rest
+    big = false, medium = false, linkTo = null, onClick, growWithScreenSize = false, containerWidthAndHeight = false, ...rest
 }) => {
     const colorsForDifferentStates = getColorBehaviorsForColor(color);
     const onClickHandler = React.useCallback(() => {
@@ -130,7 +130,16 @@ const PrimaryButton = ({
                         :
                         ""
                     }
+                     ${containerWidthAndHeight ?
+                    `
+                        width: 100%;
+                        height: 100%;
+                    `
+                        :
+                        ``
+                    }
                   }
+
                   button.save-question.inactive {
                       background-color: grey;
                       box-shadow: 1px 1px 8px grey;
@@ -148,28 +157,28 @@ const PrimaryButton = ({
                   @media (min-width: 750px) {
                     button {
                         ${big && growWithScreenSize ?
-                            `
+                        `
                                 width: 250px;
                                 font-size: 1.4em;
                                 padding: 8px;
                             `
-                            :
-                            ""
-                        }
+                        :
+                        ""
+                    }
                     }
                 }
 
                  @media (min-width: 1200px) {
                     button {
                         ${big && growWithScreenSize ?
-                            `
+                        `
                                 width: 300px;
                                 font-size: 1.55em;
                                 padding: 8px;
                             `
-                            :
-                            ""
-                        }
+                        :
+                        ""
+                    }
                     }
                  }
         }

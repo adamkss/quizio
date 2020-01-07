@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import LayoutSetup from '../../components/layoutSetup';
 import { getNextQuizQuestion, verifyAnswer } from '../../utils/QuizRequests';
 import Router, { useRouter } from 'next/router';
+import PrimaryButton from '../../components/PrimaryButton';
 
 export default ({ }) => {
     const router = useRouter();
@@ -69,17 +70,10 @@ export default ({ }) => {
                             null
                         }
                     </div>
-                    <div className="button-container">
-                        <button
-                            className={`go-forward${nextQuestionAvailable ? " active" : ""}`}
-                            onClick={onNextPressed}>
-                            Next
-                        </button>
-                    </div>
                 </main>
                 <footer>
                     {currentlySelectedAnswerOrderNr != null ?
-                        <AnswerFooter isItCorrect={isCurrentAnswerCorrect} />
+                        <AnswerFooter isItCorrect={isCurrentAnswerCorrect} onNextPressed={onNextPressed} />
                         : ""}
                 </footer>
             </div>
@@ -111,37 +105,6 @@ export default ({ }) => {
                         padding: 10px;
                         padding-top: 100px;
                     }
-                    .button-container {
-                        position: fixed;
-                        bottom: 110px;
-                        width:70%;
-                        display: flex;
-                        flex-direction: row-reverse;
-                    }
-                    button.go-forward {
-                        width: 150px;
-                        height: 50px;
-                        cursor: pointer;
-                        outline: none;
-                        border: none;
-                        border-radius: 10px;
-                        font-family: Oswald;
-                        font-size: 1.3em;
-                        background-color: rgba(0, 0, 0, 0.2);
-                        color: grey;
-                        box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
-                        transition: all 0.3s;
-                    }
-                    button.go-forward.active {
-                        background-color: #ED4D8B;
-                        color: white;
-                        box-shadow: 1px 1px 10px #ED4D8B;
-                    }
-
-                    button.go-forward.active:hover {
-                        box-shadow: 1px 1px 15px #ED4D8B;
-                    }
-                  
                 `}
             </style>
         </>
@@ -277,24 +240,30 @@ const Question = ({ question, options = [], onAnswerSelected, currentlySelectedA
     )
 }
 
-const AnswerFooter = ({ isItCorrect }) => {
+const AnswerFooter = ({ isItCorrect, onNextPressed }) => {
     return (
         <>
             <div className="outer">
                 <div className="information">
-                    {
-                        isItCorrect ?
-                            <>
-                                <span className="title">Great!</span>
-                                <span className="subtitle">You answered correctly :)</span>
-                            </>
-                            :
-                            <>
-                                <span className="title">Oopsie :(</span>
-                                <span className="subtitle">That is not correct. You'll get it next time!</span>
-                            </>
-                    }
-
+                    <div className="text">
+                        {
+                            isItCorrect ?
+                                <>
+                                    <span className="title">Great!</span>
+                                    <span className="subtitle">You answered correctly :)</span>
+                                </>
+                                :
+                                <>
+                                    <span className="title">Oopsie :(</span>
+                                    <span className="subtitle">That is not correct. You'll get it next time!</span>
+                                </>
+                        }
+                    </div>
+                    <div className="next-button-container">
+                        <div className="next-button">
+                            <PrimaryButton onClick={onNextPressed} containerWidthAndHeight title="Next" color="blue" marginTop />
+                        </div>
+                    </div>
                 </div>
             </div>
             <style jsx>
@@ -304,9 +273,11 @@ const AnswerFooter = ({ isItCorrect }) => {
                 left: 0;
                 right: 0;
                 bottom: 0;
-                height: 100px;
-                background-color: ${isItCorrect ? "#4bac61" : "#ba2232"};
+                height: 150px;
+                //background-color: ${isItCorrect ? "#4bac61" : "#ba2232"};
+                background-color: white;
                 animation: SlideUp 0.3s ease-out;
+                box-shadow: 0px 0px 8px grey;
             }
             @keyframes SlideUp {
                 0% {
@@ -318,18 +289,71 @@ const AnswerFooter = ({ isItCorrect }) => {
             }
             .information {
                 position: absolute;
-                left: 18%;
+                width: 100%;
+                padding-left: 4%;
+                padding-right: 4%;
+                padding-top: 12px;
+                padding-bottom: 12px;
                 top: 50%;
                 transform: translateY(-50%);
                 display: flex;
                 flex-direction: column;
-                color: white;
+                color: black;
             }
-            .information > .title {
+            .next-button-container {
+                display: flex;
+                justify-content: flex-end;
+            }
+            .next-button {
+                width: 90px;
+                height: 38px;
+            }
+            @media (min-width: 473px) {
+                .next-button {
+                    width: 120px;
+                    height: 50px;
+                    font-size: 1.3em;
+                }
+            }
+            @media (min-width: 880px) {
+                .information {
+                    flex-direction: row;
+                    align-items: center;
+                }
+                .next-button-container {
+                    display: block;
+                }
+                .next-button {
+                    width: 140px;
+                    height: 65px;
+                    font-size: 1.3em;
+                }
+            }
+            @media (min-width: 690px) {
+                .information {
+                    font-size: 1.1em;
+                }
+            }
+            @media (min-width: 920px) {
+                .information {
+                    font-size: 1.2em;
+                }
+            }
+            @media (min-width: 1499px) {
+                .information {
+                    font-size: 1.3em;
+                }
+            }
+            .information .text {
+                display: flex;
+                flex-direction: column;
+                flex-grow: 1;
+            }
+            .information .title {
                 font-size: 1.4em;
                 font-weight: 500;
             }
-            .information > .subtitle {
+            .information .subtitle {
                 font-size: 1.2em;
                 font-weight: 300;
             }
