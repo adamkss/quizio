@@ -71,6 +71,7 @@ export default () => {
                             title="Go!"
                             rightAligned
                             medium
+                            marginTop
                             inactive={quiz.askForQuizTakerName && quizTakerName === ""}
                             onClick={onGoClick}
                         />

@@ -11,7 +11,7 @@ export default ({ }) => {
     const [progress, setProgress] = useState(0);
     const [currentQuestion, setCurrentQuestion] = useState(null);
     const [nextQuestionAvailable, setNextQuestionAvailable] = useState(false);
-    const [currentlySelectedAnswerOrderNr, setCurrentlySelectedAnswerOrderNr] = useState(1);
+    const [currentlySelectedAnswerOrderNr, setCurrentlySelectedAnswerOrderNr] = useState(null);
     const [isCurrentAnswerCorrect, setIsCurrentAnswerCorrect] = useState(false);
 
     const getAndSetNextQuizQuestion = async (shouldISetProgress) => {
