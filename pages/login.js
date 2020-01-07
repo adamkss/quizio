@@ -80,6 +80,7 @@ export default () => {
                     padding: 20px;
                     padding-top: 10px;
                     position: relative;
+                    top: -35px;
                 }
 
                 .login-window > form {
@@ -117,7 +118,7 @@ export default () => {
                     position: fixed;
                     width: 400px;
                     right: -50px;
-                    bottom: -230px;
+                    bottom: -250px;
                     transform: rotate(-12deg);
                     z-index: -1;
                     opacity: 0.8;
