@@ -36,7 +36,7 @@ export default () => {
                         <li><a href="#head">Home</a></li>
                         <li><a href="#quizio-presentation">The flow</a></li>
                         <li><a href="#about-us">About us</a></li>
-                        <li><a>Login</a></li>
+                        <li><Link href="/login"><a>Login</a></Link></li>
                     </ul>
                 </nav>
             </header>
@@ -84,7 +84,7 @@ export default () => {
                 <footer>
                     <span>Quizio - 2020</span>
                     <div className="footer__links">
-                        <Link href="/">
+                        <Link href="/#head">
                             <a>Home</a>
                         </Link>
                         <Link href="/#quizio-presentation">
@@ -98,6 +98,13 @@ export default () => {
                         </Link>
                     </div>
                 </footer>
+                {!isHeaderSticky ?
+                    <a className="go-down" href="/#quizio-presentation" title="Scroll">
+                        <img className="down-arrow" src="/static/arrow.svg" />
+                    </a>
+                    :
+                    ""
+                }
             </main>
 
             <style jsx>
@@ -287,6 +294,52 @@ export default () => {
                     margin: 5px;
                     color: inherit;
                     text-decoration: inherit;
+                }
+                .go-down {
+                    display: none;
+                    position: fixed;
+                    bottom: -4px;
+                    left: 50%;
+                    padding: 2px;
+                    transform: translateX(-50%);
+                    opacity: 0;
+                    animation: GoDownArrowAnimation 1.8s ease-out;
+                    animation-delay: 1s;
+                    animation-iteration-count: infinite;
+                }
+                @keyframes GoDownArrowAnimation {
+                    0% {
+                        opacity: 0;
+                        transform: translateX(-50%) translateY(-7px);
+                    }
+                    75% {
+                        opacity: 0.8;
+                        transform: translateX(-50%) translateY(0px);
+                    }
+                    100% {
+                        opacity: 0;
+                    }
+                }
+                .down-arrow {
+                    width: 15px;
+                }
+                @media (min-height: 667px) {
+                    .go-down {
+                        display: block;
+                    }
+                }
+                @media (min-height: 675px) {
+                    .go-down {
+                        bottom: 5px;
+                    }
+                    .down-arrow {
+                        width: 20px;
+                    }
+                }
+                @media (min-height: 700px) {
+                    .go-down {
+                        bottom: 10px;
+                    }
                 }
             `}
             </style>

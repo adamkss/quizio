@@ -71,7 +71,9 @@ const PrimaryButton = ({
         if (linkTo) {
             Router.push(linkTo);
         } else {
-            onClick();
+            if (onClick) {
+                onClick();
+            }
         }
     }, [linkTo, onClick]);
     return (
@@ -131,7 +133,7 @@ const PrimaryButton = ({
                         ""
                     }
                      ${containerWidthAndHeight ?
-                    `
+                        `
                         width: 100%;
                         height: 100%;
                     `

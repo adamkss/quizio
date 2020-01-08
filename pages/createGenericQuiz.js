@@ -30,6 +30,9 @@ export default ({ }) => {
     return (
         <>
             <LayoutSetup />
+            <header>
+                <h1>Quizio</h1>
+            </header>
             <main className={`${wasEnteringEffectShown ? null : "fade-in"}`}>
                 <section className="dialog">
                     <h1>Name your quiz</h1>
@@ -37,7 +40,7 @@ export default ({ }) => {
                         <TextInput width="100%" marginTop="20px" placeholder="Ex. Super hard math quiz..." value={title} valueSetter={setTitle} />
                     </div>
                     <div className="buttons-section">
-                        <PrimaryButton rightAligned title="Let's begin!" onClick={onCreatePress} />
+                        <PrimaryButton medium rightAligned title="Let's begin!" onClick={isForwardButtonVisible ? onCreatePress : null} />
                     </div>
                 </section>
             </main>
@@ -54,21 +57,38 @@ export default ({ }) => {
                         justify-content: center;
                         padding: 30px;
                     }
+                    header h1 {
+                        font-size: 2em;
+                        position: fixed;
+                        top: 3px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        opacity: 0.8;
+                    }
                     .dialog {
                         position: relative;
                         width: 100%;
                         max-width: 700px;
-                        min-width: 340px;
-                        margin-top: 25vh;
+                        min-width: 300px;
+                        margin-top: 20vh;
                         ${isForwardButtonVisible ?
-                        "height: 240px"
+                        "height: 295px"
                         :
-                        "height: 200px"
+                        "height: 240px"
                     };
                         padding: 30px;
                         box-shadow: 0px 2px 8px #00000040;
                         border-radius: 7px;
                         transition: all 0.3s;
+                    }
+                    @media (min-width: 375px) {
+                        .dialog {
+                            ${isForwardButtonVisible ?
+                        "height: 240px"
+                        :
+                        "height: 200px"
+                    };
+                        }
                     }
                     .buttons-section {
                         position: absolute;
@@ -76,6 +96,7 @@ export default ({ }) => {
                         right: 30px;
                         bottom: 30px;
                         opacity: ${isForwardButtonVisible ? "1" : "0"};
+                        visibility: ${isForwardButtonVisible ? "visible" : "hidden"};
                         transition: all 0.2s;
                     }
                     .fade-in { 
