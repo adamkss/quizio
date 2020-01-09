@@ -128,10 +128,10 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
                         height: 100vh;
                         color: #212B36;
                         background-color: #F5F6F8;
-                        z-index: 2;
                         flex-direction: column;
                         ${isMenuOpen ?
-                        "display: flex;"
+                        `display: flex;
+                         z-index: 1;`
                         :
                         "display: none;"
                     }
@@ -227,7 +227,6 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
                         padding: 5px 5px;
                         display: flex;
                         align-items: center;
-                        z-index: 2;
                     }   
                     @media (min-width: 740px) {
                         .right-column {
@@ -274,7 +273,6 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
                         position: relative;
                         height: calc(100vh - 50px);
                         overflow: auto;
-                        z-index: 1;
                         padding-bottom: 70px;
                     }
                 `}
