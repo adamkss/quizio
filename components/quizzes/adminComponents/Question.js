@@ -106,7 +106,7 @@ const Question = ({ questionTitle, questionOptions, onAddNewOption, onSetNewCorr
                 <img title="Delete question" src="/static/delete-24px.svg" className="delete-icon initially-less-visible" onClick={onDeleteQuestion} />
                 <img title="New answer option" src="/static/add-icon.svg" className="add-icon initially-less-visible" onClick={onAddNewOptionButtonClick} />
                 <img title="New right answer" className="new-right-answer-icon initially-less-visible visible-only-mobile" src="/static/check_circle_black.svg" onClick={onAreAllSetAsRightAnswerOptionsVisibleTogglePress} />
-                <img title="Delete answer option" className="delete-answer-icon initially-less-visible visible-only-mobile" src="/static/delete-24px.svg" onClick={onAreAllDeleteOptionsVisibleTogglePress} />
+                <img title="Delete answer option" className="delete-answer-icon initially-less-visible visible-only-mobile" src="/static/minus.svg" onClick={onAreAllDeleteOptionsVisibleTogglePress} />
             </article>
             <style jsx>
                 {`
@@ -203,21 +203,21 @@ const Question = ({ questionTitle, questionOptions, onAddNewOption, onSetNewCorr
                     }
                     .add-icon {
                         position: absolute;
-                        right: 10px;
+                        right: 45px;
                         bottom: 10px;
                         cursor: pointer;
                         padding: 5px;
                     }
                     .new-right-answer-icon {
                         position: absolute;
-                        right: 45px;
+                        right: 10px;
                         bottom: 10px;
                         padding: 5px;
                     }
                     .delete-answer-icon {
                         position: absolute;
                         right: 80px;
-                        bottom: 10px;
+                        bottom: 11px;
                         padding: 5px;
                     }
                     .right-answer-icon {

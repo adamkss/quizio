@@ -9,11 +9,13 @@ export default ({ title, onConfirm, onCancel, positiveAnswer = "Yes", negativeAn
                     <PrimaryButton
                         title={negativeAnswer}
                         onClick={onCancel}
+                        medium
                         marginRight
                         color={positiveIsRed ? "green" : "red"} />
                     <PrimaryButton
                         title={positiveAnswer}
                         onClick={onConfirm}
+                        medium
                         color={positiveIsRed ? "red" : "green"} />
                 </div>
             </GenericDailog>

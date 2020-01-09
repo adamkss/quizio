@@ -43,6 +43,7 @@ export default () => {
     const quizzDoneLink = `${process.env.HOST}/takeQuizz/${genericQuizId}`;
     const [wasQuizDoneURLCopied, setWasQuizDoneURLCopied] = useState(false);
     const [isQuizBeingCustomized, setIsBeingQuizCustomized] = useState(false);
+    const [questionOptionToDeleteInfo, setQuestionOptionToDeleteInfo] = useState(null);
 
     React.useEffect(() => {
         (async () => {
@@ -93,19 +94,31 @@ export default () => {
         ))
     };
 
-    const getOnDeleteQuestionOptionFromQuestion = (questionId) => async (questionOptionId) => {
+    const onDeleteQuestionOptionFromQuestion = React.useCallback(async () => {
         const newQuestionOptions = await executeAsyncFunctionAndObserveState(
             setIsAsyncOperationInProgress,
             deleteQuestionOptionFromQuestion,
-            questionId,
-            questionOptionId
+            questionOptionToDeleteInfo.questionId,
+            questionOptionToDeleteInfo.questionOptionId
         );
         setQuestions(getNewQuestionsWithUpdatedQuestionOptions(
             questions,
-            questionId,
+            questionOptionToDeleteInfo.questionId,
             newQuestionOptions
-        ))
+        ));
+        setQuestionOptionToDeleteInfo(null);
+    }, [setIsAsyncOperationInProgress, deleteQuestionOptionFromQuestion, questionOptionToDeleteInfo, questions, setQuestionOptionToDeleteInfo]);
+
+    const getOnDeleteQuestionOptionFromQuestion = (questionId) => async (questionOptionId) => {
+        setQuestionOptionToDeleteInfo({
+            questionId,
+            questionOptionId
+        });
     }
+
+    const abandonDeleteQuestionOptionFromQuestion = React.useCallback(() => {
+        setQuestionOptionToDeleteInfo(null);
+    }, [setQuestionOptionToDeleteInfo]);
 
     const getOnDeleteQuestionCallback = (questionId) => async () => {
         const { status } = await executeAsyncFunctionAndObserveState(
@@ -285,6 +298,16 @@ export default () => {
                     onSave={onQuizSettingsSaveClick} />
                 :
                 ""
+            }
+            {questionOptionToDeleteInfo ?
+                <ConfirmationDialog
+                    title="Delete question option?"
+                    positiveIsRed
+                    onConfirm={onDeleteQuestionOptionFromQuestion}
+                    onCancel={abandonDeleteQuestionOptionFromQuestion}
+                />
+                :
+                ''
             }
             <style jsx>
                 {`
