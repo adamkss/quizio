@@ -35,6 +35,7 @@ export default ({ noMarginTop, noMarginBottom, title, onChange, valueSetter = nu
                       border: 1px solid rgba(0, 0, 0, 0.4);
                       border-radius: 5px;
                       padding: 10px;
+                      margin-top: 4px;
                       font-size: 1em;
                   }
                   input:focus {

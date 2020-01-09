@@ -216,6 +216,8 @@ const CreateNewQuizDialog = ({ onDismissDialog, onCreateNewQuiz }) => {
             <PrimaryButton
                 rightAligned
                 title="Create quiz"
+                marginTop
+                medium
                 inactive={newQuizName === ""}
                 onClick={onSavePress} />
         </GenericDialog>
