@@ -72,6 +72,7 @@ export default ({ onDismissDialog, onSaveQuestion }) => {
                                 type="text"
                                 placeholder="Option here..."
                                 value={questionOption}
+                                autoFocus={questionOptions.length > 1}
                                 onChange={getQuestionOptionValueUpdateCallback(index)}
                                 width="100%" />
                             <img
@@ -106,7 +107,7 @@ export default ({ onDismissDialog, onSaveQuestion }) => {
                   }
                   span.no-options-yet {
                       font-weight: 200;
-                      font-size: 0.9em;
+                      font-size: 1.1rem;
                       margin-bottom: 15px;
                   }
                   .delete-option-icon {
