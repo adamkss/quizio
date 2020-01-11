@@ -6,9 +6,10 @@ import { executeAsyncFunctionAndObserveState } from '../../utils/AsyncUtils';
 import LayoutSetup from '../../components/layoutSetup';
 import PrimaryButton from '../../components/PrimaryButton';
 import TextInput from '../../components/TextInput';
+import Link from 'next/link';
 
 export default () => {
-    const { quizId } = useRouter().query;
+    const { quizId, isForTesting } = useRouter().query;
     const [isLoadingScreenShown, setIsLoadingScreenShown] = React.useState(false);
     const [quiz, setQuiz] = React.useState(null);
     const [quizTakerName, setQuizTakerName] = React.useState("");
@@ -36,9 +37,12 @@ export default () => {
                     quizTakerName
                 }
             );
-            Router.push(`/quiz/${sessionId}`);
+            if (isForTesting)
+                Router.push(`/quiz/${sessionId}?isForTesting=true`);
+            else
+                Router.push(`/quiz/${sessionId}`);
         }
-    }, [quizId, quizTakerName]);
+    }, [quizId, quizTakerName, isForTesting]);
 
     const onGoClick = React.useCallback(() => {
         requestSessionForQuiz();
@@ -80,6 +84,16 @@ export default () => {
                 :
                 ""
             }
+            {isForTesting ?
+                <Link href={`/genericQuizzes/${quizId}/editor`}>
+                    <a className="back-link fade-and-slide-in">
+                        <img className="back-arrow" src="/static/left-arrow.svg"></img>
+                        <span>Back to editor</span>
+                    </a>
+                </Link>
+                :
+                ''
+            }
             <style jsx>
                 {`
                     main {
@@ -100,6 +114,25 @@ export default () => {
                     }
                     .card__quiz-name {
                         font-weight: 700;
+                    }
+                    .back-link {
+                        position: fixed;
+                        left: 25px;
+                        top: 25px;
+                        padding: 5px;
+                        text-align: center;
+                        vertical-align: center;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        cursor: pointer;
+                        text-decoration: none;
+                        color: inherit;
+                        font-size: 1.14rem;
+                    }
+                    .back-arrow {
+                        width: 20px;
+                        margin-right: 7px;
                     }
                 `}
             </style>

@@ -210,7 +210,7 @@ export default () => {
     }, [setIsAsyncOperationInProgress, genericQuizId]);
 
     const onTestTakeQuizClick = useCallback(() => {
-        Router.push(`/takeQuizz/${genericQuizId}`);
+        Router.push(`/takeQuizz/${genericQuizId}/?isForTesting=true`);
     }, [Router, genericQuizId]);
 
     return (

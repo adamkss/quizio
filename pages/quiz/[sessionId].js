@@ -242,7 +242,7 @@ const Question = ({ question, options = [], onAnswerSelected, currentlySelectedA
     )
 }
 
-const AnswerFooter = ({ isItCorrect, onNextPressed }) => {
+const AnswerFooter = ({ isItCorrect, onNextPressed, isForTesting }) => {
     return (
         <>
             <div className="outer">
