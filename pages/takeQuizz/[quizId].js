@@ -94,6 +94,13 @@ export default () => {
                 :
                 ''
             }
+            <img className="illustration" src="/static/illustrations/student-monochrome.svg" />
+            {!isForTesting ?
+                <h1 className="title fade-in">
+                    Quizio
+                </h1>
+                :
+                ''}
             <style jsx>
                 {`
                     main {
@@ -108,6 +115,8 @@ export default () => {
                         border-radius: 10px;
                         box-shadow: 0px 0px 8px hsl(0, 0%, 70%);
                         padding: 30px;
+                        margin-top: -90px;
+                        background-color: white;
                     }
                     h1 {
                         font-weight: 400;
@@ -133,6 +142,57 @@ export default () => {
                     .back-arrow {
                         width: 20px;
                         margin-right: 7px;
+                    }
+                    .illustration {
+                        width: 200px;
+                        position: fixed;
+                        bottom: -40px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        opacity: 0.8;
+                        z-index: -1;
+                        animation: IllustrationIn 1.8s ease-out;
+                    }
+                    @media (min-width: 400px) {
+                        .illustration {
+                            width: 250px;
+                        }
+                    }
+                    @media (min-width: 700px) {
+                        .illustration {
+                            width: 350px;
+                            bottom: -75px;
+                        }
+                    }
+                    @keyframes IllustrationIn {
+                        0% {
+                            opacity: 0;
+                            transform: translateX(-50%) translateY(-10px);
+                        }
+                        40% {
+                            opacity: 0;
+                        }
+                        75% {
+                            opacity: 0.4;
+                        }
+                        100% {
+                            opacity: 0.8;
+                            transform: translateX(-50%) translateY(0px);
+                        }
+                    }
+                    .title {
+                        position: fixed;
+                        top: 10px;
+                        font-weight: 500;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        z-index: -1;
+                    }
+                    @media (min-width: 450px) {
+                        .title {
+                            left: 50%;
+                            transform: translateX(-50%);
+                        }
                     }
                 `}
             </style>
