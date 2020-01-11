@@ -58,7 +58,7 @@ export default ({ onDismissDialog, onSaveQuestion }) => {
                         placeholder="Type question here..."
                         width="100%"
                         autoFocus />
-                    <label>Options:</label>
+                    <label className="options-label">Options:</label>
                     {questionOptions.length === 0 ?
                         <div className="horizontally-centered">
                             <span className="no-options-yet">No options defined yet.</span>
@@ -82,10 +82,12 @@ export default ({ onDismissDialog, onSaveQuestion }) => {
                         </div>
                     )}
                     <div className="horizontally-centered">
-                        <button className="add-option" onClick={createNewEmptyOption}>Add option</button>
+                        <PrimaryButton title="Add option" color="pink" medium onClick={createNewEmptyOption}/>
                     </div>
                     <PrimaryButton
                         title="Save question"
+                        medium
+                        marginTop
                         inactive={!isNewQuestionReadyToBeCreated}
                         onClick={isNewQuestionReadyToBeCreated ? onSaveQuestionClicked : null}
                         rightAligned />
@@ -98,6 +100,9 @@ export default ({ onDismissDialog, onSaveQuestion }) => {
                       display: flex;
                       flex-direction: row;
                       align-items: center;
+                  }
+                  .options-label {
+                      font-size: 1.2rem;
                   }
                   span.no-options-yet {
                       font-weight: 200;

@@ -106,7 +106,7 @@ const PrimaryButton = ({
                         medium ?
                             `
                             width: 130px;
-                            font-size: 1.15em;
+                            font-size: 1.05rem;
                             padding: 5px;
                         `
                             :

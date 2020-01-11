@@ -25,7 +25,7 @@ export default ({ noMarginTop, noMarginBottom, title, onChange, valueSetter = nu
                     }
                 }
                 label {
-                      font-size: 1.2em;
+                      font-size: 1.2rem;
                       display: block;
                   }
                  input {
