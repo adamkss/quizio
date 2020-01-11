@@ -37,10 +37,7 @@ export default () => {
                     quizTakerName
                 }
             );
-            if (isForTesting)
-                Router.push(`/quiz/${sessionId}?isForTesting=true`);
-            else
-                Router.push(`/quiz/${sessionId}`);
+            Router.push(`/quiz/${sessionId}`);
         }
     }, [quizId, quizTakerName, isForTesting]);
 

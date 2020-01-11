@@ -4,6 +4,7 @@ import React from 'react';
 import PrimaryButton from "../components/PrimaryButton";
 import { createNewGenericQuiz } from "../utils/QuizRequests";
 import Router from 'next/router';
+import Link from "next/link";
 
 export default ({ }) => {
     const [title, setTitle] = React.useState("");
@@ -31,11 +32,11 @@ export default ({ }) => {
         <>
             <LayoutSetup />
             <header>
-                <h1>Quizio</h1>
+                <h1 className="fade-in">Quizio</h1>
             </header>
-            <main className={`${wasEnteringEffectShown ? null : "fade-in"}`}>
+            <main className={`${wasEnteringEffectShown ? null : "fade-and-slide-in"}`}>
                 <section className="dialog">
-                    <h1>Name your quiz</h1>
+                    <h1>Name your quiz:</h1>
                     <div className="horizontally-centered">
                         <TextInput width="100%" marginTop="20px" placeholder="Ex. Super hard math quiz..." value={title} valueSetter={setTitle} />
                     </div>
@@ -43,6 +44,12 @@ export default ({ }) => {
                         <PrimaryButton medium rightAligned title="Let's begin!" onClick={isForwardButtonVisible ? onCreatePress : null} />
                     </div>
                 </section>
+                <img className="illustration-1" src="/static/illustrations/charts_guy.svg"/>
+                <Link href="/">
+                    <a className="back-button" title="Back">
+                        <img src="/static/left-arrow.svg"></img>
+                    </a>
+                </Link>
             </main>
             <style jsx>
                 {`
@@ -63,7 +70,6 @@ export default ({ }) => {
                         top: 3px;
                         left: 50%;
                         transform: translateX(-50%);
-                        opacity: 0.8;
                     }
                     .dialog {
                         position: relative;
@@ -71,6 +77,7 @@ export default ({ }) => {
                         max-width: 700px;
                         min-width: 300px;
                         margin-top: 20vh;
+                        background-color: white;
                         ${isForwardButtonVisible ?
                         "height: 295px"
                         :
@@ -81,7 +88,7 @@ export default ({ }) => {
                         border-radius: 7px;
                         transition: all 0.3s;
                     }
-                    @media (min-width: 375px) {
+                    @media (min-width: 400px) {
                         .dialog {
                             ${isForwardButtonVisible ?
                         "height: 240px"
@@ -110,6 +117,43 @@ export default ({ }) => {
                             opacity: 1;
                             transform: translateY(0px);
                         }
+                    }
+                    .illustration-1 {
+                        position: fixed;
+                        bottom: -100px;
+                        left: -80px;
+                        width: 430px;
+                        transform: rotate(20deg);
+                        z-index: -1;
+                        opacity: 0.6;
+                    }
+                    @media (min-width: 377px), (min-height: 750px) {
+                        .illustration-1 {
+                            opacity: 0.8;
+                            width: 550px;
+                            transform: rotate(15deg);
+                            left: -100px;
+                        }
+                    }
+                    @media (min-width: 700px) {
+                        .illustration-1 {
+                            opacity: 0.8;
+                            width: 700px;
+                            transform: rotate(15deg);
+                            left: -100px;
+                            bottom: -130px;
+                        }
+                    }
+                    .back-button {
+                        position: fixed;
+                        top: 15px;
+                        left: 15px;
+                        padding: 5px;
+                        cursor: pointer;
+                        transition: all 0.3s;
+                    }
+                    .back-button > img {
+                        width: 25px;
                     }
             `}
             </style>
