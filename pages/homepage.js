@@ -7,7 +7,7 @@ import GenericDailog from '../components/GenericDailog';
 import Router from 'next/router';
 
 const Homepage = ({ currentUserDetails }) => {
-    const [quizToContinueWorkingOn, setQuizToContinueWorkingOn] = React.useState({ genericQuizName: 'asd' });
+    const [quizToContinueWorkingOn, setQuizToContinueWorkingOn] = React.useState(null);
 
     React.useEffect(() => {
         const quizToContinueOnWorking = sessionStorage.getItem('quizToContinueOnWorking');
