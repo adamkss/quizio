@@ -5,7 +5,7 @@ import LayoutSetup from '../../../components/layoutSetup';
 import { addOptionToQuestion, setNewAnswerOptionAsCorrectAnswer, deleteQuestionOptionFromQuestion, deleteQuestion } from '../../../utils/QuizRequests';
 import FloatingActionButton from '../../../components/FloatingActionButton';
 import CreateQuestionDialog from '../../../components/quizzes/CreateQuestionDialog';
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useLayoutEffect } from 'react';
 import LoadingSpinner from '../../../components/LoadingSpinner';
 import { executeAsyncFunctionAndObserveState } from '../../../utils/AsyncUtils';
 import GenericDailog from '../../../components/GenericDailog';
@@ -209,6 +209,10 @@ export default () => {
         );
     }, [setIsAsyncOperationInProgress, genericQuizId]);
 
+    const onTestTakeQuizClick = useCallback(() => {
+        Router.push(`/takeQuizz/${genericQuizId}`);
+    }, [Router, genericQuizId]);
+
     return (
         <>
             <LayoutSetup />
@@ -285,6 +289,14 @@ export default () => {
                             :
                             null
                     }
+                    <p className="done-dialog__or-text">...or</p>
+                    <PrimaryButton
+                        color="pink"
+                        centered
+                        medium
+                        onClick={onTestTakeQuizClick}
+                        title="Test take this quiz!"
+                        marginTop />
                 </GenericDailog>
                 :
                 null
@@ -415,7 +427,7 @@ export default () => {
                         font-family: inherit;
                         font-size: 1.3em;
                         text-align: center;
-                        margin-top: 50px;
+                        margin-top: 20px;
                         outline: none;
                         border: 1px solid grey;
                     }
@@ -427,10 +439,15 @@ export default () => {
                         display: flex;
                         justify-content: center;
                         align-items:center;
-                        margin-top: 10px;
+                        margin-top: 8px;
                     }
                     .done-dialog__copied-to-clipboard-shell img{
                         width: 25px;
+                    }
+                    .done-dialog__or-text {
+                        font-size: 1.1rem;
+                        text-align: center;
+                        margin-top: 5px;
                     }
                 `}
             </style>

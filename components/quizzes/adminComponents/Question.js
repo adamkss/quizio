@@ -203,20 +203,20 @@ const Question = ({ questionTitle, questionOptions, onAddNewOption, onSetNewCorr
                     }
                     .add-icon {
                         position: absolute;
-                        right: 45px;
+                        right: 10px;
                         bottom: 10px;
                         cursor: pointer;
                         padding: 5px;
                     }
                     .new-right-answer-icon {
                         position: absolute;
-                        right: 10px;
+                        right: 80px;
                         bottom: 10px;
                         padding: 5px;
                     }
                     .delete-answer-icon {
                         position: absolute;
-                        right: 80px;
+                        right: 45px;
                         bottom: 11px;
                         padding: 5px;
                     }
