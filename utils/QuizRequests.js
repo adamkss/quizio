@@ -75,9 +75,15 @@ export const deleteQuiz = async (quizId) => {
     return res.status === 204;
 }
 
-export const createNewGenericQuiz = (quizzName) => {
+export const createNewGenericQuiz = (quizName) => {
     return axios.post(`/genericQuizzes`, {
-        newQuizName: quizzName
+        newQuizName: quizName
+    }).then(getDataFromResponseAsPromise);
+}
+
+export const createNewGenericAnonymousQuiz = (quizName) => {
+    return axios.post(`/genericQuizzes/anonymousQuizzes`, {
+        newQuizName: quizName
     }).then(getDataFromResponseAsPromise);
 }
 
@@ -105,6 +111,10 @@ export const updateQuizSettings = (quizId, { quizName, askForQuiztakerName, show
     }).then(getDataFromResponseAsPromise);
 }
 
-export const getQuizResults = (quizId) =>  {
+export const getQuizResults = (quizId) => {
     return axios.get(`/genericQuizzes/${quizId}/results`).then(getDataFromResponseAsPromise);
+}
+
+export const assignAnonymousQuizToUser = (quizId) => {
+    return axios.put(`/genericQuizzes/${quizId}/owner`).then(getDataFromResponseAsPromise);
 }

@@ -36,6 +36,17 @@ export default ({ children, title, onDismissDialog, ...rest }) => {
                 box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.3);
                 padding: 25px;
                 background-color: white;
+                animation: DialogIn 0.4s;
+            }
+            @keyframes DialogIn { 
+                0% {
+                    transform: scale(0.9);
+                    opacity: 0;
+                }
+                100% {
+                    transform: scale(1);
+                    opacity: 1;
+                }
             }
             h1 {
                 font-size: 1.7em;

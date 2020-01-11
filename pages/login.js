@@ -9,6 +9,7 @@ import { saveSuccessfulLoginInfo } from '../utils/AuthUtils';
 import useAuthTokenIfExists from '../hooks/useAuthTokenIfExists';
 import Router from 'next/router';
 import { OnEnterPressBoundary } from '../components/OnEnterPressBoundary';
+import { assignAnonymousQuizToUserIfNeeded } from '../utils/QuizUtils';
 
 export default () => {
     const [username, setUsername] = React.useState("");
@@ -23,6 +24,7 @@ export default () => {
             const loginResponse = await login({ username, password });
             saveSuccessfulLoginInfo(loginResponse["access_token"]);
             setIsLoginFailed(false);
+            await assignAnonymousQuizToUserIfNeeded();
             Router.push('/homepage');
         }
         catch {

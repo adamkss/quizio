@@ -2,14 +2,17 @@ import LayoutSetup from "../components/layoutSetup";
 import TextInput from "../components/TextInput";
 import React from 'react';
 import PrimaryButton from "../components/PrimaryButton";
-import { createNewGenericQuiz } from "../utils/QuizRequests";
+import { createNewGenericAnonymousQuiz } from "../utils/QuizRequests";
 import Router from 'next/router';
 import Link from "next/link";
+import LoadingSpinner from '../components/LoadingSpinner';
+import {executeAsyncFunctionAndObserveState} from '../utils/AsyncUtils';
 
 export default ({ }) => {
     const [title, setTitle] = React.useState("");
     const [isForwardButtonVisible, setIsForwardButtonVisible] = React.useState(false);
     const [wasEnteringEffectShown, setWasEnteringEffectShown] = React.useState(false);
+    const [isLoadingShown, setIsLoadingShown] = React.useState(false);
 
     React.useEffect(() => {
         setWasEnteringEffectShown(true);
@@ -24,13 +27,22 @@ export default ({ }) => {
     }, [title]);
 
     const onCreatePress = React.useCallback(async () => {
-        const { id: newQuizId } = await createNewGenericQuiz(title);
+        const { id: newQuizId } = await executeAsyncFunctionAndObserveState(
+            setIsLoadingShown,
+            createNewGenericAnonymousQuiz,
+            title
+        );
         Router.push(`/genericQuizzes/${newQuizId}/editor`);
     }, [title]);
 
     return (
         <>
             <LayoutSetup />
+            {isLoadingShown ?
+                <LoadingSpinner />
+                :
+                ''
+            }
             <header>
                 <h1 className="fade-in">Quizio</h1>
             </header>
@@ -44,7 +56,7 @@ export default ({ }) => {
                         <PrimaryButton medium rightAligned title="Let's begin!" onClick={isForwardButtonVisible ? onCreatePress : null} />
                     </div>
                 </section>
-                <img className="illustration-1" src="/static/illustrations/charts_guy.svg"/>
+                <img className="illustration-1" src="/static/illustrations/charts_guy.svg" />
                 <Link href="/">
                     <a className="back-button" title="Back">
                         <img src="/static/left-arrow.svg"></img>

@@ -5,7 +5,7 @@ import LayoutSetup from '../../../components/layoutSetup';
 import { addOptionToQuestion, setNewAnswerOptionAsCorrectAnswer, deleteQuestionOptionFromQuestion, deleteQuestion } from '../../../utils/QuizRequests';
 import FloatingActionButton from '../../../components/FloatingActionButton';
 import CreateQuestionDialog from '../../../components/quizzes/CreateQuestionDialog';
-import { useState, useCallback, useRef, useLayoutEffect } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import LoadingSpinner from '../../../components/LoadingSpinner';
 import { executeAsyncFunctionAndObserveState } from '../../../utils/AsyncUtils';
 import GenericDailog from '../../../components/GenericDailog';
@@ -44,6 +44,7 @@ export default () => {
     const [wasQuizDoneURLCopied, setWasQuizDoneURLCopied] = useState(false);
     const [isQuizBeingCustomized, setIsBeingQuizCustomized] = useState(false);
     const [questionOptionToDeleteInfo, setQuestionOptionToDeleteInfo] = useState(null);
+    const [isAnonymousQuizDialogShown, setIsAnonymousQuizDialogShown] = useState(false);
 
     React.useEffect(() => {
         (async () => {
@@ -61,6 +62,14 @@ export default () => {
             }
         })();
     }, [genericQuizId]);
+
+    React.useEffect(() => {
+        if (quizInfo) {
+            if (quizInfo.anonymous) {
+                setIsAnonymousQuizDialogShown(true);
+            }
+        }
+    }, [quizInfo]);
 
     const loadQuizInfo = useCallback(async () => {
         const quizInfo = await getQuizInfoById(genericQuizId);
@@ -213,6 +222,30 @@ export default () => {
         Router.push(`/takeQuizz/${genericQuizId}/?isForTesting=true`);
     }, [Router, genericQuizId]);
 
+    const onIgnoreAnonymousQuizWarningDialog = useCallback(() => {
+        setIsAnonymousQuizDialogShown(false);
+    }, []);
+
+    const onAnonymousClickLogin = useCallback(() => {
+        sessionStorage.setItem('anonymousQuizToAssignToUser', JSON.stringify(
+            {
+                genericQuizId,
+                genericQuizName: quizInfo.name
+            }
+        ));
+        Router.push('/login');
+    }, [genericQuizId, quizInfo]);
+
+    const onAnonymousClickRegister = useCallback(() => {
+        sessionStorage.setItem('anonymousQuizToAssignToUser', JSON.stringify(
+            {
+                genericQuizId,
+                genericQuizName: quizInfo.name
+            }
+        ));
+        Router.push('/register');
+    }, [genericQuizId, quizInfo]);
+
     return (
         <>
             <LayoutSetup />
@@ -318,6 +351,38 @@ export default () => {
                     onConfirm={onDeleteQuestionOptionFromQuestion}
                     onCancel={abandonDeleteQuestionOptionFromQuestion}
                 />
+                :
+                ''
+            }
+            {isAnonymousQuizDialogShown ?
+                <GenericDailog title="Hey there! You're not logged in..." onDismissDialog={onIgnoreAnonymousQuizWarningDialog}>
+                    <p className="warning-dialog__text">Register for an account or login if you want to save the quiz and see the results of people :)</p>
+                    <div className="horizontally-end-positioned">
+                        <PrimaryButton
+                            medium
+                            color="blue"
+                            title="Login"
+                            marginTop
+                            marginRight
+                            onClick={onAnonymousClickLogin}
+                        />
+                        <PrimaryButton
+                            medium
+                            color="pink"
+                            title="Register"
+                            marginTop
+                            onClick={onAnonymousClickRegister}
+                        />
+                    </div>
+                    <div className="horizontally-end-positioned">
+                        <PrimaryButton
+                            title="Later"
+                            marginTop
+                            secondary
+                            onClick={onIgnoreAnonymousQuizWarningDialog}
+                            medium />
+                    </div>
+                </GenericDailog>
                 :
                 ''
             }
@@ -448,6 +513,9 @@ export default () => {
                         font-size: 1.1rem;
                         text-align: center;
                         margin-top: 5px;
+                    }
+                    .warning-dialog__text {
+                        font-size: 1.2rem;
                     }
                 `}
             </style>
