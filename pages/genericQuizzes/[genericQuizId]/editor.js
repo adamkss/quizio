@@ -509,6 +509,7 @@ const QuizSettingsDialog = (
                     <PrimaryButton
                         title="Done"
                         marginRight
+                        medium
                         marginTop
                         onClick={onDoneClick}
                     />
@@ -516,6 +517,7 @@ const QuizSettingsDialog = (
                         title="Cancel"
                         color="red"
                         marginTop
+                        medium
                         onClick={onCancelClick}
                     />
                 </div>

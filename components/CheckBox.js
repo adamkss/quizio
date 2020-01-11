@@ -14,7 +14,7 @@ export default ({ title = "", checked, onChange, marginTop = false }) => {
                         </div>
                     </div>
                 </div>
-                <span>{title}</span>
+                <span className="title">{title}</span>
             </label>
             <style jsx>
                 {`
@@ -63,6 +63,9 @@ export default ({ title = "", checked, onChange, marginTop = false }) => {
                    input:checked ~ .shell {
                        background-color: #4CAC60;
                        box-shadow: 0px 0px 8px #4CAC60;
+                   }
+                   .title {
+                       font-size: 1.1rem;
                    }
                 `}
             </style>
