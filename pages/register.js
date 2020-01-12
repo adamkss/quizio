@@ -7,6 +7,7 @@ import { registerUser } from "../utils/QuizRequests";
 import SecondaryButton from "../components/SecondaryButton";
 import Router from 'next/router';
 import { OnEnterPressBoundary } from '../components/OnEnterPressBoundary';
+import Link from "next/link";
 
 const stepOneValidator = ({ name, email }) => {
     return /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/.test(email) && name != "";
@@ -62,7 +63,9 @@ export default () => {
             <div className="centered full-view-height small-lateral-padding">
                 <div className="card fade-and-slide-in">
                     <header>
-                        <h1>Quizio <span>registration</span></h1>
+                        <Link href="/">
+                            <h1>Quizio <span>registration</span></h1>
+                        </Link>
                     </header>
                     <OnEnterPressBoundary onEnterPressed={isNextValid && step !== 4 ? onNextClick : null}>
                         <main>

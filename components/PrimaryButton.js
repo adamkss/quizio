@@ -22,7 +22,7 @@ export default ({ rightAligned = false, centered = false, ...rest }) => {
 }
 
 const getColorBehaviorsForColor = (color, secondary) => {
-    if(secondary) {
+    if (secondary) {
         return {
             textColor: "black",
             backgroundColorDefault: "white",
@@ -85,7 +85,7 @@ const getColorBehaviorsForColor = (color, secondary) => {
 const PrimaryButton = ({
     title, color = "green", inactive = false, marginRight = false, marginTop = false, extraMarginTop = false,
     big = false, medium = false, linkTo = null, onClick, growWithScreenSize = false, containerWidthAndHeight = false,
-    secondary = false, ...rest
+    secondary = false, noFixedWidth = false, ...rest
 }) => {
     const colorsForDifferentStates = getColorBehaviorsForColor(color, secondary);
     const onClickHandler = React.useCallback(() => {
@@ -158,6 +158,11 @@ const PrimaryButton = ({
                         width: 100%;
                         height: 100%;
                     `
+                        :
+                        ``
+                    }
+                    ${noFixedWidth ?
+                        `width: auto;`
                         :
                         ``
                     }

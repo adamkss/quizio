@@ -45,6 +45,7 @@ export default () => {
     const [isQuizBeingCustomized, setIsBeingQuizCustomized] = useState(false);
     const [questionOptionToDeleteInfo, setQuestionOptionToDeleteInfo] = useState(null);
     const [isAnonymousQuizDialogShown, setIsAnonymousQuizDialogShown] = useState(false);
+    const [isDoneDialogWanted, setIsDoneDialogWanted] = useState(false);
 
     React.useEffect(() => {
         (async () => {
@@ -175,8 +176,13 @@ export default () => {
     }, [genericQuizId]);
 
     const onQuizzDoneButtonPress = useCallback(() => {
-        setIsDoneDialogShown(true);
-    }, []);
+        if (quizInfo.anonymous) {
+            setIsAnonymousQuizDialogShown(true);
+            setIsDoneDialogWanted(true);
+        } else {
+            setIsDoneDialogShown(true);
+        }
+    }, [quizInfo]);
 
     const closeIsDoneDialog = useCallback(() => {
         setIsDoneDialogShown(false);
@@ -224,7 +230,11 @@ export default () => {
 
     const onIgnoreAnonymousQuizWarningDialog = useCallback(() => {
         setIsAnonymousQuizDialogShown(false);
-    }, []);
+        if (isDoneDialogWanted) {
+            setIsDoneDialogShown(true);
+            setIsDoneDialogWanted(false);
+        }
+    }, [isDoneDialogWanted]);
 
     const onAnonymousClickLogin = useCallback(() => {
         sessionStorage.setItem('anonymousQuizToAssignToUser', JSON.stringify(
@@ -330,6 +340,19 @@ export default () => {
                         onClick={onTestTakeQuizClick}
                         title="Test take this quiz!"
                         marginTop />
+                    {quizInfo.anonymous ?
+                        <div className="done-dialog__anonymous-quiz">
+                            <p>You are not logged in. Login or register to be able to access this quiz later.</p>
+                        </div>
+                        :
+                        ''
+                    }
+                    <PrimaryButton
+                        secondary
+                        title="Exit"
+                        marginTop
+                        onClick={closeIsDoneDialog}
+                        rightAligned />
                 </GenericDailog>
                 :
                 null
@@ -376,9 +399,10 @@ export default () => {
                     </div>
                     <div className="horizontally-end-positioned">
                         <PrimaryButton
-                            title="Later"
+                            title={isDoneDialogWanted ? `I will never want to edit my quiz` : `Later`}
                             marginTop
                             secondary
+                            noFixedWidth={isDoneDialogWanted ? true : false}
                             onClick={onIgnoreAnonymousQuizWarningDialog}
                             medium />
                     </div>
@@ -514,8 +538,15 @@ export default () => {
                         text-align: center;
                         margin-top: 5px;
                     }
+                    .done-dialog__anonymous-quiz {
+                        margin-top: 7px;
+                        font-size: 1.24rem;
+                        font-weight: 400;
+                    }
                     .warning-dialog__text {
-                        font-size: 1.2rem;
+                        margin: 15px 0px;
+                        font-size: 1.3rem;
+                        font-weight: 300;
                     }
                 `}
             </style>

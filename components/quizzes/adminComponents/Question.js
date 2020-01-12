@@ -65,33 +65,35 @@ const Question = ({ questionTitle, questionOptions, onAddNewOption, onSetNewCorr
         <>
             <article onClick={onCancelNewOptionCreation}>
                 <h2>{questionTitle}</h2>
-                {questionOptions.map((questionOption, index) => {
-                    return (
-                        <div className="question-option" key={questionOption.id}>
-                            <span className="order-index">{index + 1}.</span>
-                            <span key={questionOption.id}>
-                                {questionOption.title}
-                            </span>
-                            {questionOption.amITheRightAnswer ?
-                                <img className="right-answer-icon initially-less-visible" src="/static/check_circle-24px.svg" title="This is the right answer." />
-                                :
-                                null
-                            }
-                            {!questionOption.amITheRightAnswer ?
-                                <img title="Set as right answer"
-                                    className={`accent-on-question-hover not-visible-implicitly-no-hover${areSetRightAnswerVisible ? " visible" : ""}`}
-                                    src="/static/check_circle_black.svg"
-                                    onClick={getSetNewCorrectQuestionOptionCallback(questionOption.id)} />
-                                :
-                                null
-                            }
-                            <img title="Delete answer"
-                                className={`accent-on-question-hover not-visible-implicitly-no-hover${areDeleteOptionVisible ? " visible" : ""}`}
-                                src="/static/delete-24px.svg"
-                                onClick={getDeleteQuestionOptionCallback(questionOption.id)} />
-                        </div>
-                    )
-                })}
+                <div className="question-options">
+                    {questionOptions.map((questionOption, index) => {
+                        return (
+                            <div className="question-option" key={questionOption.id}>
+                                <span className="order-index">{index + 1}.</span>
+                                <span key={questionOption.id}>
+                                    {questionOption.title}
+                                </span>
+                                {questionOption.amITheRightAnswer ?
+                                    <img className="right-answer-icon initially-less-visible" src="/static/check_circle-24px.svg" title="This is the right answer." />
+                                    :
+                                    null
+                                }
+                                {!questionOption.amITheRightAnswer ?
+                                    <img title="Set as right answer"
+                                        className={`accent-on-question-hover not-visible-implicitly-no-hover${areSetRightAnswerVisible ? " visible" : ""}`}
+                                        src="/static/check_circle_black.svg"
+                                        onClick={getSetNewCorrectQuestionOptionCallback(questionOption.id)} />
+                                    :
+                                    null
+                                }
+                                <img title="Delete answer"
+                                    className={`accent-on-question-hover not-visible-implicitly-no-hover${areDeleteOptionVisible ? " visible" : ""}`}
+                                    src="/static/delete-24px.svg"
+                                    onClick={getDeleteQuestionOptionCallback(questionOption.id)} />
+                            </div>
+                        )
+                    })}
+                </div>
                 {isNewOptionWanted ?
                     <div className="add-new-option-section">
                         <input autoFocus ref={newOptionInputRef} type="text" value={newOption}
@@ -119,6 +121,11 @@ const Question = ({ questionTitle, questionOptions, onAddNewOption, onSetNewCorr
                     p {
                         margin: 0;
                         padding: 0;
+                    }
+                    .question-options {
+                        height: 220px;
+                        overflow-y: auto;
+                        margin-bottom: 13px;
                     }
                     .question-option {
                         font-family: Arial;
@@ -175,7 +182,8 @@ const Question = ({ questionTitle, questionOptions, onAddNewOption, onSetNewCorr
                         position: relative;
                         width: calc(100% - 20px);
                         max-width: 400px;
-                        min-width: 330px;
+                        min-width: 300px;
+                        max-height: 300px;
                         border-radius: 8px;
                         padding: 25px;
                         display: flex;

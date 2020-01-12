@@ -10,6 +10,7 @@ import useAuthTokenIfExists from '../hooks/useAuthTokenIfExists';
 import Router from 'next/router';
 import { OnEnterPressBoundary } from '../components/OnEnterPressBoundary';
 import { assignAnonymousQuizToUserIfNeeded } from '../utils/QuizUtils';
+import Link from 'next/link';
 
 export default () => {
     const [username, setUsername] = React.useState("");
@@ -38,7 +39,9 @@ export default () => {
             <LayoutSetup />
             <main>
                 <div className="login-window fade-and-slide-in">
-                    <h1>Quizio</h1>
+                    <Link href="/">
+                        <h1>Quizio</h1>
+                    </Link>
                     <OnEnterPressBoundary onEnterPressed={onLoginClicked}>
                         <form>
                             <TextInput title="E-mail:" width="100%" value={username} valueSetter={setUsername} />
