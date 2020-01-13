@@ -273,6 +273,7 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
                         position: relative;
                         height: calc(100vh - 50px);
                         overflow: auto;
+                        z-index: 0;
                         padding-bottom: 70px;
                     }
                 `}
