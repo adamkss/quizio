@@ -40,6 +40,7 @@ export default () => {
                         <li><a href="#head">Home</a></li>
                         <li><a href="#quizio-presentation">The flow</a></li>
                         <li><a href="#about-us">About us</a></li>
+                        <li><Link href="/"><a>Quizio</a></Link></li>
                         <li><Link href="/login"><a>Login</a></Link></li>
                     </ul>
                 </nav>
@@ -48,24 +49,16 @@ export default () => {
                 <section id="head" className="head">
                     <div className="entry-stuff-container">
                         <h1 className="head__name">Quizio</h1>
-                        <p className="head__schools"><span className="head__schools__text">Schools</span><img className="head__schools__dev-woman" src="/static/illustrations/dev-woman.svg"/></p>
-                        <p className="head__subtitle">Create and distribute a test in minutes</p>
-                        <PrimaryButton
-                            title="Create a test now"
-                            big
-                            growWithScreenSize
-                            color="blue"
-                            extraMarginTop
-                            linkTo="/createGenericQuiz"
-                        />
-                        <p className="main__option-separator-text">...or</p>
+                        <p className="head__schools"><span className="head__schools__text">Schools</span><img className="head__schools__dev-woman" src="/static/illustrations/dev-woman.svg" /></p>
+                        <p className="head__subtitle">Create and distribute tests in minutes</p>
                         <PrimaryButton
                             title="Login"
                             big
                             growWithScreenSize
                             color="pink"
                             linkTo="/login"
-                            marginTop />
+                            extraMarginTop />
+                        <p className="main__option-separator-text">...or</p>
                         <SecondaryButton
                             title="Register"
                             marginTop
@@ -80,13 +73,16 @@ export default () => {
                 </section>
                 <section id="quizio-presentation" className="quizio-presentation">
                     <div className="presentation__tile">
-
+                        <p className="presentation-tile__text">Create interactive tests</p>
+                        <img className="presentation-tile__image" src="/static/illustrations/quizio_schools/support-notes-colour.svg"/>
                     </div>
                     <div className="presentation__tile">
-
+                        <p className="presentation-tile__text">Send them to students</p>
+                        <img className="presentation-tile__image send-to-students-image" src="/static/illustrations/quizio_schools/list-app-colour.svg"/>
                     </div>
                     <div className="presentation__tile">
-
+                        <p className="presentation-tile__text">Analyze results and view statistics</p>
+                        <img className="presentation-tile__image analyze-results-image" src="/static/illustrations/quizio_schools/charts-and-graphs.svg"/>
                     </div>
                 </section>
                 <section id="about-us" className="about-us-container">
@@ -312,6 +308,25 @@ export default () => {
                     border-radius: 8px;
                     box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.3);
                     margin: 30px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    padding-top: 30px;
+                    overflow: hidden;
+                }
+                .presentation-tile__text {
+                    font-size: 1.7rem;
+                    text-align: center;
+                    flex-grow: 1;
+                }
+                .presentation-tile__image {
+                    height: 300px;
+                }
+                .send-to-students-image {
+                    transform: translateY(4px) scale(1.05);
+                }
+                .analyze-results-image {
+                    transform: translateY(-28px) scale(1.5);
                 }
                 .about-us-container {
                     width: 100%;

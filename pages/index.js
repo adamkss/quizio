@@ -36,6 +36,7 @@ export default () => {
                         <li><a href="#head">Home</a></li>
                         <li><a href="#quizio-presentation">The flow</a></li>
                         <li><a href="#about-us">About us</a></li>
+                        <li><Link href="/schools"><a>Quizio Schools</a></Link></li>
                         <li><Link href="/login"><a>Login</a></Link></li>
                     </ul>
                 </nav>
