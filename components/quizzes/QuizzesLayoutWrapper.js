@@ -9,6 +9,7 @@ const getRouteNameAfterPath = (path) => {
         case "/quizzes": return "quizzes";
         case "/homepage": return "homepage";
         case "/genericQuizzes/[genericQuizId]/results": return "quizResults";
+        case "/schools/tests": return "schools-tests";
     }
 }
 
@@ -47,6 +48,12 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
                         link: null
                     }
                 ]); break;
+                case "schools-tests" : setBreadcrumbParts([
+                    {
+                        text: "Tests (Quizio Schools)",
+                        link: "/schools/tests"
+                    },
+                ])
             }
         }
     }, [pathName, extraParamFromChild]);
@@ -79,6 +86,9 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
                         </Link>
                         <Link href="/quizzes">
                             <MenuItem name="Quizzes" isSelected={page === "quizzes" || page === "quizResults"} />
+                        </Link>
+                        <Link href="/schools/tests">
+                            <MenuItem name="Tests (Quizio Schools)" isSelected={page === "schools-tests"} />
                         </Link>
                         <div className="aside__menu-separator" />
                         <MenuItem name="Logout" onClick={onLogoutClick} />

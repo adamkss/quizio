@@ -29,6 +29,9 @@ const Homepage = ({ currentUserDetails }) => {
         Router.push('/quizzes');
     }, [Router]);
 
+    const onTestsTileClick = React.useCallback(() => {
+        Router.push('/schools/tests');
+    }, [Router]);
     return (
         <>
             <QuizzesLayoutWrapper>
@@ -39,7 +42,7 @@ const Homepage = ({ currentUserDetails }) => {
                             <p className="tile__text">Manage my <span className="tile-text__bold">quizzes</span></p>
                             <QuizIllustration />
                         </div>
-                        <div className="tile tests-tile">
+                        <div className="tile tests-tile" onClick={onTestsTileClick}>
                             <p className="tile__text">Manage my <span className="tile-text__bold">tests</span></p>
                             <TestIllustration />
                         </div>
