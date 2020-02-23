@@ -4,8 +4,10 @@ import { getAllTestsOfUser, createTest } from "../../utils/TestRequests";
 import GenericDialog from '../../components/GenericDailog';
 import PrimaryButton from '../../components/PrimaryButton';
 import TextInput from '../../components/TextInput';
+import Router from "next/router";
+import withAuthSetUp from "../../hocs/withAuthSetUp";
 
-export default () => {
+const Tests = () => {
     const [tests, setTests] = useState([]);
     const [isCreatingNewTestInProgress, setIsCreatingNewTestInProgress] = useState(false);
 
@@ -32,6 +34,11 @@ export default () => {
         onDismissCreateNewTestDialog();
     }, [onDismissCreateNewTestDialog, createTest, loadTestsOfUser]);
 
+    const generateOnGoToEditorCallback = React.useCallback((testId) => {
+        return () => {
+            Router.push(`/schools/${testId}/editor`);
+        }
+    }, [Router])
     return (
         <>
             <QuizzesLayoutWrapper>
@@ -39,11 +46,14 @@ export default () => {
                     {tests.map(test =>
                         <div className="test" key={test.id}>
                             <h2>{test.name}</h2>
-                            <button className="test-operation-button">
+                            <button className="test-operation-button" onClick={generateOnGoToEditorCallback(test.id)}>
                                 Open test editor
                                 </button>
                             <button className="test-operation-button">
                                 See results
+                                </button>
+                            <button className="test-operation-button">
+                                Generate entry codes
                                 </button>
                             <img
                                 title="Delete test"
@@ -167,3 +177,5 @@ const CreateNewTestDialog = ({ onDismissDialog, onCreateNewTest }) => {
         </GenericDialog>
     )
 }
+
+export default withAuthSetUp(Tests);

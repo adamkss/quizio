@@ -1,6 +1,8 @@
 import { useState, useRef, useCallback } from 'react';
 
-const Question = ({ questionTitle, questionOptions, onAddNewOption, onSetNewCorrectAnswer, onDeleteQuestionOption, onDeleteQuestion }) => {
+const Question = ({ 
+    questionTitle, questionOptions, onAddNewOption, onSetNewCorrectAnswer,
+    onDeleteQuestionOption, onDeleteQuestion, questionOptionTitleKey = "title" }) => {
     const [isNewOptionWanted, setIsNewOptionWanted] = useState(false);
     const [newOption, setNewOption] = useState("");
     const newOptionInputRef = useRef(null);
@@ -71,7 +73,7 @@ const Question = ({ questionTitle, questionOptions, onAddNewOption, onSetNewCorr
                             <div className="question-option" key={questionOption.id}>
                                 <span className="order-index">{index + 1}.</span>
                                 <span key={questionOption.id}>
-                                    {questionOption.title}
+                                    {questionOption[questionOptionTitleKey]}
                                 </span>
                                 {questionOption.amITheRightAnswer ?
                                     <img className="right-answer-icon initially-less-visible" src="/static/check_circle-24px.svg" title="This is the right answer." />
