@@ -2,14 +2,13 @@ import { useRouter } from "next/router"
 import { useEffect, useState } from "react";
 import LayoutSetup from "../../../components/layoutSetup";
 import Link from 'next/link';
-import { getTestById, getAllQuestionsOfTest, addQuestionOptionToQuestion, createQuestion, getQuestionOfTest, updateCorrectQuestionOption, deleteQuestionOption } from "../../../utils/TestRequests";
+import { getTestById, getAllQuestionsOfTest, addQuestionOptionToQuestion, createQuestion, getQuestionOfTest, updateCorrectQuestionOption, deleteQuestionOption, deleteQuestion } from "../../../utils/TestRequests";
 import withAuthSetUp from "../../../hocs/withAuthSetUp";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import { executeAsyncFunctionAndObserveState } from '../../../utils/AsyncUtils';
 import Question from "../../../components/quizzes/adminComponents/Question";
 import FloatingActionButton from "../../../components/FloatingActionButton";
 import CreateQuestionDialog from "../../../components/quizzes/CreateQuestionDialog";
-import { deleteQuestionOptionFromQuestion } from "../../../utils/QuizRequests";
 
 const findQuestionById = (questions, id) => {
     return questions.find(question => question.id == id);
@@ -107,7 +106,8 @@ const Editor = () => {
             title,
             options
         );
-        loadTestQuestions();
+        await loadTestQuestions();
+        onDismissCreateQuestionDialog();
     }, [testId]);
 
     const getOnAddNewOptionCallback = React.useCallback((questionId) => {
@@ -149,8 +149,15 @@ const Editor = () => {
     }, [reloadQuestion]);
 
     const getOnDeleteQuestionCallback = React.useCallback((questionId) => {
-
-    }, []);
+        return async () => {
+            await executeAsyncFunctionAndObserveState(
+                setIsLoadingInProgress,
+                deleteQuestion,
+                questionId
+            );
+            loadTestQuestions();
+        }
+    }, [questions]);
 
     return (
         <>
@@ -177,7 +184,7 @@ const Editor = () => {
             <main>
                 {questions.map(question =>
                     <Question
-                        questionTitle={question.questionTitle}
+                        questionTitle={question.questionOrderNumber + '. ' + question.questionTitle}
                         questionOptions={question.questionOptions}
                         questionOptionTitleKey={'questionOptionText'}
                         key={question.id}

@@ -48,3 +48,7 @@ export const updateCorrectQuestionOption = (questionId, newCorrectQuestionOption
 export const deleteQuestionOption = (questionOptionId) => {
     return axios.delete(`/tests/question-options/${questionOptionId}`);
 }
+
+export const deleteQuestion = (questionId) => {
+    return axios.delete(`/tests/questions/${questionId}`);
+}
