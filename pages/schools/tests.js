@@ -39,6 +39,12 @@ const Tests = () => {
             Router.push(`/schools/${testId}/editor`);
         }
     }, [Router])
+
+    const getOnTestTakingCodesButtonPress = React.useCallback((testId) => {
+        return () => {
+            Router.push(`/schools/${testId}/codes`);
+        }
+    })
     return (
         <>
             <QuizzesLayoutWrapper>
@@ -52,8 +58,8 @@ const Tests = () => {
                             <button className="test-operation-button">
                                 See results
                                 </button>
-                            <button className="test-operation-button">
-                                Generate entry codes
+                            <button className="test-operation-button" onClick={getOnTestTakingCodesButtonPress(test.id)}>
+                                Test taking codes
                                 </button>
                             <img
                                 title="Delete test"

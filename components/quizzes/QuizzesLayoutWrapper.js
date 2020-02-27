@@ -10,6 +10,7 @@ const getRouteNameAfterPath = (path) => {
         case "/homepage": return "homepage";
         case "/genericQuizzes/[genericQuizId]/results": return "quizResults";
         case "/schools/tests": return "schools-tests";
+        case "/schools/[testId]/codes": return "schools-codes";
     }
 }
 
@@ -48,12 +49,22 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
                         link: null
                     }
                 ]); break;
-                case "schools-tests" : setBreadcrumbParts([
+                case "schools-tests": setBreadcrumbParts([
                     {
                         text: "Tests (Quizio Schools)",
                         link: "/schools/tests"
                     },
-                ])
+                ]); break;
+                case "schools-codes": setBreadcrumbParts([
+                    {
+                        text: "Tests (Quizio Schools)",
+                        link: "/schools/tests"
+                    },
+                    {
+                        text: "Test entry codes",
+                        link: null
+                    }
+                ]); break;
             }
         }
     }, [pathName, extraParamFromChild]);
@@ -88,7 +99,7 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
                             <MenuItem name="Quizzes" isSelected={page === "quizzes" || page === "quizResults"} />
                         </Link>
                         <Link href="/schools/tests">
-                            <MenuItem name="Tests (Quizio Schools)" isSelected={page === "schools-tests"} />
+                            <MenuItem name="Tests (Quizio Schools)" isSelected={page === "schools-tests" || page === "schools-codes"} />
                         </Link>
                         <div className="aside__menu-separator" />
                         <MenuItem name="Logout" onClick={onLogoutClick} />
