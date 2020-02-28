@@ -60,6 +60,7 @@ const Element = forwardRef(({ id, leftOffset = 0, topOffset = 0 }, ref) => {
                         `
                             left: ${gridState.clientX - gridState.initialOffsetX}px;
                             top: ${gridState.clientY - gridState.initialOffsetY}px;
+                            z-index: 1;
                         `
                         :
                         `
@@ -105,7 +106,7 @@ const Grid = ({ children, gap = 20 }) => {
     })
 
     const onMouseMove = useCallback((event) => {
-        if (gridState.draggedItemId) {
+        if (gridState.draggedItemId != null) {
             const { clientX, clientY } = event.nativeEvent;
             setGridState(gridState => ({
                 ...gridState,
