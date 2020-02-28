@@ -24,7 +24,7 @@ export default () => {
     )
 }
 
-const Element = forwardRef(({ id, leftOffset = 0, topOffset = 0 }, ref) => {
+const Element = forwardRef(({ id, leftOffset = 0, topOffset = 0, dndIndex }, ref) => {
     const { gridState, setDraggedItemInfo, setDragEnd } = useContext(DNDContext);
 
     const onMouseDown = useCallback((event) => {
@@ -33,7 +33,8 @@ const Element = forwardRef(({ id, leftOffset = 0, topOffset = 0 }, ref) => {
             clientX: event.nativeEvent.clientX,
             clientY: event.nativeEvent.clientY,
             initialOffsetX: event.nativeEvent.offsetX,
-            initialOffsetY: event.nativeEvent.offsetY
+            initialOffsetY: event.nativeEvent.offsetY,
+            dndIndex
         });
     }, [id]);
 
@@ -56,8 +57,10 @@ const Element = forwardRef(({ id, leftOffset = 0, topOffset = 0 }, ref) => {
                     background-color: white;
                     cursor: pointer;
                     position: absolute;
+                    transition: all 0.5s;
                     ${gridState.draggedItemId === id ?
                         `
+                            transition: none;
                             left: ${gridState.clientX - gridState.initialOffsetX}px;
                             top: ${gridState.clientY - gridState.initialOffsetY}px;
                             z-index: 1;
@@ -77,6 +80,7 @@ const Element = forwardRef(({ id, leftOffset = 0, topOffset = 0 }, ref) => {
 const getInitialGridState = () => {
     return {
         draggedItemId: null,
+        draggedElementIndex: null,
         clientX: 0,
         clientY: 0,
         initialOffsetX: 0,
@@ -84,38 +88,96 @@ const getInitialGridState = () => {
     }
 }
 
+const getOverlapCoeficcient = ({
+    draggedX, draggedY, draggedWidth, draggedHeight,
+    targetX, targetY, targetWidth, targetHeight
+}) => {
+    const deltaX = targetX - draggedX;
+    const deltaY = Math.abs(targetY - draggedY);
+    if (deltaX >= 0 && deltaX <= (draggedWidth / 2) && deltaY <= draggedHeight) {
+        return deltaX + deltaY;
+    }
+    return -1;
+}
+
 const Grid = ({ children, gap = 20 }) => {
     const [gridState, setGridState] = useState(getInitialGridState());
     const gridRef = useRef(null);
     const childrenRefs = useRef([]);
     const [elementPositions, setElementPositions] = useState({});
+    const [spaceBeforeIndex, setSpaceBeforeIndex] = useState(null);
+    const [maskedElementSpaceIndex, setMaskedElementSpaceIndex] = useState(null);
 
-    const setDraggedItemInfo = useCallback(({ draggedItemId, initialOffsetX, initialOffsetY, clientX, clientY }) => {
+    const setDraggedItemInfo = useCallback(({
+        draggedItemId, initialOffsetX, initialOffsetY, clientX, clientY, dndIndex
+    }) => {
         setGridState(gridState => ({
             ...gridState,
             clientX,
             clientY,
             draggedItemId,
             initialOffsetX,
-            initialOffsetY
-        }))
+            initialOffsetY,
+            draggedElementIndex: dndIndex
+        }));
+        setMaskedElementSpaceIndex(dndIndex);
     }, []);
 
     const setDragEnd = useCallback(() => {
         setGridState(getInitialGridState());
+        setMaskedElementSpaceIndex(null);
+        setSpaceBeforeIndex(null);
     })
+
+    const verifyOverlappingItems = useCallback(() => {
+        const draggedItemBoundingRect = childrenRefs.current[gridState.draggedElementIndex].current.getBoundingClientRect();
+        let overlappingItem;
+        const overlappedElements = childrenRefs.current
+            .map((child, index) => ({
+                boundingRect: child.current.getBoundingClientRect(),
+                index
+            }))
+            .filter(element => element.index != gridState.draggedElementIndex)
+            .map((element) => {
+                return {
+                    index: element.index,
+                    overlapCoeficcient: getOverlapCoeficcient({
+                        draggedX: draggedItemBoundingRect.x,
+                        draggedY: draggedItemBoundingRect.y,
+                        draggedWidth: draggedItemBoundingRect.width,
+                        draggedHeight: draggedItemBoundingRect.height,
+                        targetX: element.boundingRect.x,
+                        targetY: element.boundingRect.y,
+                        targetWidth: element.boundingRect.width,
+                        targetHeight: element.boundingRect.height
+                    })
+                };
+            })
+            .filter(element => element.overlapCoeficcient != -1)
+            .sort((a,b) => a.overlapCoeficcient - b.overlapCoeficcient);
+            const elementToMoveIndex = overlappedElements.length > 0 ? overlappedElements[0].index : null;
+            console.log(overlappedElements);
+            if(elementToMoveIndex) {
+                setSpaceBeforeIndex(elementToMoveIndex);
+            }
+    }, [childrenRefs.current, gridState]);
 
     const onMouseMove = useCallback((event) => {
         if (gridState.draggedItemId != null) {
+            event.preventDefault();
             const { clientX, clientY } = event.nativeEvent;
             setGridState(gridState => ({
                 ...gridState,
                 clientX,
                 clientY
             }))
+            verifyOverlappingItems();
         }
-        event.preventDefault();
     }, [gridState]);
+
+    const show = () => {
+        childrenRefs.current.forEach(el => console.log(el.current.getBoundingClientRect()));
+    }
 
     useEffect(() => {
         if (gridRef.current && childrenRefs.current) {
@@ -127,12 +189,23 @@ const Grid = ({ children, gap = 20 }) => {
                 childWidth = Math.ceil(childWidth);
                 childHeight = Math.ceil(childHeight);
 
+                let indexInCalculation = index;
+
+                if (spaceBeforeIndex != null && index >= spaceBeforeIndex) {
+                    indexInCalculation++;
+                }
+
+                if (maskedElementSpaceIndex != null && index > maskedElementSpaceIndex) {
+                    indexInCalculation--;
+                }
+
                 const numberOfElementsPerRow = Math.floor(gridWidth / (childWidth + gap));
-                const rowNumberOfElement = Math.floor(((index + 1) * (childWidth + gap)) / gridWidth);
-                const numberOfElementInRow = index % numberOfElementsPerRow;
+                const rowNumberOfElement = Math.floor(((indexInCalculation + 1) * (childWidth + gap)) / gridWidth);
+                const numberOfElementInRow = indexInCalculation % numberOfElementsPerRow;
 
                 const offsetX = numberOfElementInRow * (childWidth + gap);
                 const offsetY = rowNumberOfElement * childHeight + rowNumberOfElement * gap;
+
                 setElementPositions(elementPositions => {
                     return {
                         ...elementPositions,
@@ -144,7 +217,7 @@ const Grid = ({ children, gap = 20 }) => {
                 })
             })
         }
-    }, [childrenRefs]);
+    }, [childrenRefs, spaceBeforeIndex, maskedElementSpaceIndex]);
 
     return (
         <>
@@ -161,16 +234,20 @@ const Grid = ({ children, gap = 20 }) => {
                             {
                                 ref: childRef,
                                 leftOffset: elementPositions[index] ? elementPositions[index].offsetX : 0,
-                                topOffset: elementPositions[index] ? elementPositions[index].offsetY : 0
+                                topOffset: elementPositions[index] ? elementPositions[index].offsetY : 0,
+                                dndIndex: index
                             }
                         );
                     })}
                 </div>
+                <button onClick={show} />
             </DNDContext.Provider>
             <style jsx>
                 {`
                 .grid {
                     position: relative;
+                    height: 700px;
+                    overflow: hidden;
                 }
             `}
             </style>
@@ -178,6 +255,4 @@ const Grid = ({ children, gap = 20 }) => {
     )
 }
 
-const DNDContext = createContext({
-    elementMovingId: null
-});
+const DNDContext = createContext(null);
