@@ -113,6 +113,7 @@ const Grid = ({ children, gap = 20 }) => {
                 clientY
             }))
         }
+        event.preventDefault();
     }, [gridState]);
 
     useEffect(() => {
@@ -131,7 +132,6 @@ const Grid = ({ children, gap = 20 }) => {
 
                 const offsetX = numberOfElementInRow * (childWidth + gap);
                 const offsetY = rowNumberOfElement * childHeight + rowNumberOfElement * gap;
-                console.log(childRef, rowNumberOfElement);
                 setElementPositions(elementPositions => {
                     return {
                         ...elementPositions,
@@ -149,18 +149,18 @@ const Grid = ({ children, gap = 20 }) => {
         <>
             <DNDContext.Provider value={{ gridState, setDraggedItemInfo, setDragEnd }}>
                 <div ref={gridRef} className="grid" onMouseMove={onMouseMove}>
-                    {React.Children.map(children, child => {
-                        let childRef = childrenRefs.current[child.props.id];
+                    {React.Children.map(children, (child, index) => {
+                        let childRef = childrenRefs.current[index];
                         //we assign it a ref if it doesn't have one
                         if (!childRef) {
                             childRef = createRef();
-                            childrenRefs.current[child.props.id] = childRef;
+                            childrenRefs.current[index] = childRef;
                         }
                         return React.cloneElement(child,
                             {
                                 ref: childRef,
-                                leftOffset: elementPositions[child.props.id] ? elementPositions[child.props.id].offsetX : 0,
-                                topOffset: elementPositions[child.props.id] ? elementPositions[child.props.id].offsetY : 0
+                                leftOffset: elementPositions[index] ? elementPositions[index].offsetX : 0,
+                                topOffset: elementPositions[index] ? elementPositions[index].offsetY : 0
                             }
                         );
                     })}
