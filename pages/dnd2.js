@@ -33,13 +33,11 @@ const Element = forwardRef(({ id, leftOffset = 0, topOffset = 0, dndIndex }, ref
     const onMouseDown = useCallback((event) => {
         setDraggedItemInfo({
             draggedItemId: id,
-            clientX: event.nativeEvent.clientX,
-            clientY: event.nativeEvent.clientY,
-            initialOffsetX: event.nativeEvent.offsetX,
-            initialOffsetY: event.nativeEvent.offsetY,
+            clientX: leftOffset,
+            clientY: topOffset,
             dndIndex
         });
-    }, [id]);
+    }, [id, leftOffset, topOffset]);
 
     const onMouseUp = useCallback(() => {
         setDragEnd();
@@ -64,8 +62,8 @@ const Element = forwardRef(({ id, leftOffset = 0, topOffset = 0, dndIndex }, ref
                     ${gridState.draggedItemId === id ?
                         `
                             transition: none;
-                            left: ${gridState.clientX - gridState.initialOffsetX}px;
-                            top: ${gridState.clientY - gridState.initialOffsetY}px;
+                            left: ${gridState.clientX}px;
+                            top: ${gridState.clientY}px;
                             z-index: 1;
                         `
                         :
@@ -86,8 +84,6 @@ const getInitialGridState = () => {
         draggedElementIndex: null,
         clientX: 0,
         clientY: 0,
-        initialOffsetX: 0,
-        initialOffsetY: 0
     }
 }
 
@@ -133,7 +129,7 @@ const Grid = ({
 
     const LayoutElements = useCallback(() => {
         if (gridRef.current && childrenRefs.current) {
-            const gridWidth = Math.floor(gridRef.current.getBoundingClientRect().width) -  2 * insidePadding;
+            const gridWidth = Math.floor(gridRef.current.getBoundingClientRect().width) - 2 * insidePadding;
 
             const childWidth = Math.ceil(childrenRefs.current[0] ? childrenRefs.current[0].current.getBoundingClientRect().width : 0);
             const childHeight = Math.ceil(childrenRefs.current[0] ? childrenRefs.current[0].current.getBoundingClientRect().height : 0);
@@ -142,7 +138,7 @@ const Grid = ({
             const numberOfRows = getNumberOfRows({ numberOfElementsPerRow, numberOfElements: childrenRefs.current.length });
             const gridHeight = numberOfRows * childHeight + 2 * insidePadding + gap * (numberOfRows - 1);
             setGridHeight(gridHeight);
-            
+
             childrenRefs.current.forEach((childRef, index) => {
                 let indexInCalculation = index;
 
@@ -188,15 +184,13 @@ const Grid = ({
     }, [LayoutElements]);
 
     const setDraggedItemInfo = useCallback(({
-        draggedItemId, initialOffsetX, initialOffsetY, clientX, clientY, dndIndex
+        draggedItemId, clientX, clientY, dndIndex
     }) => {
         setGridState(gridState => ({
             ...gridState,
             clientX,
             clientY,
             draggedItemId,
-            initialOffsetX,
-            initialOffsetY,
             draggedElementIndex: dndIndex
         }));
         setMaskedElementSpaceIndex(dndIndex);
@@ -244,11 +238,11 @@ const Grid = ({
     const onMouseMove = useCallback((event) => {
         if (gridState.draggedItemId != null) {
             event.preventDefault();
-            const { clientX, clientY } = event.nativeEvent;
+            const { movementX, movementY } = event.nativeEvent;
             setGridState(gridState => ({
                 ...gridState,
-                clientX,
-                clientY
+                clientX: gridState.clientX + movementX,
+                clientY: gridState.clientY + movementY
             }))
             verifyOverlappingItems();
         }
