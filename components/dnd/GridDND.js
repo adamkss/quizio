@@ -1,43 +1,15 @@
 import { useCallback, useState, createContext, useContext, useRef, useEffect, forwardRef, createRef } from "react"
 
-export default () => {
-    return (
-        <>
-            <main>
-                <Grid
-                    scrollable
-                    gap={20}
-                    insidePadding={20}>
-                    <Element id={0} />
-                    <Element id={1} />
-                    <Element id={2} />
-                    <Element id={3} />
-                    <Element id={4} />
-                    <Element id={5} />
-                    <Element id={6} />
-                    <Element id={7} />
-                    <Element id={8} />
-                </Grid>
-            </main>
-            <style jsx>
-                {`
-            `}
-            </style>
-        </>
-    )
-}
-
-const Element = forwardRef(({ id, leftOffset = 0, topOffset = 0, dndIndex }, ref) => {
+export const GridElement = forwardRef(({ leftOffset = 0, topOffset = 0, dndIndex }, ref) => {
     const { gridState, setDraggedItemInfo, setDragEnd } = useContext(DNDContext);
 
-    const onMouseDown = useCallback((event) => {
+    const onMouseDown = useCallback(() => {
         setDraggedItemInfo({
-            draggedItemId: id,
             clientX: leftOffset,
             clientY: topOffset,
             dndIndex
         });
-    }, [id, leftOffset, topOffset]);
+    }, [leftOffset, topOffset]);
 
     const onMouseUp = useCallback(() => {
         setDragEnd();
@@ -45,25 +17,25 @@ const Element = forwardRef(({ id, leftOffset = 0, topOffset = 0, dndIndex }, ref
 
     return (
         <>
-            <article ref={ref} onMouseDown={onMouseDown} onMouseUp={onMouseUp}>
-                {id}
-            </article>
+            <div className="draggable" ref={ref} onMouseDown={onMouseDown} onMouseUp={onMouseUp}>
+                {dndIndex}
+            </div>
             <style jsx>
                 {`
-                article {
-                    width: 400px;
-                    height: 350px;
+                .draggable {
+                    width: 300px;
+                    height: 250px;
                     border-radius: 10px;
                     box-shadow: 3px 3px 10px grey;
                     background-color: white;
                     cursor: pointer;
                     position: absolute;
                     transition: all 0.5s;
-                    ${gridState.draggedItemId === id ?
+                    ${gridState.draggedElementIndex === dndIndex ?
                         `
                             transition: none;
                             left: ${gridState.clientX}px;
-                            top: ${gridState.clientY}px;
+                            top: ${gridState.clientY - 10}px;
                             z-index: 1;
                         `
                         :
@@ -80,7 +52,6 @@ const Element = forwardRef(({ id, leftOffset = 0, topOffset = 0, dndIndex }, ref
 
 const getInitialGridState = () => {
     return {
-        draggedItemId: null,
         draggedElementIndex: null,
         clientX: 0,
         clientY: 0,
@@ -89,7 +60,7 @@ const getInitialGridState = () => {
 
 const getOverlapCoefficient = ({
     draggedX, draggedY, draggedWidth, draggedHeight,
-    targetX, targetY, targetWidth, targetHeight
+    targetX, targetY
 }) => {
     const deltaX = Math.abs(targetX - draggedX);
     const deltaY = Math.abs(targetY - draggedY);
@@ -110,10 +81,10 @@ const getNumberOfElementsPerRow = ({ gridWidth, childWidth, gap }) => {
     return Math.floor(gridWidth / (childWidth + gap));
 }
 
-const Grid = ({
+export const Grid = ({
     children,
     gap = 0,
-    onElementMove = (a, b) => { },
+    onElementMove = ({ sourceIndex, targetIndex }) => { },
     wrapperCSS = '',
     scrollable = false,
     fixedHeight = 0,
@@ -184,13 +155,12 @@ const Grid = ({
     }, [LayoutElements]);
 
     const setDraggedItemInfo = useCallback(({
-        draggedItemId, clientX, clientY, dndIndex
+        clientX, clientY, dndIndex
     }) => {
         setGridState(gridState => ({
             ...gridState,
             clientX,
             clientY,
-            draggedItemId,
             draggedElementIndex: dndIndex
         }));
         setMaskedElementSpaceIndex(dndIndex);
@@ -236,7 +206,7 @@ const Grid = ({
     }, [childrenRefs.current, gridState]);
 
     const onMouseMove = useCallback((event) => {
-        if (gridState.draggedItemId != null) {
+        if (gridState.draggedElementIndex != null) {
             event.preventDefault();
             const { movementX, movementY } = event.nativeEvent;
             setGridState(gridState => ({
