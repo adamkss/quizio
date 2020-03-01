@@ -4,7 +4,10 @@ export default () => {
     return (
         <>
             <main>
-                <Grid>
+                <Grid
+                    scrollable
+                    gap={20}
+                    insidePadding={20}>
                     <Element id={0} />
                     <Element id={1} />
                     <Element id={2} />
@@ -50,8 +53,8 @@ const Element = forwardRef(({ id, leftOffset = 0, topOffset = 0, dndIndex }, ref
             <style jsx>
                 {`
                 article {
-                    width: 300px;
-                    height: 200px;
+                    width: 400px;
+                    height: 350px;
                     border-radius: 10px;
                     box-shadow: 3px 3px 10px grey;
                     background-color: white;
@@ -103,9 +106,26 @@ const getOverlapCoefficient = ({
     return -1;
 }
 
-const Grid = ({ children, gap = 20, onElementMove = (a, b) => { } }) => {
+const getNumberOfRows = ({ numberOfElementsPerRow, numberOfElements }) => {
+    return Math.ceil(numberOfElements / numberOfElementsPerRow);
+}
+
+const getNumberOfElementsPerRow = ({ gridWidth, childWidth, gap }) => {
+    return Math.floor(gridWidth / (childWidth + gap));
+}
+
+const Grid = ({
+    children,
+    gap = 0,
+    onElementMove = (a, b) => { },
+    wrapperCSS = '',
+    scrollable = false,
+    fixedHeight = 0,
+    insidePadding = 0
+}) => {
     const [gridState, setGridState] = useState(getInitialGridState());
     const gridRef = useRef(null);
+    const [gridHeight, setGridHeight] = useState(0);
     const childrenRefs = useRef([]);
     const [elementPositions, setElementPositions] = useState({});
     const [spaceBeforeIndex, setSpaceBeforeIndex] = useState(null);
@@ -113,14 +133,17 @@ const Grid = ({ children, gap = 20, onElementMove = (a, b) => { } }) => {
 
     const LayoutElements = useCallback(() => {
         if (gridRef.current && childrenRefs.current) {
-            const gridWidth = Math.floor(gridRef.current.getBoundingClientRect().width);
-            const gridHeight = Math.floor(gridRef.current.getBoundingClientRect().height);
+            const gridWidth = Math.floor(gridRef.current.getBoundingClientRect().width) -  2 * insidePadding;
 
+            const childWidth = Math.ceil(childrenRefs.current[0] ? childrenRefs.current[0].current.getBoundingClientRect().width : 0);
+            const childHeight = Math.ceil(childrenRefs.current[0] ? childrenRefs.current[0].current.getBoundingClientRect().height : 0);
+
+            const numberOfElementsPerRow = getNumberOfElementsPerRow({ gridWidth, childWidth, gap });
+            const numberOfRows = getNumberOfRows({ numberOfElementsPerRow, numberOfElements: childrenRefs.current.length });
+            const gridHeight = numberOfRows * childHeight + 2 * insidePadding + gap * (numberOfRows - 1);
+            setGridHeight(gridHeight);
+            
             childrenRefs.current.forEach((childRef, index) => {
-                let { width: childWidth, height: childHeight } = childRef.current.getBoundingClientRect();
-                childWidth = Math.ceil(childWidth);
-                childHeight = Math.ceil(childHeight);
-
                 let indexInCalculation = index;
 
                 if (spaceBeforeIndex != null && index >= spaceBeforeIndex) {
@@ -131,12 +154,11 @@ const Grid = ({ children, gap = 20, onElementMove = (a, b) => { } }) => {
                     indexInCalculation--;
                 }
 
-                const numberOfElementsPerRow = Math.floor(gridWidth / (childWidth + gap));
-                const rowNumberOfElement = Math.floor(((indexInCalculation + 1) * (childWidth + gap)) / gridWidth);
+                const rowNumberOfElement = Math.floor(indexInCalculation / numberOfElementsPerRow);
                 const numberOfElementInRow = indexInCalculation % numberOfElementsPerRow;
 
-                const offsetX = numberOfElementInRow * (childWidth + gap);
-                const offsetY = rowNumberOfElement * childHeight + rowNumberOfElement * gap;
+                const offsetX = numberOfElementInRow * (childWidth + gap) + insidePadding;
+                const offsetY = rowNumberOfElement * childHeight + rowNumberOfElement * gap + insidePadding;
 
                 setElementPositions(elementPositions => {
                     return {
@@ -149,7 +171,7 @@ const Grid = ({ children, gap = 20, onElementMove = (a, b) => { } }) => {
                 })
             })
         }
-    }, [childrenRefs, spaceBeforeIndex, maskedElementSpaceIndex]);
+    }, [childrenRefs, spaceBeforeIndex, maskedElementSpaceIndex, insidePadding]);
 
     useEffect(() => {
         LayoutElements();
@@ -235,31 +257,56 @@ const Grid = ({ children, gap = 20, onElementMove = (a, b) => { } }) => {
     return (
         <>
             <DNDContext.Provider value={{ gridState, setDraggedItemInfo, setDragEnd }}>
-                <div ref={gridRef} className="grid" onMouseMove={onMouseMove}>
-                    {React.Children.map(children, (child, index) => {
-                        let childRef = childrenRefs.current[index];
-                        //we assign it a ref if it doesn't have one
-                        if (!childRef) {
-                            childRef = createRef();
-                            childrenRefs.current[index] = childRef;
-                        }
-                        return React.cloneElement(child,
-                            {
-                                ref: childRef,
-                                leftOffset: elementPositions[index] ? elementPositions[index].offsetX : 0,
-                                topOffset: elementPositions[index] ? elementPositions[index].offsetY : 0,
-                                dndIndex: index
+                <div className="wrapper">
+                    <div ref={gridRef} className="grid" onMouseMove={onMouseMove}>
+                        {React.Children.map(children, (child, index) => {
+                            let childRef = childrenRefs.current[index];
+                            //we assign it a ref if it doesn't have one
+                            if (!childRef) {
+                                childRef = createRef();
+                                childrenRefs.current[index] = childRef;
                             }
-                        );
-                    })}
+                            return React.cloneElement(child,
+                                {
+                                    ref: childRef,
+                                    leftOffset: elementPositions[index] ? elementPositions[index].offsetX : 0,
+                                    topOffset: elementPositions[index] ? elementPositions[index].offsetY : 0,
+                                    dndIndex: index
+                                }
+                            );
+                        })}
+                    </div>
                 </div>
             </DNDContext.Provider>
             <style jsx>
                 {`
+                .wrapper {
+                    ${wrapperCSS}
+                }
                 .grid {
+                    width: 100%;
                     position: relative;
-                    height: 700px;
-                    overflow: hidden;
+                    ${scrollable ?
+                        `overflow: auto;`
+                        :
+                        ``
+                    }
+                    ${insidePadding ?
+                        `padding: ${insidePadding}px;`
+                        :
+                        ``
+                    }
+                    height: ${fixedHeight > 0 ? fixedHeight : gridHeight}px;
+                    transition: all 0.3s;
+                    ${fixedHeight > 0 || gridHeight > 0 ?
+                        `
+                        opacity: 1;
+                        `
+                        :
+                        `
+                        opacity: 0;
+                        `
+                    }
                 }
             `}
             </style>
