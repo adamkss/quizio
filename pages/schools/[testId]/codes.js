@@ -76,7 +76,7 @@ export default () => {
                         padding: 20px;
                         color: white;
                         transition: all 0.3s;
-                        filter: brightness(90%);
+                        filter: brightness(100%);
                         animation: TileEntry 1.3s;
                     }
                     @keyframes TileEntry {
@@ -98,7 +98,7 @@ export default () => {
                     }
                     .tile:hover {
                         cursor: pointer;
-                        filter: brightness(100%);
+                        filter: brightness(105%);
                     }
                     .tile-generate {
                         grid-area: generate;
