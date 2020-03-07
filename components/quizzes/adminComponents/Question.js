@@ -186,13 +186,13 @@ const Question = ({
                         max-width: 400px;
                         min-width: 300px;
                         max-height: 300px;
+                        background-color: white;
                         border-radius: 8px;
                         padding: 25px;
                         display: flex;
                         flex-direction: column;
                         box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.3);
                         margin: 10px;
-                        animation: SlideUp 0.3s;
                     }
                     @keyframes SlideUp {
                         0% {
