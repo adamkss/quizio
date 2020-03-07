@@ -2,13 +2,16 @@ import { useRouter } from "next/router"
 import { useEffect, useState } from "react";
 import LayoutSetup from "../../../components/layoutSetup";
 import Link from 'next/link';
-import { getTestById, getAllQuestionsOfTest, addQuestionOptionToQuestion, createQuestion, getQuestionOfTest, updateCorrectQuestionOption, deleteQuestionOption, deleteQuestion } from "../../../utils/TestRequests";
+import { getTestById, getAllQuestionsOfTest, addQuestionOptionToQuestion, createQuestion, getQuestionOfTest, updateCorrectQuestionOption, deleteQuestionOption, deleteQuestion, moveQuestions } from "../../../utils/TestRequests";
 import withAuthSetUp from "../../../hocs/withAuthSetUp";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import { executeAsyncFunctionAndObserveState } from '../../../utils/AsyncUtils';
 import Question from "../../../components/quizzes/adminComponents/Question";
 import FloatingActionButton from "../../../components/FloatingActionButton";
 import CreateQuestionDialog from "../../../components/quizzes/CreateQuestionDialog";
+import { Grid, GridElement } from "../../../components/dnd/GridDND";
+import CheckBox from '../../../components/CheckBox';
+import { getArrayAfterElementMove } from '../../../utils/OpsUtils';
 
 const findQuestionById = (questions, id) => {
     return questions.find(question => question.id == id);
@@ -47,6 +50,7 @@ const Editor = () => {
     const [questions, setQuestions] = useState([]);
     const [isLoadingInProgress, setIsLoadingInProgress] = useState(false);
     const [isCreatingQuestionInProgress, setIsCreatingQuestionsInProgress] = useState(false);
+    const [isDNDEnabled, setIsDNDEnabled] = useState(false);
 
     const loadTestInfo = React.useCallback(async () => {
         const testInfo = await executeAsyncFunctionAndObserveState(
@@ -73,11 +77,11 @@ const Editor = () => {
     }, [questions]);
 
     const loadTestQuestions = React.useCallback(async () => {
-        const testQuestions = await executeAsyncFunctionAndObserveState(
+        const testQuestions = (await executeAsyncFunctionAndObserveState(
             setIsLoadingInProgress,
             getAllQuestionsOfTest,
             testId
-        );
+        )).sort((a, b) => a.questionOrderNumber - b.questionOrderNumber);
         setQuestions(testQuestions);
     }, [testId, getAllQuestionsOfTest, executeAsyncFunctionAndObserveState]);
 
@@ -159,6 +163,22 @@ const Editor = () => {
         }
     }, [questions]);
 
+    const onReorganizeCheckboxChange = React.useCallback(() => {
+        setIsDNDEnabled(dnd => !dnd);
+    }, []);
+
+    const onElementMove = React.useCallback(async ({ sourceIndex, targetIndex }) => {
+        setQuestions(getArrayAfterElementMove(questions, sourceIndex, targetIndex));
+        await executeAsyncFunctionAndObserveState(
+            setIsLoadingInProgress,
+            moveQuestions,
+            testId,
+            sourceIndex,
+            targetIndex
+        );
+        loadTestQuestions();
+    }, [testId, questions]);
+
     return (
         <>
             <LayoutSetup />
@@ -175,6 +195,13 @@ const Editor = () => {
                 </Link>
                 <div className="flex-space" />
                 <h1 className="header__title">Quizio Schools</h1>
+                <CheckBox
+                    title={"Reorganize:"}
+                    checked={isDNDEnabled}
+                    onChange={onReorganizeCheckboxChange}
+                    leftSideTitle
+                    extraCSS='margin-right:10px;'
+                />
                 <button className="header__test-settings-button" onClick={() => { }}>
                     <img src="/static/settings.svg"></img>
                     <span>Test Settings</span>
@@ -182,18 +209,21 @@ const Editor = () => {
                 <button className="header__done-button" onClick={() => { }}>Done</button>
             </header>
             <main>
-                {questions.map(question =>
-                    <Question
-                        questionTitle={question.questionOrderNumber + '. ' + question.questionTitle}
-                        questionOptions={question.questionOptions}
-                        questionOptionTitleKey={'questionOptionText'}
-                        key={question.id}
-                        onAddNewOption={getOnAddNewOptionCallback(question.id)}
-                        onSetNewCorrectAnswer={getOnSetNewCorrectAnswerCallback(question.id)}
-                        onDeleteQuestionOption={getOnDeleteQuestionOptionFromQuestion(question.id)}
-                        onDeleteQuestion={getOnDeleteQuestionCallback(question.id)}
-                    />
-                )}
+                <Grid isDragEnabled={isDNDEnabled} scrollable insidePadding={20} fixedHeight="100%" onElementMove={onElementMove}>
+                    {questions.map((question, index) =>
+                        <GridElement key={question.id}>
+                            <Question
+                                questionTitle={(index + 1) + '. ' + question.questionTitle}
+                                questionOptions={question.questionOptions}
+                                questionOptionTitleKey={'questionOptionText'}
+                                onAddNewOption={getOnAddNewOptionCallback(question.id)}
+                                onSetNewCorrectAnswer={getOnSetNewCorrectAnswerCallback(question.id)}
+                                onDeleteQuestionOption={getOnDeleteQuestionOptionFromQuestion(question.id)}
+                                onDeleteQuestion={getOnDeleteQuestionCallback(question.id)}
+                            />
+                        </GridElement>
+                    )}
+                </Grid>
                 {isCreatingQuestionInProgress ?
                     <CreateQuestionDialog
                         onDismissDialog={onDismissCreateQuestionDialog}

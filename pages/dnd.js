@@ -1,4 +1,4 @@
-import {Grid, GridElement} from '../components/dnd/GridDND';
+import { Grid, GridElement } from '../components/dnd/GridDND';
 export default () => {
     return (
         <>
@@ -7,19 +7,40 @@ export default () => {
                     scrollable
                     gap={20}
                     insidePadding={20}>
-                    <GridElement id={0} />
-                    <GridElement id={1} />
-                    <GridElement id={2} />
-                    <GridElement id={3} />
-                    <GridElement id={4} />
-                    <GridElement id={5} />
-                    <GridElement id={6} />
-                    <GridElement id={7} />
-                    <GridElement id={8} />
+                    <GridElement>
+                        <div className="element" />
+                    </GridElement>
+                    <GridElement>
+                        <div className="element" />
+                    </GridElement>
+                    <GridElement>
+                        <div className="element" />
+                    </GridElement>
+                    <GridElement>
+                        <div className="element" />
+                    </GridElement><GridElement>
+                        <div className="element" />
+                    </GridElement><GridElement>
+                        <div className="element" />
+                    </GridElement><GridElement>
+                        <div className="element" />
+                    </GridElement><GridElement>
+                        <div className="element" />
+                    </GridElement><GridElement>
+                        <div className="element" />
+                    </GridElement><GridElement>
+                        <div className="element" />
+                    </GridElement>
+
                 </Grid>
             </main>
             <style jsx>
                 {`
+                .element {
+                    width: 300px;
+                    height: 200px;
+                    box-shadow: 3px 3px 10px grey;
+                }
             `}
             </style>
         </>

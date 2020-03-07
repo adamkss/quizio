@@ -52,3 +52,7 @@ export const deleteQuestionOption = (questionOptionId) => {
 export const deleteQuestion = (questionId) => {
     return axios.delete(`/tests/questions/${questionId}`);
 }
+
+export const moveQuestions = (testId, sourceIndex, targetIndex) => {
+    return axios.put(`/tests/${testId}/questionOrders`, {sourceIndex, targetIndex});
+}

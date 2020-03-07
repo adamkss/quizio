@@ -1,48 +1,98 @@
 import { useCallback, useState, createContext, useContext, useRef, useEffect, forwardRef, createRef } from "react"
 
-export const GridElement = forwardRef(({ leftOffset = 0, topOffset = 0, dndIndex }, ref) => {
-    const { gridState, setDraggedItemInfo, setDragEnd } = useContext(DNDContext);
+export const GridElement = forwardRef(({ leftOffset = 0, topOffset = 0, dndIndex, children }, ref) => {
+    const { gridState, setDraggedItemInfo, setDragEnd, isDragEnabled } = useContext(DNDContext);
+    const [wasWiggleAnimationPlayed, setWasWiggleAnimationPlayed] = useState(false);
 
     const onMouseDown = useCallback(() => {
-        setDraggedItemInfo({
-            clientX: leftOffset,
-            clientY: topOffset,
-            dndIndex
-        });
-    }, [leftOffset, topOffset]);
+        if (isDragEnabled) {
+            setDraggedItemInfo({
+                clientX: leftOffset,
+                clientY: topOffset,
+                dndIndex
+            });
+        }
+    }, [leftOffset, topOffset, isDragEnabled]);
 
     const onMouseUp = useCallback(() => {
-        setDragEnd();
-    }, [setDragEnd]);
+        if (isDragEnabled) {
+            setDragEnd();
+        }
+    }, [setDragEnd, isDragEnabled]);
+
+    useEffect(() => {
+        if (isDragEnabled) {
+            setTimeout(() => {
+                setWasWiggleAnimationPlayed(true);
+            }, 500);
+        } else {
+            setWasWiggleAnimationPlayed(false);
+        }
+    }, [isDragEnabled]);
 
     return (
         <>
-            <div className="draggable" ref={ref} onMouseDown={onMouseDown} onMouseUp={onMouseUp}>
-                {dndIndex}
+            <div className={`draggable${isDragEnabled && !wasWiggleAnimationPlayed ? ' wiggle-animation' : ''}`} ref={ref} onMouseDown={onMouseDown} onMouseUp={onMouseUp}>
+                <div className="children">
+                    {children}
+                </div>
             </div>
             <style jsx>
                 {`
                 .draggable {
-                    width: 300px;
-                    height: 250px;
-                    border-radius: 10px;
-                    box-shadow: 3px 3px 10px grey;
-                    background-color: white;
                     cursor: pointer;
                     position: absolute;
                     transition: all 0.5s;
+                    ${isDragEnabled ?
+                        `
+                        opacity: 0.6;
+                        `
+                        :
+                        ``
+                    }
                     ${gridState.draggedElementIndex === dndIndex ?
                         `
                             transition: none;
                             left: ${gridState.clientX}px;
                             top: ${gridState.clientY - 10}px;
                             z-index: 1;
+                            opacity: 1;
                         `
                         :
                         `
                             left: ${leftOffset}px;
                             top: ${topOffset}px;
                         `}
+                }
+                .wiggle-animation {
+                    animation: DragEnabledWiggleAnimation 0.5s;
+                }
+                @keyframes DragEnabledWiggleAnimation {
+                    0% {
+                        transform: rotate(0deg);
+                        opacity: 1;
+                    }
+                    25% {
+                        transform: rotate(-1deg) scale(1.02);
+                        opacity: 1;
+                    }
+                    75% {
+                        transform: rotate(1deg) scale(1.02);
+                        opacity: 1;
+                    }
+                    100% {
+                        transform: rotate(0deg) scale(1);
+                        opacity: 0.6;
+                    }
+                }
+                .children {
+                    ${isDragEnabled ?
+                        `
+                        pointer-events: none;
+                        `
+                        :
+                        ``
+                    }
                 }
             `}
             </style>
@@ -87,8 +137,9 @@ export const Grid = ({
     onElementMove = ({ sourceIndex, targetIndex }) => { },
     wrapperCSS = '',
     scrollable = false,
-    fixedHeight = 0,
-    insidePadding = 0
+    fixedHeight = null,
+    insidePadding = 0,
+    isDragEnabled = true,
 }) => {
     const [gridState, setGridState] = useState(getInitialGridState());
     const gridRef = useRef(null);
@@ -104,12 +155,10 @@ export const Grid = ({
 
             const childWidth = Math.ceil(childrenRefs.current[0] ? childrenRefs.current[0].current.getBoundingClientRect().width : 0);
             const childHeight = Math.ceil(childrenRefs.current[0] ? childrenRefs.current[0].current.getBoundingClientRect().height : 0);
-
             const numberOfElementsPerRow = getNumberOfElementsPerRow({ gridWidth, childWidth, gap });
             const numberOfRows = getNumberOfRows({ numberOfElementsPerRow, numberOfElements: childrenRefs.current.length });
             const gridHeight = numberOfRows * childHeight + 2 * insidePadding + gap * (numberOfRows - 1);
             setGridHeight(gridHeight);
-
             childrenRefs.current.forEach((childRef, index) => {
                 let indexInCalculation = index;
 
@@ -138,11 +187,11 @@ export const Grid = ({
                 })
             })
         }
-    }, [childrenRefs, spaceBeforeIndex, maskedElementSpaceIndex, insidePadding]);
+    }, [childrenRefs, spaceBeforeIndex, maskedElementSpaceIndex, insidePadding, gridRef]);
 
     useEffect(() => {
         LayoutElements();
-    }, [childrenRefs, spaceBeforeIndex, maskedElementSpaceIndex]);
+    }, [childrenRefs, spaceBeforeIndex, maskedElementSpaceIndex, children]);
 
     useEffect(() => {
         const listener = () => {
@@ -157,14 +206,16 @@ export const Grid = ({
     const setDraggedItemInfo = useCallback(({
         clientX, clientY, dndIndex
     }) => {
-        setGridState(gridState => ({
-            ...gridState,
-            clientX,
-            clientY,
-            draggedElementIndex: dndIndex
-        }));
-        setMaskedElementSpaceIndex(dndIndex);
-    }, []);
+        if (isDragEnabled) {
+            setGridState(gridState => ({
+                ...gridState,
+                clientX,
+                clientY,
+                draggedElementIndex: dndIndex
+            }));
+            setMaskedElementSpaceIndex(dndIndex);
+        }
+    }, [isDragEnabled]);
 
     const setDragEnd = useCallback(() => {
         onElementMove({ sourceIndex: gridState.draggedElementIndex, targetIndex: spaceBeforeIndex });
@@ -206,7 +257,7 @@ export const Grid = ({
     }, [childrenRefs.current, gridState]);
 
     const onMouseMove = useCallback((event) => {
-        if (gridState.draggedElementIndex != null) {
+        if (gridState.draggedElementIndex != null && isDragEnabled) {
             event.preventDefault();
             const { movementX, movementY } = event.nativeEvent;
             setGridState(gridState => ({
@@ -216,11 +267,11 @@ export const Grid = ({
             }))
             verifyOverlappingItems();
         }
-    }, [gridState]);
+    }, [gridState, isDragEnabled]);
 
     return (
         <>
-            <DNDContext.Provider value={{ gridState, setDraggedItemInfo, setDragEnd }}>
+            <DNDContext.Provider value={{ gridState, setDraggedItemInfo, setDragEnd, isDragEnabled }}>
                 <div className="wrapper">
                     <div ref={gridRef} className="grid" onMouseMove={onMouseMove}>
                         {React.Children.map(children, (child, index) => {
@@ -245,6 +296,7 @@ export const Grid = ({
             <style jsx>
                 {`
                 .wrapper {
+                    width: 100%;
                     ${wrapperCSS}
                 }
                 .grid {
@@ -260,9 +312,9 @@ export const Grid = ({
                         :
                         ``
                     }
-                    height: ${fixedHeight > 0 ? fixedHeight : gridHeight}px;
+                    height: ${fixedHeight ? fixedHeight : `${gridHeight}px`};
                     transition: all 0.3s;
-                    ${fixedHeight > 0 || gridHeight > 0 ?
+                    ${fixedHeight || gridHeight > 0 ?
                         `
                         opacity: 1;
                         `
@@ -278,4 +330,4 @@ export const Grid = ({
     )
 }
 
-const DNDContext = createContext(null);
+export const DNDContext = createContext(null);

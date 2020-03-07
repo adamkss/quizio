@@ -1,9 +1,14 @@
 import React from 'react';
 
-export default ({ title = "", checked, onChange, marginTop = false }) => {
+export default ({ title = "", checked, onChange, marginTop = false, leftSideTitle = false , extraCSS = ''}) => {
     return (
         <>
             <label>
+                {leftSideTitle ?
+                    <span className="title leftside-text">{title}</span>
+                    :
+                    null
+                }
                 <div className="checkbox-container">
                     <input
                         type="checkbox"
@@ -14,7 +19,11 @@ export default ({ title = "", checked, onChange, marginTop = false }) => {
                         </div>
                     </div>
                 </div>
-                <span className="title">{title}</span>
+                {!leftSideTitle ?
+                    <span className="title">{title}</span>
+                    :
+                    null
+                }
             </label>
             <style jsx>
                 {`
@@ -31,11 +40,14 @@ export default ({ title = "", checked, onChange, marginTop = false }) => {
                     input {
                         position: absolute;
                         opacity: 0;
-                        width: 100%;
                         height: 100%;
                     }
                     .checkbox-container {
                         display: inline-block;
+                        margin-right: 5px;
+                        ${extraCSS}
+                    }
+                    .leftside-text {
                         margin-right: 5px;
                     }
                    .shell {
