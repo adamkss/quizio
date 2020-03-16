@@ -54,5 +54,17 @@ export const deleteQuestion = (questionId) => {
 }
 
 export const moveQuestions = (testId, sourceIndex, targetIndex) => {
-    return axios.put(`/tests/${testId}/questionOrders`, {sourceIndex, targetIndex});
+    return axios.put(`/tests/${testId}/questionOrders`, { sourceIndex, targetIndex });
+}
+
+export const createNewEntryCodes = (testId, numberOfNewEntryCodes) => {
+    return axios.post(`/tests/${testId}/entryCodes`, { numberOfNewEntryCodes }).then(getDataFromResponseAsPromise);
+}
+
+export const updateEntryCodeName = (testId, entryCodeId, newName) => {
+    return axios.put(`/tests/${testId}/entryCodes/${entryCodeId}/name`, { newName });
+}
+
+export const getAllUnfinishedEntryCodesOfATest = (testId) => {
+    return axios.get(`/tests/${testId}/entryCodes/unfinished`).then(getDataFromResponseAsPromise);
 }

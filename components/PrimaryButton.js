@@ -79,7 +79,7 @@ const getColorBehaviorsForColor = (color, secondary) => {
                 boxShadowActive: "1px 1px 12px #b51b45",
                 borderDefault: "none"
             }
-        case "purple" :{
+        case "purple": {
             return {
                 textColor: "white",
                 backgroundColorDefault: "#43318D",
@@ -95,7 +95,7 @@ const getColorBehaviorsForColor = (color, secondary) => {
 }
 
 const PrimaryButton = ({
-    title, color = "green", inactive = false, marginRight = false, marginTop = false, extraMarginTop = false,
+    title, color = "green", inactive = false, marginRight = false, marginTop = false, customMarginTop = null, extraMarginTop = false,
     big = false, medium = false, linkTo = null, onClick, growWithScreenSize = false, containerWidthAndHeight = false,
     secondary = false, noFixedWidth = false, ...rest
 }) => {
@@ -164,6 +164,13 @@ const PrimaryButton = ({
                         "margin-top: 50px;"
                         :
                         ""
+                    }
+                    ${customMarginTop ?
+                        `
+                        margin-top: ${customMarginTop}px;
+                        `
+                        :
+                        ``
                     }
                      ${containerWidthAndHeight ?
                         `

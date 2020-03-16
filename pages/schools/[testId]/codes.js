@@ -1,16 +1,40 @@
 import { QuizzesLayoutWrapper } from "../../../components/quizzes/QuizzesLayoutWrapper"
 import { Code } from "../../../components/schools/Code"
+import { useCallback, useState } from "react"
+import { GenerateNewCodesDialog } from "../../../components/schools/codes/GenerateNewCodesDialog";
+import { ViewUnfinishedCodesDialog } from "../../../components/schools/codes/ViewUnfinishedCodesDialog";
+import { useRouter } from "next/router";
 
 export default () => {
+    const [isGenerateNewCodesInProgress, setIsGenerateNewCodesInProgress] = useState(false);
+    const [isViewingUnfinishedCodes, setIsViewingUnfinishedCodes] = useState(true);
+    const { testId } = useRouter().query;
+
+    const onGenerateCodesTileClick = useCallback(() => {
+        setIsGenerateNewCodesInProgress(true);
+    }, []);
+
+    const onDismissGenerateCodesDialog = useCallback(() => {
+        setIsGenerateNewCodesInProgress(false);
+    }, []);
+
+    const onViewUnfinishedCodesClick = useCallback(() => {
+        setIsViewingUnfinishedCodes(true);
+    }, []);
+
+    const onDismissViewUnfinishedCodesDialog = useCallback(() => {
+        setIsViewingUnfinishedCodes(false);
+    }, []);
+
     return (
         <>
             <QuizzesLayoutWrapper>
                 <main>
-                    <div className="tile tile-generate">
+                    <div className="tile tile-generate" onClick={onGenerateCodesTileClick}>
                         <h1>Generate new codes</h1>
                         <Code code="1234" fontSize="1.7rem" extraCSS={"margin-top: 5px;"} />
                     </div>
-                    <div className="tile tile-status">
+                    <div className="tile tile-status" onClick={onViewUnfinishedCodesClick}>
                         <h1>View unfinished code statuses</h1>
                         <div className="tile-status__illustration">
                             <div className="status-illustration__element">
@@ -39,7 +63,7 @@ export default () => {
                                 <Code code="abc1" fontSize="1.1rem" inversedColors></Code>
                                 <span className="results-tile__name">Max Millian</span>
                                 <span className="results-tile__grade">67%</span>
-                            </div> 
+                            </div>
                             <div className="results-tile__element">
                                 <Code code="abc1" fontSize="1.1rem" inversedColors></Code>
                                 <span className="results-tile__name">Loe Caprio</span>
@@ -49,6 +73,20 @@ export default () => {
                     </div>
                 </main>
             </QuizzesLayoutWrapper>
+            {isGenerateNewCodesInProgress ?
+                <GenerateNewCodesDialog
+                    testId={testId}
+                    onDismissDialog={onDismissGenerateCodesDialog} />
+                :
+                null
+            }
+            {isViewingUnfinishedCodes ?
+                <ViewUnfinishedCodesDialog
+                    testId={testId}
+                    onDismissDialog={onDismissViewUnfinishedCodesDialog} />
+                :
+                null
+            }
             <style jsx>
                 {`
                     main {

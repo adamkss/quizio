@@ -1,5 +1,6 @@
-export default ({ children, title, onDismissDialog, ...rest }) => {
+export default ({ children, title, onDismissDialog, loading = false, ...rest }) => {
     const onContentWrapperClick = React.useCallback((event) => {
+        //see whether the clicked area is part of the wrapper and not the content
         if (event.target.dataset.clickToQuit) {
             onDismissDialog();
         }
@@ -11,6 +12,11 @@ export default ({ children, title, onDismissDialog, ...rest }) => {
                 <div className="dialog-content-wrapper">
                     {title ? <h1>{title}</h1> : null}
                     {children}
+                    {loading ?
+                        <LoadingScreen />
+                        :
+                        null
+                    }
                 </div>
             </div>
             <style jsx>
@@ -31,12 +37,14 @@ export default ({ children, title, onDismissDialog, ...rest }) => {
                 width: calc(100% - 30px);
                 min-width: 300px;
                 max-width: 500px;
-                max-height: 500px;
+                max-height: 95vh;
                 border-radius: 8px;
                 box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.3);
                 padding: 25px;
                 background-color: white;
                 animation: DialogIn 0.2s;
+                position: relative;
+                overflow: hidden;
             }
             @keyframes DialogIn { 
                 0% {
@@ -54,6 +62,77 @@ export default ({ children, title, onDismissDialog, ...rest }) => {
                 margin-bottom: 10px;
             }
         `}
+            </style>
+        </>
+    )
+}
+
+const LoadingScreen = () => {
+    return (
+        <>
+            <div className="wrapper">
+                <div className="lds-ring"><div></div><div></div><div></div><div></div></div>
+            </div>
+            <style jsx>
+                {`
+                .wrapper {
+                    position: absolute;
+                    top: 0px;
+                    left: 0px;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0, 0, 0, 0.3);
+                    border-radius: 8px;
+                    animation: LoadingScreenIn 0.5s;
+                }
+                @keyframes LoadingScreenIn {
+                    0% {
+                        opacity: 0;
+                    }
+                    100% {
+                        opacity: 1;
+                    }
+                }
+                .lds-ring {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(0.8);
+                z-index: 99999;
+                display: inline-block;
+                width: 80px;
+                height: 80px;
+                }
+                .lds-ring div {
+                box-sizing: border-box;
+                display: block;
+                position: absolute;
+                width: 64px;
+                height: 64px;
+                margin: 8px;
+                border: 7px solid;
+                border-radius: 50%;
+                animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+                border-color: hsl(0,0%,100%) transparent transparent transparent;
+                }
+                .lds-ring div:nth-child(1) {
+                animation-delay: -0.45s;
+                }
+                .lds-ring div:nth-child(2) {
+                animation-delay: -0.3s;
+                }
+                .lds-ring div:nth-child(3) {
+                animation-delay: -0.15s;
+                }
+                @keyframes lds-ring {
+                0% {
+                    transform: rotate(0deg);
+                }
+                100% {
+                    transform: rotate(360deg);
+                }
+                }
+            `}
             </style>
         </>
     )
