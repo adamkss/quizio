@@ -3,14 +3,27 @@ import LoadingSpinner from '../../components/LoadingSpinner';
 import LayoutSetup from '../../components/layoutSetup';
 import PrimaryButton from '../../components/PrimaryButton';
 import TextInput from '../../components/TextInput';
-import Link from 'next/link';
+import { createSessionByEntryCode } from '../../utils/TestRequests';
+import { executeAsyncFunctionAndObserveState } from '../../utils/AsyncUtils';
+import Router from 'next/router';
 
 export default () => {
     const [isLoadingScreenShown, setIsLoadingScreenShown] = React.useState(false);
-    const [quizTakerName, setQuizTakerName] = React.useState("");
+    const [entryCode, setEntryCode] = React.useState("");
+    const [errorMessage, setErrorMessage] = React.useState(null);
 
-    const onGoClick = React.useCallback(() => {
-    }, []);
+    const onGoClick = React.useCallback(async () => {
+        const result = await executeAsyncFunctionAndObserveState(
+            setIsLoadingScreenShown,
+            createSessionByEntryCode,
+            entryCode
+        );
+        if (result.statusCode == 200) {
+            Router.push(`/schools/doTest/${result.body.sessionId}`)
+        } else {
+            setErrorMessage(result.body.error || 'Something went wrong.');
+        }
+    }, [entryCode, Router]);
 
     return (
         <>
@@ -27,8 +40,8 @@ export default () => {
                         title="Entry code:"
                         width="100%"
                         marginTop="15px"
-                        value={quizTakerName}
-                        valueSetter={setQuizTakerName}
+                        value={entryCode}
+                        valueSetter={setEntryCode}
                     />
                     <PrimaryButton
                         title="Go!"
@@ -37,6 +50,11 @@ export default () => {
                         marginTop
                         onClick={onGoClick}
                     />
+                    {errorMessage ?
+                        <p className="error-message">{errorMessage}</p>
+                        :
+                        null
+                    }
                 </section>
             </main>
 
@@ -136,6 +154,10 @@ export default () => {
                             left: 50%;
                             transform: translateX(-50%);
                         }
+                    }
+                    .error-message {
+                        text-align: center;
+                        color: red;
                     }
                 `}
             </style>

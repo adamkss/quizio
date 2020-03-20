@@ -4,6 +4,13 @@ const getDataFromResponseAsPromise = (response) => {
     return Promise.resolve(response.data);
 }
 
+const getDataAndStatusFromResponseAsPromise = (response) => {
+    return Promise.resolve({
+        body: response.data,
+        statusCode: response.status
+    });
+}
+
 export const getAllTestsOfUser = () => {
     return axios.get('/tests').then(getDataFromResponseAsPromise);
 }
@@ -67,4 +74,14 @@ export const updateEntryCodeName = (testId, entryCodeId, newName) => {
 
 export const getAllUnfinishedEntryCodesOfATest = (testId) => {
     return axios.get(`/tests/${testId}/entryCodes/unfinished`).then(getDataFromResponseAsPromise);
+}
+
+export const createSessionByEntryCode = (entryCode) => {
+    return axios.post(`/test-sessions/by-entry-codes/${entryCode}`, null, {
+        validateStatus: false
+    }).then(getDataAndStatusFromResponseAsPromise);
+}
+
+export const getNumberOfQuestions = (sessionId) => {
+    return axios.get(`/test-sessions/${sessionId}/numberOfQuestions`).then(getDataFromResponseAsPromise);
 }
