@@ -1,33 +1,101 @@
 import { useRouter } from "next/router"
-import { useEffect, useState } from "react";
-import { getNumberOfQuestions } from "../../../utils/TestRequests";
+import { useEffect, useState, useCallback } from "react";
+import { getSessionQuestionsWithIds, getQuestionDetails, getAllUnfinishedEntryCodesOfATest, getInfoAboutTestBySession } from "../../../utils/TestRequests";
 import { executeAsyncFunctionAndObserveState } from "../../../utils/AsyncUtils";
 import LoadingSpinner from "../../../components/LoadingSpinner";
+import PrimaryButton from "../../../components/PrimaryButton";
 import LayoutSetup from "../../../components/layoutSetup";
 
 export default () => {
     const { testSession } = useRouter().query;
-    const [numberOfQuestions, setNumberOfQuestions] = useState(null);
+    const [testInfo, setTestInfo] = useState(null);
     const [isLoadingScreenShown, setIsLoadingScreenShown] = useState(false);
-    const [currentQuestion, setCurrentQuestion] = useState(1);
-    const [currentQuestionOrderNr, setCurrentQuestionOrderNr] = useState(1);
+    const [currentQuestion, setCurrentQuestion] = useState(null);
+    const [questionsWithIds, setQuestionsWithIds] = useState([]);
+    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+    const [questionsState, setQuestionsState] = useState([]);
+    //we use this state to cache already loaded questions
+    const [preloadedQuestions, setPreloadedQuestions] = useState({});
+
+    const loadQuestionInfo = useCallback(async (questionId) => {
+        const questionDetailsCached = preloadedQuestions[questionId];
+        if (questionDetailsCached) {
+            setCurrentQuestion(questionDetailsCached);
+        } else {
+            const questionDetails = await executeAsyncFunctionAndObserveState(
+                setIsLoadingScreenShown,
+                getQuestionDetails,
+                testSession,
+                questionId
+            );
+            setCurrentQuestion(questionDetails);
+            setPreloadedQuestions({
+                ...preloadedQuestions,
+                [questionId]: questionDetails
+            });
+        }
+    }, [testSession, preloadedQuestions]);
+
+    const moveToQuestionWithIndex = useCallback(async (index) => {
+        await loadQuestionInfo(questionsWithIds[index]);
+        setCurrentQuestionIndex(index);
+    }, [loadQuestionInfo, questionsWithIds]);
+
+    const loadTestInfo = useCallback(async (sessionId) => {
+        const testInfo = await getInfoAboutTestBySession(sessionId);
+        setTestInfo(testInfo);
+    }, []);
 
     useEffect(() => {
         (async () => {
             if (testSession) {
-                const nrOfQuestions = await executeAsyncFunctionAndObserveState(
+                loadTestInfo(testSession);
+                const questionsWithIds = await executeAsyncFunctionAndObserveState(
                     setIsLoadingScreenShown,
-                    getNumberOfQuestions,
+                    getSessionQuestionsWithIds,
                     testSession
                 );
-                setNumberOfQuestions(nrOfQuestions);
+                let questionsState = [];
+                questionsWithIds.forEach((questionId, index) => {
+                    questionsState[index] = {
+                        questionId,
+                        answered: false,
+                        selectedOption: null,
+                        selectedOptionOrderNr: null
+                    };
+                });
+                setQuestionsWithIds(questionsWithIds);
+                setQuestionsState(questionsState);
+                if (questionsWithIds.length > 0)
+                    await loadQuestionInfo(questionsWithIds[0]);
             }
         })();
     }, [testSession]);
 
+    const onAnswerSelected = useCallback((selectedOptionIndex) => {
+        let newQuestionsState = [...questionsState];
+        newQuestionsState[currentQuestionIndex] = {
+            ...newQuestionsState[currentQuestionIndex],
+            answered: true,
+            selectedOptionOrderNr: selectedOptionIndex,
+            selectedOption: currentQuestion.questionOptions[selectedOptionIndex]
+        };
+        setQuestionsState(newQuestionsState);
+    }, [questionsState, currentQuestionIndex, currentQuestion]);
+
+    const onQuestionSelectedFromList = useCallback(async (questionIndex) => {
+        moveToQuestionWithIndex(questionIndex);
+    }, [moveToQuestionWithIndex]);
+
+    const onMainButtonClick = useCallback(() => {
+        if (currentQuestionIndex < (questionsWithIds.length - 1)) {
+            moveToQuestionWithIndex(currentQuestionIndex + 1);
+        }
+    }, [currentQuestionIndex, questionsWithIds, moveToQuestionWithIndex]);
+
     return (
         <>
-            <LayoutSetup />
+            <LayoutSetup title={`Quizio - Take test ${testInfo ? `"${testInfo.testName}"` : ''}`} />
             {isLoadingScreenShown ?
                 <LoadingSpinner />
                 :
@@ -35,52 +103,84 @@ export default () => {
             }
             <main>
                 <div className="layout-organizer">
+                    <header>
+                        <h1>Taking test: <span>{testInfo ? testInfo.testName : ''}</span> </h1>
+                    </header>
                     <section className="questions-list">
-                        <QuestionsList />
+                        <QuestionsList
+                            numberOfQuestions={questionsWithIds.length}
+                            currentQuestionOrderNr={currentQuestionIndex + 1}
+                            onQuestionSelected={onQuestionSelectedFromList}
+                            questionsState={questionsState} />
                     </section>
                     <div className="horizontally-centered question-grid">
                         <div className="question-container">
                             {currentQuestion ?
-                                <Question
-                                    question="1. How are you called?"
-                                    options={[
-                                        {
-                                            id: 1,
-                                            title: "unu"
-                                        }, {
-                                            id: 2,
-                                            title: "doi"
-                                        }
-                                    ]} />
-
+                                <>
+                                    <Question
+                                        question={`${currentQuestionIndex + 1}. ${currentQuestion.questionTitle}`}
+                                        options={currentQuestion.questionOptions}
+                                        onAnswerSelected={onAnswerSelected}
+                                        currentlySelectedAnswerOrderNr={questionsState[currentQuestionIndex] ? questionsState[currentQuestionIndex].selectedOptionOrderNr : null} />
+                                </>
                                 :
                                 null
                             }
                         </div>
                     </div>
+                    <section className="main-button-container">
+                        <PrimaryButton
+                            title="Next"
+                            color="pink"
+                            medium
+                            onClick={onMainButtonClick} />
+                    </section>
                 </div>
             </main>
             <style jsx>
                 {`
+                    header h1{
+                        grid-area: header;
+                        font-weight: 300;
+                        color: rgba(0,0,0,0.6);
+                    }
+                    header h1 span {
+                        font-weight: 400;
+                    }
                     main {
                         width: 100%;
                         height: 100vh;
+                    }
+                    .main-button-container {
+                        grid-area: main-button;
+                        justify-self: end;
+                        align-self: start;
+                        margin-right: 50px;
                     }
                     .layout-organizer {
                         height: 100%;
                         display: grid;
                         padding: 50px;
-                        grid-template-columns: 1fr 5fr;
+                        grid-template-rows: auto 1fr auto;
+                        grid-template-columns: 1.2fr 5fr;
+                        grid-template-areas:
+                            "header header"
+                            ". question"
+                            "questions-list main-button";
                     }
                     .questions-list {
+                        grid-area: questions-list;
                         align-self: end;
                         padding-bottom: 40px;
+                    }
+                    .question-grid {
+                        grid-area: question;
                     }
                     .question-container {
                         width: 60vw;
                         min-width: 400px;
                         display: flex;
-                        justify-content: center;
+                        flex-direction:column;
                         padding-top: 50px;
                     }
             `}
@@ -89,23 +189,20 @@ export default () => {
     )
 }
 
-const Question = ({ question, options = [], onAnswerSelected, currentlySelectedAnswerOrderNr, isSelectedAnswerCorrect }) => {
+const Question = ({ question, options = [], onAnswerSelected, currentlySelectedAnswerOrderNr }) => {
     return (
         <>
             <div className="outer-container">
                 <span className="question">{question}</span>
                 {options.map((option, index) => {
                     const extraClassNames = currentlySelectedAnswerOrderNr != null ?
-                        index === currentlySelectedAnswerOrderNr ?
-                            isSelectedAnswerCorrect ? "correct-answer" : "incorrect-answer"
-                            : "inactive"
-                        : "";
+                        index === currentlySelectedAnswerOrderNr ? "selected" : "" : "";
 
                     return (
-                        <div className={`option ${extraClassNames}`} key={option.id} onClick={() => !currentlySelectedAnswerOrderNr ? onAnswerSelected(index) : ""}>
+                        <div className={`option ${extraClassNames}`} key={option.id} onClick={() => onAnswerSelected(index)}>
                             <span className="nr">{index + 1}.</span>
                             <span className="answer">
-                                {option.title}
+                                {option.questionOptionText}
                             </span>
                         </div>
                     )
@@ -138,19 +235,13 @@ const Question = ({ question, options = [], onAnswerSelected, currentlySelectedA
                         font-size: 1.5em;
                     }
 
-                    .option.correct-answer {
-                        box-shadow: 0px 0px 12px green;
-                        background-color: #4bac61;
+                    .option.selected {
+                        box-shadow: 0px 0px 12px #ab47bc;
+                        background-color: #ab47bc;
                         color: white;
                     }
 
-                    .option.incorrect-answer {
-                        box-shadow: 0px 0px 12px red;
-                        background-color: #ba2232;
-                        color: white;
-                    }
-
-                    .option:not(.correct-answer):not(.inactive):hover {
+                    .option:not(.selected):not(.inactive):hover {
                         box-shadow: 0px 0px 12px grey;
                     }
 
@@ -174,14 +265,23 @@ const Question = ({ question, options = [], onAnswerSelected, currentlySelectedA
     )
 }
 
-const QuestionsList = ({ numberOfQuestions = 23, currentQuestionOrderNr = 1 }) => {
+const QuestionsList = ({ numberOfQuestions = 23, currentQuestionOrderNr = 1, onQuestionSelected, questionsState }) => {
+
+    const getCallbackForQuestionSelect = useCallback((index) => () => {
+        onQuestionSelected(index);
+    }, [onQuestionSelected]);
+
     return (
         <>
             <div className="layout">
                 {[...Array(numberOfQuestions)].map((el, index) => {
-                    const extraCSS = index + 1 == currentQuestionOrderNr ? " current" : "";
+                    let extraCSS = index + 1 == currentQuestionOrderNr ? " current" : "";
+                    extraCSS += questionsState[index] ? questionsState[index].answered ? ' answered' : '' : '';
                     return (
-                        <div className={`element${extraCSS}`} title={`Go to question ${index + 1}`}>
+                        <div key={index}
+                            className={`element${extraCSS}`}
+                            title={`Go to question ${index + 1}`}
+                            onClick={getCallbackForQuestionSelect(index)}>
                             <span className="element-text">{index + 1}</span>
                         </div>
                     )
@@ -192,12 +292,13 @@ const QuestionsList = ({ numberOfQuestions = 23, currentQuestionOrderNr = 1 }) =
                 {`
                 .layout {
                   display: grid;
-                  gap: 5px;
+                  gap: 2px;
                   grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
                   place-items: center;
                   align-content: start;
                 }
                 .element {
+                    position: relative;
                     width: 35px;
                     height: 35px;
                     background-color: rgba(0,0,0,0.1);
@@ -208,7 +309,23 @@ const QuestionsList = ({ numberOfQuestions = 23, currentQuestionOrderNr = 1 }) =
                     transition: all 0.3s;
                 }
                 .element.current {
-                    background-color: rgba(0,0,0,0.2);
+                    background-color: rgba(0,0,0,0.15);
+                }
+                .element::after {
+                    content: '';
+                    display: block;
+                    position: absolute;
+                    width: 10px;
+                    top: 0px;
+                    right: 0px;
+                    height: 10px;
+                    border-radius: 50%;
+                    background-color: #ab47bc;
+                    opacity: 0;
+                    transition: all 0.3s;
+                }
+                .element.answered::after {
+                    opacity: 1;
                 }
                 .element:hover,
                 .element:active,

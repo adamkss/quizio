@@ -85,3 +85,15 @@ export const createSessionByEntryCode = (entryCode) => {
 export const getNumberOfQuestions = (sessionId) => {
     return axios.get(`/test-sessions/${sessionId}/numberOfQuestions`).then(getDataFromResponseAsPromise);
 }
+
+export const getSessionQuestionsWithIds = (sessionId) => {
+    return axios.get(`/test-sessions/${sessionId}/questionsWithIdsOnly`).then(getDataFromResponseAsPromise);
+}
+
+export const getQuestionDetails = (sessionId, questionId) => {
+    return axios.get(`/test-sessions/${sessionId}/questions/${questionId}`).then(getDataFromResponseAsPromise);
+}
+
+export const getInfoAboutTestBySession = (sessionId) => {
+    return axios.get(`/test-sessions/${sessionId}/testInfo`).then(getDataFromResponseAsPromise);
+}
