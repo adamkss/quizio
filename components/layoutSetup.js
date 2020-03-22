@@ -1,10 +1,14 @@
 import Head from 'next/head';
 
-export default () => {
+export default ({ title = null }) => {
     return (
         <>
             <Head>
-                <title>Quizio - Beautiful Quizzes</title>
+                {title ?
+                    <title>{title}</title>
+                    :
+                    null
+                }
                 <link href="https://fonts.googleapis.com/css?family=Oswald:300,400,500,600,700&display=swap" rel="stylesheet" />
                 <link href="https://fonts.googleapis.com/css?family=Reenie+Beanie&display=swap" rel="stylesheet"></link>
             </Head>

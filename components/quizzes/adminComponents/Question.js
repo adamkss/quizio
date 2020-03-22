@@ -1,6 +1,8 @@
 import { useState, useRef, useCallback } from 'react';
 
-const Question = ({ questionTitle, questionOptions, onAddNewOption, onSetNewCorrectAnswer, onDeleteQuestionOption, onDeleteQuestion }) => {
+const Question = ({ 
+    questionTitle, questionOptions, onAddNewOption, onSetNewCorrectAnswer,
+    onDeleteQuestionOption, onDeleteQuestion, questionOptionTitleKey = "title" }) => {
     const [isNewOptionWanted, setIsNewOptionWanted] = useState(false);
     const [newOption, setNewOption] = useState("");
     const newOptionInputRef = useRef(null);
@@ -71,7 +73,7 @@ const Question = ({ questionTitle, questionOptions, onAddNewOption, onSetNewCorr
                             <div className="question-option" key={questionOption.id}>
                                 <span className="order-index">{index + 1}.</span>
                                 <span key={questionOption.id}>
-                                    {questionOption.title}
+                                    {questionOption[questionOptionTitleKey]}
                                 </span>
                                 {questionOption.amITheRightAnswer ?
                                     <img className="right-answer-icon initially-less-visible" src="/static/check_circle-24px.svg" title="This is the right answer." />
@@ -184,13 +186,13 @@ const Question = ({ questionTitle, questionOptions, onAddNewOption, onSetNewCorr
                         max-width: 400px;
                         min-width: 300px;
                         max-height: 300px;
+                        background-color: white;
                         border-radius: 8px;
                         padding: 25px;
                         display: flex;
                         flex-direction: column;
                         box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.3);
                         margin: 10px;
-                        animation: SlideUp 0.3s;
                     }
                     @keyframes SlideUp {
                         0% {

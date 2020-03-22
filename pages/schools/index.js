@@ -1,10 +1,11 @@
-import LayoutSetup from "../components/layoutSetup"
+import LayoutSetup from "../../components/layoutSetup"
 import React, { useRef, useEffect, useState } from 'react';
-import SecondaryButton from "../components/SecondaryButton";
-import PrimaryButton from "../components/PrimaryButton";
-import { SillyHandwritingWithOption } from '../components/visual/SillyHandwriting';
-import { QuizioIllustrationMain } from "../components/visual/QuizioIllustrationMain";
+import SecondaryButton from "../../components/SecondaryButton";
+import PrimaryButton from "../../components/PrimaryButton";
+import { SillyHandwritingWithOption } from '../../components/visual/SillyHandwriting';
+import { QuizioIllustrationMain } from "../../components/visual/QuizioIllustrationMain";
 import Link from "next/link";
+import Head from "next/head";
 
 export default () => {
     const mainContentRef = useRef(null);
@@ -28,6 +29,9 @@ export default () => {
 
     return (
         <>
+            <Head>
+                <title>Quizio - For Schools</title>
+            </Head>
             <LayoutSetup />
             <header className={`${isHeaderSticky ? "sticky" : ""}`}>
                 <h1>Quizio</h1>
@@ -36,7 +40,7 @@ export default () => {
                         <li><a href="#head">Home</a></li>
                         <li><a href="#quizio-presentation">The flow</a></li>
                         <li><a href="#about-us">About us</a></li>
-                        <li><Link href="/schools"><a>Quizio Schools</a></Link></li>
+                        <li><Link href="/"><a>Quizio</a></Link></li>
                         <li><Link href="/login"><a>Login</a></Link></li>
                     </ul>
                 </nav>
@@ -44,24 +48,17 @@ export default () => {
             <main ref={mainContentRef}>
                 <section id="head" className="head">
                     <div className="entry-stuff-container">
-                        <h1>Quizio</h1>
-                        <p className="subtitle">Design the most beautiful quizzes</p>
-                        <PrimaryButton
-                            title="Create quiz now"
-                            big
-                            growWithScreenSize
-                            color="blue"
-                            extraMarginTop
-                            linkTo="/createGenericQuiz"
-                        />
-                        <p>...or</p>
+                        <h1 className="head__name">Quizio</h1>
+                        <p className="head__schools"><span className="head__schools__text">Schools</span><img className="head__schools__dev-woman" src="/static/illustrations/dev-woman.svg" /></p>
+                        <p className="head__subtitle">Create and distribute tests in minutes</p>
                         <PrimaryButton
                             title="Login"
                             big
                             growWithScreenSize
                             color="pink"
                             linkTo="/login"
-                            marginTop />
+                            extraMarginTop />
+                        <p className="main__option-separator-text">...or</p>
                         <SecondaryButton
                             title="Register"
                             marginTop
@@ -73,36 +70,20 @@ export default () => {
                     <div className="quiz-illustration-container">
                         <QuizzIllustration />
                     </div>
-                    <div className="quizio-schools-teaser-big">
-                        <img className="quizio-schools-teaser-big__icon" src="/static/book-icon.svg" />
-                        <div className="quizio-schools-teaser-big__content">
-                            <p>Explore <span>Quizio Schools.</span></p>
-                            <p>Create tests quick and easy.</p>
-                            <PrimaryButton
-                                title="Go to Quizio Schools"
-                                color="purple"
-                                big
-                                marginTop
-                                linkTo="/schools" />
-                        </div>
-                    </div>
                 </section>
-                <div className="quizio-schools-teaser-container">
-                    <div className="quizio-schools-teaser">
-                        <p className="quizio-schools-teaser__text">
-                            Explore <span>Quizio Schools</span>
-                        </p>
-                        <PrimaryButton
-                            title="Go to Quizio Schools"
-                            color="purple"
-                            big
-                            growWithScreenSize
-                            marginTop
-                        />
-                    </div>
-                </div>
                 <section id="quizio-presentation" className="quizio-presentation">
-                    <QuizioIllustrationMain />
+                    <div className="presentation__tile">
+                        <p className="presentation-tile__text">Create interactive tests</p>
+                        <img className="presentation-tile__image" src="/static/illustrations/quizio_schools/support-notes-colour.svg"/>
+                    </div>
+                    <div className="presentation__tile">
+                        <p className="presentation-tile__text">Send them to students</p>
+                        <img className="presentation-tile__image send-to-students-image" src="/static/illustrations/quizio_schools/list-app-colour.svg"/>
+                    </div>
+                    <div className="presentation__tile">
+                        <p className="presentation-tile__text">Analyze results and view statistics</p>
+                        <img className="presentation-tile__image analyze-results-image" src="/static/illustrations/quizio_schools/charts-and-graphs.svg"/>
+                    </div>
                 </section>
                 <section id="about-us" className="about-us-container">
                     <h1>About us</h1>
@@ -148,13 +129,58 @@ export default () => {
                     padding-left: 10px;
                     transition: all 0.3s;
                     opacity: 0;
-                    font-size: 1.4em;
+                    font-size: 2rem;
                 }
                 header.sticky h1 {
                     opacity: 1;
                 }
                 header.sticky {
                     box-shadow: 0px 0px 12px hsl(0, 0%, 70%);
+                }
+                .head__schools {
+                    color: rgba(0,0,0,1);
+                    padding: 2px 15px;
+                    font-size: 6rem;
+                    font-weight: 600;
+                    border-radius: 10px;
+                    transform: translateY(-20px) rotate(3deg);
+                    position: relative;
+                    animation: HeadSchoolsTextAnimation 2.5s ease-out;
+                }
+                @keyframes HeadSchoolsTextAnimation {
+                    0% {
+                        transform: translateY(-20px) rotate(0deg);
+                    }
+                    50% {
+                        transform: translateY(-20px) rotate(0deg);
+                    }
+                    100% {
+                        transform: translateY(-20px) rotate(3deg);
+                    }
+                }
+                .head__schools__dev-woman {
+                    position: absolute;
+                    width: 220px;
+                    top: -65px;
+                    right: -97px;
+                    animation: HeadSchoolsDevWomanAnimation 1.5s ease-out;
+                }
+                @keyframes HeadSchoolsDevWomanAnimation {
+                    0% {
+                        transform: translateY(-20px);
+                        opacity: 0;
+                    }
+                    50% {
+                        opacity: 0;
+                        transform: translateY(-20px);
+                    }
+                    100% {
+                        transform: translateY(0px);
+                        opacity: 1;
+                    }
+                }
+                .head__name {
+                    margin-top: -50px;
                 }
                 nav ul {
                     display: flex;
@@ -192,9 +218,9 @@ export default () => {
                     overflow-y: auto;
                     overflow-x: hidden;
                 }
-                main p {
-                    font-size: 1.5em;
+                .main__option-separator-text {
                     margin-top: 10px;
+                    font-size: 1.3rem;
                 }
                 .head {
                     position: relative;
@@ -229,111 +255,14 @@ export default () => {
                         opacity: 1;
                     }
                 }
-                .quizio-schools-teaser-container {
-                    width: 100%;
-                    display: flex;
-                    justify-content: center;
-                }
-                .quizio-schools-teaser {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    flex-direction: column;
-                    padding: 24px 15px;
-                    margin-bottom: 30px;
-                    background-color: hsl(347,88%,96%);
-                    border-radius: 10px;
-                    box-shadow: 2px 2px 8px rgba(0, 0, 0, 30%);
-                }
-                .quizio-schools-teaser__text {
-                    text-align: center;
-                    color: black;
-                    font-weight: 400;
-                    font-size: 1.6rem;
-                }
-                .quizio-schools-teaser__text > span {
-                    font-weight: 700;
-                    font-size: 1.8rem;
-                }
-                @media (min-width: 450px) {
-                    .quizio-schools-teaser {
-                        padding: 24px 20px;
-                    }
-                    .quizio-schools-teaser__text {
-                        font-size: 1.8rem;
-                    }
-                    .quizio-schools-teaser__text > span {
-                        font-size: 2rem;
-                    }
-                }
-                @media (min-width: 1195px) {
-                    .quizio-schools-teaser-container {
-                        display: none;
-                    }
-                }
-                .quizio-schools-teaser-big {
-                    display: none;
-                    flex-direction: row;
-                    align-items: center;
-                    position: absolute;
-                    top: 20%;
-                    right: -300px;
-                    background-color: hsl(347,88%,96%);
-                    width: 400px;
-                    height: 300px;
-                    border-top-left-radius: 200px;
-                    border-bottom-left-radius: 200px;
-                    box-shadow: 2px 2px 8px rgb(0, 0, 0, 0.3);
-                    transition: all 0.3s ease-out;
-                    padding-left: 18px;
-                    animation: BigTeaserIn 1s;
-                }
-                @keyframes BigTeaserIn {
-                    0% {
-                        right: -400px;
-                        opacity: 0;
-                    }
-                    100% {
-                        right: -300px;
-                        opacity: 1;
-                    }
-                }
-                .quizio-schools-teaser-big__icon {
-                    width: 60px;
-                    animation: Pulsate 1s ease-out;
-                    animation-iteration-count: infinite;
-                    animation-direction: alternate;
-                }
-                .quizio-schools-teaser-big__content span {
-                    font-size: 1.8rem;
-                    font-weight: 600;
-                }
-                @keyframes Pulsate {
-                    0% {
-                        transform: scale(1);
-                    }
-                    100% {
-                        transform: scale(1.1);
-                    }
-                }
-                .quizio-schools-teaser-big:hover {
-                    right: 0px;
-                }
-                .quizio-schools-teaser-big__content {
-                    margin-left: 25px;
-                }
-                @media (min-width: 1195px) {
-                    .quizio-schools-teaser-big {
-                        display: flex;
-                    }
-                }
                 .entry-stuff-container {
                     width: 100%;
                     height: calc(100vh - 50px);
                     display: flex;
                     flex-direction: column;
                     align-items: center;
-                    padding-top: 20px;
+                    padding-top: 0px;
+                    margin-top: 10px;
                     animation: SlideDownAndFadeIn 1s;
                 }
                 .entry-stuff-container h1 {
@@ -350,7 +279,8 @@ export default () => {
                         font-size: 9em;
                     }
                 }
-                .entry-stuff-container p.subtitle  {
+                .head__subtitle  {
+                    margin-top: -15px;
                     font-size: 3em;
                     text-align: center;
                 }
@@ -367,9 +297,36 @@ export default () => {
                 .quizio-presentation {
                     margin-top: 25px;
                     min-height: calc(100vh - 25px);
-                    background-color: hsl(347,90%,97%);
-                    clip-path: polygon(50% 0%, 100% 30px, 100% 100%, 0 100%, 0 30px);
-                    padding-bottom: 20px;
+                    display: flex;
+                    flex-wrap: wrap;
+                    justify-content: center;
+                    padding: -30px;
+                }
+                .presentation__tile {
+                    width: 310px;
+                    height: 400px;
+                    border-radius: 8px;
+                    box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.3);
+                    margin: 30px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    padding-top: 30px;
+                    overflow: hidden;
+                }
+                .presentation-tile__text {
+                    font-size: 1.7rem;
+                    text-align: center;
+                    flex-grow: 1;
+                }
+                .presentation-tile__image {
+                    height: 300px;
+                }
+                .send-to-students-image {
+                    transform: translateY(4px) scale(1.05);
+                }
+                .analyze-results-image {
+                    transform: translateY(-28px) scale(1.5);
                 }
                 .about-us-container {
                     width: 100%;

@@ -79,11 +79,23 @@ const getColorBehaviorsForColor = (color, secondary) => {
                 boxShadowActive: "1px 1px 12px #b51b45",
                 borderDefault: "none"
             }
+        case "purple": {
+            return {
+                textColor: "white",
+                backgroundColorDefault: "#43318D",
+                backgroundColorHover: "#43318D",
+                backgroundColorActive: "#43318D",
+                boxShadowDefault: "1px 1px 8px #43318D",
+                boxShadowHover: "1px 1px 12px #43318D",
+                boxShadowActive: "1px 1px 12px #43318D",
+                borderDefault: "none"
+            }
+        }
     }
 }
 
 const PrimaryButton = ({
-    title, color = "green", inactive = false, marginRight = false, marginTop = false, extraMarginTop = false,
+    title, color = "green", inactive = false, marginRight = false, marginTop = false, customMarginTop = null, extraMarginTop = false,
     big = false, medium = false, linkTo = null, onClick, growWithScreenSize = false, containerWidthAndHeight = false,
     secondary = false, noFixedWidth = false, ...rest
 }) => {
@@ -152,6 +164,13 @@ const PrimaryButton = ({
                         "margin-top: 50px;"
                         :
                         ""
+                    }
+                    ${customMarginTop ?
+                        `
+                        margin-top: ${customMarginTop}px;
+                        `
+                        :
+                        ``
                     }
                      ${containerWidthAndHeight ?
                         `

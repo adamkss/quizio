@@ -1,9 +1,9 @@
-export const SillyHandwritingWithOption = ({ text, checked, noMargins = false }) => {
+export const SillyHandwritingWithOption = ({ text, checked, noMargins = false, smallMargin = false, width = "50px" }) => {
     return (
         <>
             <div className="shell">
                 <SillyHandwriting text={text} />
-                <Checkmarkplace checked={checked} />
+                <Checkmarkplace checked={checked} width={width} />
             </div>
             <style jsx>
                 {`
@@ -15,7 +15,12 @@ export const SillyHandwritingWithOption = ({ text, checked, noMargins = false })
                         "margin-top: 60px;"
                         :
                         ""
-                        }
+                    }
+                        ${ smallMargin ?
+                        "margin-top: 20px;"
+                        :
+                        ""
+                    }
                     }
             `}
             </style>
@@ -38,7 +43,7 @@ export const SillyHandwriting = ({ text = "Lorem impsum dolor" }) => {
     )
 }
 
-export const Checkmarkplace = ({ checkmarkplaceColor = "#44318d", checked }) => {
+export const Checkmarkplace = ({ checkmarkplaceColor = "#44318d", checked, width }) => {
     return (
         <>
             <div className="checkmark-place">
@@ -51,14 +56,14 @@ export const Checkmarkplace = ({ checkmarkplaceColor = "#44318d", checked }) => 
             <style jsx>
                 {`
                 .checkmark-place {
-                    width: 50px;
-                    height: 50px;
+                    width: ${width};
+                    height: ${width};
                     background-color: ${checkmarkplaceColor};
                     border-radius: 45%;
                     position: relative;
                 }
                 img {
-                    width: 60px;
+                    width: ${width == "50px" ? "60px" : "35px"}
                 }
             `}
             </style>

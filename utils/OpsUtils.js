@@ -23,3 +23,30 @@ export const copyToClipboard = function (text) {
         }
     }
 }
+
+export const getArrayAfterElementMove = (array, sourceIndex, targetIndex) => {
+    const elementToMove = array[sourceIndex];
+    if (sourceIndex < 0 || sourceIndex >= array.length || targetIndex < 0 || targetIndex >= array.length) {
+        console.log('Array move source or target index false value.');
+        return array;
+    }
+    if (sourceIndex != targetIndex) {
+        if (sourceIndex < targetIndex) {
+            return [
+                ...array.slice(0, sourceIndex),
+                ...array.slice(sourceIndex + 1, targetIndex),
+                elementToMove,
+                ...array.slice(targetIndex, array.length)
+            ]
+        } else {
+            return [
+                ...array.slice(0, targetIndex),
+                elementToMove,
+                ...array.slice(targetIndex, sourceIndex),
+                ...array.slice(sourceIndex + 1, array.length)
+            ]
+        }
+    } else {
+        return array;
+    }
+}
