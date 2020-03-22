@@ -1,10 +1,11 @@
-import { useRouter } from "next/router"
+import Router, { useRouter } from "next/router"
 import { useEffect, useState, useCallback } from "react";
-import { getSessionQuestionsWithIds, getQuestionDetails, getAllUnfinishedEntryCodesOfATest, getInfoAboutTestBySession } from "../../../utils/TestRequests";
+import { getSessionQuestionsWithIds, getQuestionDetails, submitTestSession, getInfoAboutTestBySession } from "../../../utils/TestRequests";
 import { executeAsyncFunctionAndObserveState } from "../../../utils/AsyncUtils";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import PrimaryButton from "../../../components/PrimaryButton";
 import LayoutSetup from "../../../components/layoutSetup";
+import ConfirmationDialog from "../../../components/ConfirmationDialog";
 
 export default () => {
     const { testSession } = useRouter().query;
@@ -16,6 +17,8 @@ export default () => {
     const [questionsState, setQuestionsState] = useState([]);
     //we use this state to cache already loaded questions
     const [preloadedQuestions, setPreloadedQuestions] = useState({});
+    const [nrOfAnsweredQuestions, setNrOfAnsweredQuestions] = useState(0);
+    const [isUserWantingToSubmitWithoutAllAnswers, setIsUserWantingToSubmitWithoutAllAnswers] = useState(false);
 
     const loadQuestionInfo = useCallback(async (questionId) => {
         const questionDetailsCached = preloadedQuestions[questionId];
@@ -74,12 +77,26 @@ export default () => {
 
     const onAnswerSelected = useCallback((selectedOptionIndex) => {
         let newQuestionsState = [...questionsState];
-        newQuestionsState[currentQuestionIndex] = {
-            ...newQuestionsState[currentQuestionIndex],
-            answered: true,
-            selectedOptionOrderNr: selectedOptionIndex,
-            selectedOption: currentQuestion.questionOptions[selectedOptionIndex]
-        };
+        //Verify if the pressed answer is the last pressed. If so, unselect it.
+        if (newQuestionsState[currentQuestionIndex].selectedOptionOrderNr === selectedOptionIndex) {
+            newQuestionsState[currentQuestionIndex] = {
+                ...newQuestionsState[currentQuestionIndex],
+                answered: false,
+                selectedOptionOrderNr: null,
+                selectedOption: null
+            };
+            setNrOfAnsweredQuestions(nr => nr - 1);
+        } else {
+            if (!newQuestionsState[currentQuestionIndex].answered) {
+                setNrOfAnsweredQuestions(nr => nr + 1);
+            }
+            newQuestionsState[currentQuestionIndex] = {
+                ...newQuestionsState[currentQuestionIndex],
+                answered: true,
+                selectedOptionOrderNr: selectedOptionIndex,
+                selectedOption: currentQuestion.questionOptions[selectedOptionIndex]
+            };
+        }
         setQuestionsState(newQuestionsState);
     }, [questionsState, currentQuestionIndex, currentQuestion]);
 
@@ -87,12 +104,36 @@ export default () => {
         moveToQuestionWithIndex(questionIndex);
     }, [moveToQuestionWithIndex]);
 
+    const submitTest = useCallback(async () => {
+        setIsUserWantingToSubmitWithoutAllAnswers(false);
+        const resultData = await executeAsyncFunctionAndObserveState(
+            setIsLoadingScreenShown,
+            submitTestSession,
+            testSession,
+            questionsState
+        );
+        localStorage.setItem('resultPercentage', resultData.result);
+        Router.push('/schools/testSubmitted');
+    }, [testSession, questionsState, Router]);
+
     const onMainButtonClick = useCallback(() => {
+        const totalNumberOfQuestions = questionsWithIds.length;
         if (currentQuestionIndex < (questionsWithIds.length - 1)) {
             moveToQuestionWithIndex(currentQuestionIndex + 1);
+        } else {
+            if (nrOfAnsweredQuestions < totalNumberOfQuestions) {
+                setIsUserWantingToSubmitWithoutAllAnswers(true);
+            } else {
+                submitTest();
+            }
         }
-    }, [currentQuestionIndex, questionsWithIds, moveToQuestionWithIndex]);
+    }, [currentQuestionIndex, questionsWithIds, moveToQuestionWithIndex, nrOfAnsweredQuestions, submitTest]);
 
+    const onCancelSubmittingTestWithUnansweredQuestions = useCallback(() => {
+        setIsUserWantingToSubmitWithoutAllAnswers(false);
+    }, []);
+
+    const isLastQuestionDisplayed = currentQuestionIndex == (questionsWithIds.length - 1);
     return (
         <>
             <LayoutSetup title={`Quizio - Take test ${testInfo ? `"${testInfo.testName}"` : ''}`} />
@@ -104,6 +145,7 @@ export default () => {
             <main>
                 <div className="layout-organizer">
                     <header>
+                        <p>Quizio Schools</p>
                         <h1>Taking test: <span>{testInfo ? testInfo.testName : ''}</span> </h1>
                     </header>
                     <section className="questions-list">
@@ -113,7 +155,7 @@ export default () => {
                             onQuestionSelected={onQuestionSelectedFromList}
                             questionsState={questionsState} />
                     </section>
-                    <div className="horizontally-centered question-grid">
+                    <div className="question-grid">
                         <div className="question-container">
                             {currentQuestion ?
                                 <>
@@ -130,58 +172,132 @@ export default () => {
                     </div>
                     <section className="main-button-container">
                         <PrimaryButton
-                            title="Next"
-                            color="pink"
+                            title={isLastQuestionDisplayed ? "Finish" : "Next"}
+                            color={isLastQuestionDisplayed ? "blue" : "pink"}
                             medium
                             onClick={onMainButtonClick} />
                     </section>
+                    <section className="number-of-unanswered-questions-section">
+                        <span>Answered: <span className="bold">{nrOfAnsweredQuestions}/{questionsWithIds.length}</span></span>
+                    </section>
                 </div>
+                {isUserWantingToSubmitWithoutAllAnswers ?
+                    <ConfirmationDialog
+                        text="You have unanswered questions. Submit the test as it is?"
+                        positiveIsRed
+                        title="Warning!"
+                        onCancel={onCancelSubmittingTestWithUnansweredQuestions}
+                        onConfirm={submitTest} />
+
+                    :
+                    null
+                }
             </main>
             <style jsx>
                 {`
+                    header {
+                        pointer-events: none;
+                    }
                     header h1{
+                        display: block;
                         grid-area: header;
+                        align-self: center;
                         font-weight: 300;
+                        font-size: 1.5em;
                         color: rgba(0,0,0,0.6);
                     }
                     header h1 span {
                         font-weight: 400;
                     }
+                    header p {
+                        font-weight: 400;
+                        color: rgba(0,0,0,0.8);
+                        font-size: 1.5em;
+                    }
                     main {
                         width: 100%;
                         height: 100vh;
+                        font-size: 0.8rem;
+                        overflow-y: auto;
                     }
                     .main-button-container {
                         grid-area: main-button;
                         justify-self: end;
                         align-self: start;
-                        margin-right: 50px;
+                        padding-top: 12px;
+                    }
+                    .number-of-unanswered-questions-section {
+                        grid-area: statistics;
+                        pointer-events: none;
+                        justify-self: end;
+                        align-self: center;
+                        font-size: 1.5em;
+                        font-weight: 300;
+                    }
+                    .number-of-unanswered-questions-section span .bold{
+                        font-weight: 400;
                     }
                     .layout-organizer {
-                        height: 100%;
+                        width: 100%;
+                        min-height: 100%;
                         display: grid;
-                        padding: 50px;
-                        grid-template-rows: auto 1fr auto;
-                        grid-template-columns: 1.2fr 5fr;
+                        padding: 12px;
+                        grid-template-columns: 1fr;
                         grid-template-areas:
-                            "header header"
-                            ". question"
-                            "questions-list main-button";
+                            "header"
+                            "statistics"
+                            "question"
+                            "main-button"
+                            "questions-list";
                     }
                     .questions-list {
                         grid-area: questions-list;
-                        align-self: end;
-                        padding-bottom: 40px;
+                        padding-top: 12px;
                     }
                     .question-grid {
                         grid-area: question;
                     }
                     .question-container {
-                        width: 60vw;
-                        min-width: 400px;
+                        width: 100%;
+                        min-height: 300px;
                         display: flex;
                         flex-direction:column;
-                        padding-top: 50px;
+                    }
+                    @media (min-width: 800px) {
+                        main {
+                            font-size: 1rem;
+                        }
+                    }
+                    @media (min-width: 1000px) {
+                        .layout-organizer {
+                            padding: 50px;
+                            grid-template-rows: auto 1fr auto;
+                            grid-template-columns: 1.2fr 5fr;
+                            grid-template-areas:
+                                "header statistics"
+                                ". question"
+                                "questions-list main-button";
+                        }
+                        .questions-list {
+                            align-self: end;
+                            padding-bottom: 40px;
+                        }
+                        .question-container {
+                            width: 60vw;
+                            min-width: 400px;
+                            padding-top: 50px;
+                        }
+                        .number-of-unanswered-questions-section {
+                            justify-self: end;
+                            padding-right: 50px;
+                            font-size: 1.5em;
+                            font-weight: 300;
+                        }
+                        .main-button-container {
+                            justify-self: end;
+                            align-self: start;
+                            margin-right: 50px;
+                        }
                     }
             `}
             </style>
@@ -228,7 +344,7 @@ const Question = ({ question, options = [], onAnswerSelected, currentlySelectedA
                         display: flex;
                         flex-direction: row;
                         align-items: center;
-                        padding: 20px;
+                        padding: 12px;
                         cursor: pointer;
                         transition: all 0.3s ease-out;
                         font-weight: 300;
@@ -258,6 +374,11 @@ const Question = ({ question, options = [], onAnswerSelected, currentlySelectedA
 
                     .option:not(:last-child) {
                         margin-bottom: 20px;
+                    }
+                    @media (min-width: 1000px) {
+                        .option {
+                            padding: 15px;
+                        }
                     }
                 `}
             </style>

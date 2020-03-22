@@ -97,3 +97,7 @@ export const getQuestionDetails = (sessionId, questionId) => {
 export const getInfoAboutTestBySession = (sessionId) => {
     return axios.get(`/test-sessions/${sessionId}/testInfo`).then(getDataFromResponseAsPromise);
 }
+
+export const submitTestSession = (sessionId, testQuestionsState) => {
+    return axios.post(`/test-sessions/${sessionId}/submissions`, testQuestionsState).then(getDataFromResponseAsPromise);
+}
