@@ -20,8 +20,13 @@ export default ({ }) => {
     const [resultColor, setResultColor] = useState(null);
 
     useEffect(() => {
-        const resultPercentage = Math.round(localStorage.getItem('resultPercentage'));
-        setResultPercentage(resultPercentage);
+        const resultPerc = localStorage.getItem('resultPercentage');
+        if (resultPerc === 'confidential') {
+            //can't show result...
+        } else {
+            const resultPercentage = Math.round(resultPerc);
+            setResultPercentage(resultPercentage);
+        }
     }, []);
 
     useEffect(() => {

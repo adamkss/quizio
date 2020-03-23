@@ -101,3 +101,7 @@ export const getInfoAboutTestBySession = (sessionId) => {
 export const submitTestSession = (sessionId, testQuestionsState) => {
     return axios.post(`/test-sessions/${sessionId}/submissions`, testQuestionsState).then(getDataFromResponseAsPromise);
 }
+
+export const updateTestSettings = (testId, testSettings) => {
+    return axios.put(`/tests/${testId}/settings`, testSettings);
+}

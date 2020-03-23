@@ -2,7 +2,7 @@ import { useRouter } from "next/router"
 import { useEffect, useState } from "react";
 import LayoutSetup from "../../../components/layoutSetup";
 import Link from 'next/link';
-import { getTestById, getAllQuestionsOfTest, addQuestionOptionToQuestion, createQuestion, getQuestionOfTest, updateCorrectQuestionOption, deleteQuestionOption, deleteQuestion, moveQuestions } from "../../../utils/TestRequests";
+import { getTestById, getAllQuestionsOfTest, addQuestionOptionToQuestion, createQuestion, getQuestionOfTest, updateCorrectQuestionOption, deleteQuestionOption, deleteQuestion, moveQuestions, updateTestSettings } from "../../../utils/TestRequests";
 import withAuthSetUp from "../../../hocs/withAuthSetUp";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import { executeAsyncFunctionAndObserveState } from '../../../utils/AsyncUtils';
@@ -12,6 +12,10 @@ import CreateQuestionDialog from "../../../components/quizzes/CreateQuestionDial
 import { Grid, GridElement } from "../../../components/dnd/GridDND";
 import CheckBox from '../../../components/CheckBox';
 import { getArrayAfterElementMove } from '../../../utils/OpsUtils';
+import GenericDialog from '../../../components/GenericDailog';
+import ConfirmationDialog from '../../../components/ConfirmationDialog';
+import TextInput from '../../../components/TextInput';
+import PrimaryButton from '../../../components/PrimaryButton';
 
 const findQuestionById = (questions, id) => {
     return questions.find(question => question.id == id);
@@ -51,6 +55,7 @@ const Editor = () => {
     const [isLoadingInProgress, setIsLoadingInProgress] = useState(false);
     const [isCreatingQuestionInProgress, setIsCreatingQuestionsInProgress] = useState(false);
     const [isDNDEnabled, setIsDNDEnabled] = useState(false);
+    const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState(false);
 
     const loadTestInfo = React.useCallback(async () => {
         const testInfo = await executeAsyncFunctionAndObserveState(
@@ -179,6 +184,26 @@ const Editor = () => {
         loadTestQuestions();
     }, [testId, questions]);
 
+    const onSettingsPress = React.useCallback(() => {
+        setIsSettingsDialogOpen(true);
+    }, []);
+
+    const onSettingsClose = React.useCallback(() => {
+        setIsSettingsDialogOpen(false)
+    }, []);
+
+    const onSettingsSave = React.useCallback(async (testName, showResultAtTheEnd) => {
+        onSettingsClose();
+        await executeAsyncFunctionAndObserveState(
+            setIsLoadingInProgress,
+            updateTestSettings,
+            testId,
+            {
+                showResultAtTheEnd
+            }
+        );
+    }, [testId, onSettingsClose]);
+
     return (
         <>
             <LayoutSetup />
@@ -202,7 +227,7 @@ const Editor = () => {
                     leftSideTitle
                     extraCSS='margin-right:10px;'
                 />
-                <button className="header__test-settings-button" onClick={() => { }}>
+                <button className="header__test-settings-button" onClick={onSettingsPress}>
                     <img src="/static/settings.svg"></img>
                     <span>Test Settings</span>
                 </button>
@@ -235,6 +260,15 @@ const Editor = () => {
                     title="Add question"
                     onClick={onAddQuestionFABClick}
                 />
+                {isSettingsDialogOpen ?
+                    <TestSettingsDialog
+                        initialTestName={testInfo.name}
+                        initialIsShowingOfFinalProcentEnabled={testInfo.showResultAtTheEnd}
+                        onCancel={onSettingsClose}
+                        onSave={onSettingsSave} />
+                    :
+                    null
+                }
             </main>
             <style jsx>
                 {`
@@ -316,6 +350,89 @@ const Editor = () => {
                 `}
             </style>
         </>
+    )
+}
+
+const TestSettingsDialog = (
+    {
+        initialTestName = "",
+        initialIsShowingOfFinalProcentEnabled = false,
+        onSave,
+        onCancel,
+        ...restGenericDialogProps
+    }) => {
+    const [testName, setTestName] = useState(initialTestName);
+    const [isShowingOfFinalProcentEnabled, setIsShowingOfFinalProcentEnabled] = useState(initialIsShowingOfFinalProcentEnabled);
+
+    const showingOfFinalProcentCheckBoxStateChangeCallback = React.useCallback((evt) => {
+        setIsShowingOfFinalProcentEnabled(evt.target.checked);
+    });
+
+    const [isCancellationConfirmationShown, setIsCancellationConfirmationShown] = useState(false);
+
+    const onCancelClick = React.useCallback(() => {
+        const wereChangesMade = initialTestName !== testName
+            || initialIsShowingOfFinalProcentEnabled !== isShowingOfFinalProcentEnabled;
+        if (wereChangesMade)
+            setIsCancellationConfirmationShown(true);
+        else
+            onCancel();
+    }, [initialTestName, testName, initialIsShowingOfFinalProcentEnabled, isShowingOfFinalProcentEnabled, onCancel]);
+
+    const onConfirmationDialogCancel = React.useCallback(() => {
+        setIsCancellationConfirmationShown(false);
+    }, []);
+
+    const onDoneClick = React.useCallback(() => {
+        const wereChangesMade = initialTestName !== testName
+            || initialIsShowingOfFinalProcentEnabled !== isShowingOfFinalProcentEnabled;
+        if (wereChangesMade)
+            onSave(testName, isShowingOfFinalProcentEnabled);
+        else
+            onCancel();
+    }, [onSave, initialTestName, testName, initialIsShowingOfFinalProcentEnabled, isShowingOfFinalProcentEnabled]);
+    return (
+        !isCancellationConfirmationShown ?
+            <GenericDialog
+                title="Customize Your test"
+                onDismissDialog={onCancelClick}
+                {...restGenericDialogProps}>
+                <TextInput
+                    title="Test name:"
+                    value={testName}
+                    width="100%"
+                    valueSetter={setTestName} />
+                <CheckBox
+                    title={"Show result of the test to the user."}
+                    checked={isShowingOfFinalProcentEnabled}
+                    onChange={showingOfFinalProcentCheckBoxStateChangeCallback}
+                    marginTop
+                />
+                <div className="horizontally-end-positioned">
+                    <PrimaryButton
+                        title="Done"
+                        marginRight
+                        medium
+                        marginTop
+                        onClick={onDoneClick}
+                    />
+                    <PrimaryButton
+                        title="Cancel"
+                        color="red"
+                        marginTop
+                        medium
+                        onClick={onCancelClick}
+                    />
+                </div>
+            </GenericDialog>
+            :
+            <ConfirmationDialog
+                title="You made changes to the test. Abandon them?"
+                negativeAnswer="No"
+                positiveAnswer="Abandon"
+                positiveIsRed
+                onConfirm={onCancel}
+                onCancel={onConfirmationDialogCancel} />
     )
 }
 

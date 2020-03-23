@@ -112,7 +112,8 @@ export default () => {
             testSession,
             questionsState
         );
-        localStorage.setItem('resultPercentage', resultData.result);
+        const resultPercentage = resultData.result || 'confidential';
+        localStorage.setItem('resultPercentage', resultPercentage);
         Router.push('/schools/testSubmitted');
     }, [testSession, questionsState, Router]);
 
