@@ -105,6 +105,12 @@ export default ({ }) => {
                }
                
                 @keyframes Circley {
+                    0% {
+                        opacity: 0;
+                    }
+                    75% {
+                        opacity: 1;
+                    }
                     100% {
                         stroke-dashoffset: ${circlePerimeter - circlePerimeter * resultPercentage / 100};
                     }
