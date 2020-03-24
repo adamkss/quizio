@@ -1,5 +1,6 @@
 import LayoutSetup from "../../components/layoutSetup"
 import { useEffect, useState } from "react";
+import Link from 'next/link';
 
 const getColorByResultPercentage = percentage => {
     if (percentage < 25)
@@ -37,6 +38,9 @@ export default ({ }) => {
         <>
             <LayoutSetup title="Test submitted" />
             <main>
+                <Link href="/">
+                    <span className="back-to-home">Back to Quizio</span>
+                </Link>
                 <div className="card fade-and-slide-in">
                     <h1>Quizio Schools</h1>
                     <span className="message">You submitted the test successfully!</span>
@@ -65,15 +69,15 @@ export default ({ }) => {
                     display: flex;
                     justify-content: center;
                     align-items: center;
+                    font-size: 1rem;
                 }
                 .card {
                     width: 90%;
                     max-width: 400px;
-                    height: 500px;
-                    max-height: 90vh;
+                    max-height: 500px;
                     box-shadow: 0px 0px 8px rgba(0,0,0,0.4);
                     border-radius: 10px;
-                    padding: 12px;
+                    padding: 20px;
                     display: flex;
                     flex-direction: column;
                     align-items: center;
@@ -81,10 +85,12 @@ export default ({ }) => {
                 h1 {
                     text-align: center;
                     margin-bottom: 30px;
+                    font-size: 2.5em;
                 }
                 .message {
                     font-weight: 300;
                     margin-bottom: 35px;
+                    font-size: 1.5em;
                 }
                 circle {
                     stroke: ${resultColor};
@@ -106,7 +112,7 @@ export default ({ }) => {
                    transform: translate(-47%, -60%);
                    text-align: center;
                    vertical-align: middle;
-                   font-size: 1.4rem;
+                   font-size: 1.4em;
                }
                
                 @keyframes Circley {
@@ -124,6 +130,14 @@ export default ({ }) => {
                     
                 }
                 .result-text {
+                }
+
+                .back-to-home {
+                    position: fixed;
+                    top: 20px;
+                    left: 20px;
+                    font-size: 1.3em;
+                    color: rgba(0,0,0,0.85);
                 }
             `}
             </style>

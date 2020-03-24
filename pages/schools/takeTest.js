@@ -69,6 +69,7 @@ export default () => {
                         justify-content: center;
                         align-items: center;
                         height: 100vh;
+                        font-size: 1.2rem;
                     }
                     .card {
                         width: 80%;
@@ -84,25 +85,6 @@ export default () => {
                     }
                     .card__quiz-name {
                         font-weight: 700;
-                    }
-                    .back-link {
-                        position: fixed;
-                        left: 25px;
-                        top: 25px;
-                        padding: 5px;
-                        text-align: center;
-                        vertical-align: center;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        cursor: pointer;
-                        text-decoration: none;
-                        color: inherit;
-                        font-size: 1.14rem;
-                    }
-                    .back-arrow {
-                        width: 20px;
-                        margin-right: 7px;
                     }
                     .illustration {
                         width: 200px;

@@ -112,7 +112,7 @@ const PrimaryButton = ({
     return (
         <>
             <button
-                className={`save-question${!inactive ? "" : " inactive"}`}
+                className={`${!inactive ? "" : " inactive"}`}
                 onClick={inactive ? null : onClickHandler}
                 {...rest}
                 title={title}>
@@ -139,7 +139,7 @@ const PrimaryButton = ({
                         medium ?
                             `
                             width: 130px;
-                            font-size: 1.05rem;
+                            font-size: 1.05em;
                             padding: 5px;
                         `
                             :
@@ -187,16 +187,17 @@ const PrimaryButton = ({
                     }
                   }
 
-                  button.save-question.inactive {
+                  button.inactive {
                       background-color: grey;
                       box-shadow: 1px 1px 8px grey;
                       cursor: default;
                   }
-                  button.save-question:not(.inactive):hover {
+                  button:not(.inactive):hover {
                     background-color: ${colorsForDifferentStates.backgroundColorHover};
                     box-shadow: ${colorsForDifferentStates.boxShadowHover};
                   }
-                  button.save-question:not(.inactive):active {
+                  button:not(.inactive):active,
+                  button:not(.inactive):focus {
                     background-color: ${colorsForDifferentStates.backgroundColorActive};
                     box-shadow: ${colorsForDifferentStates.boxShadowActive};
                   }

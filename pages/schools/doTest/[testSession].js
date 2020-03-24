@@ -1,5 +1,5 @@
 import Router, { useRouter } from "next/router"
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useContext } from "react";
 import { getSessionQuestionsWithIds, getQuestionDetails, submitTestSession, getInfoAboutTestBySession } from "../../../utils/TestRequests";
 import { executeAsyncFunctionAndObserveState } from "../../../utils/AsyncUtils";
 import LoadingSpinner from "../../../components/LoadingSpinner";
@@ -19,6 +19,7 @@ export default () => {
     const [preloadedQuestions, setPreloadedQuestions] = useState({});
     const [nrOfAnsweredQuestions, setNrOfAnsweredQuestions] = useState(0);
     const [isUserWantingToSubmitWithoutAllAnswers, setIsUserWantingToSubmitWithoutAllAnswers] = useState(false);
+    const [areQuestionsLoaded, setQuestionsLoadad] = useState(false);
 
     const loadQuestionInfo = useCallback(async (questionId) => {
         const questionDetailsCached = preloadedQuestions[questionId];
@@ -69,8 +70,10 @@ export default () => {
                 });
                 setQuestionsWithIds(questionsWithIds);
                 setQuestionsState(questionsState);
-                if (questionsWithIds.length > 0)
+                if (questionsWithIds.length > 0) {
                     await loadQuestionInfo(questionsWithIds[0]);
+                }
+                setQuestionsLoadad(true);
             }
         })();
     }, [testSession]);
@@ -78,7 +81,7 @@ export default () => {
     const onAnswerSelected = useCallback((selectedOptionIndex) => {
         let newQuestionsState = [...questionsState];
         //Verify if the pressed answer is the last pressed. If so, unselect it.
-        if (newQuestionsState[currentQuestionIndex].selectedOptionOrderNr === selectedOptionIndex) {
+        if (newQuestionsState[currentQuestionIndex].selectedOptionOrderNr == selectedOptionIndex) {
             newQuestionsState[currentQuestionIndex] = {
                 ...newQuestionsState[currentQuestionIndex],
                 answered: false,
@@ -147,7 +150,11 @@ export default () => {
                 <div className="layout-organizer">
                     <header>
                         <p>Quizio Schools</p>
-                        <h1>Taking test: <span>{testInfo ? testInfo.testName : ''}</span> </h1>
+                        {areQuestionsLoaded ?
+                            <h1 className="fade-in">Taking test: <span>{testInfo.testName || ''}</span> </h1>
+                            :
+                            null
+                        }
                     </header>
                     <section className="questions-list">
                         <QuestionsList
@@ -159,27 +166,33 @@ export default () => {
                     <div className="question-grid">
                         <div className="question-container">
                             {currentQuestion ?
-                                <>
-                                    <Question
-                                        question={`${currentQuestionIndex + 1}. ${currentQuestion.questionTitle}`}
-                                        options={currentQuestion.questionOptions}
-                                        onAnswerSelected={onAnswerSelected}
-                                        currentlySelectedAnswerOrderNr={questionsState[currentQuestionIndex] ? questionsState[currentQuestionIndex].selectedOptionOrderNr : null} />
-                                </>
+                                <Question
+                                    question={`${currentQuestionIndex + 1}. ${currentQuestion.questionTitle}`}
+                                    options={currentQuestion.questionOptions}
+                                    onAnswerSelected={onAnswerSelected}
+                                    currentlySelectedAnswerOrderNr={questionsState[currentQuestionIndex] ? questionsState[currentQuestionIndex].selectedOptionOrderNr : null} />
                                 :
                                 null
                             }
                         </div>
                     </div>
-                    <section className="main-button-container">
-                        <PrimaryButton
-                            title={isLastQuestionDisplayed ? "Finish" : "Next"}
-                            color={isLastQuestionDisplayed ? "blue" : "pink"}
-                            medium
-                            onClick={onMainButtonClick} />
-                    </section>
+                    {areQuestionsLoaded ?
+                        <section className="fade-in main-button-container">
+                            <PrimaryButton
+                                title={isLastQuestionDisplayed ? "Finish" : "Next"}
+                                color={isLastQuestionDisplayed ? "blue" : "pink"}
+                                medium
+                                onClick={onMainButtonClick} />
+                        </section>
+                        :
+                        null
+                    }
                     <section className="number-of-unanswered-questions-section">
-                        <span>Answered: <span className="bold">{nrOfAnsweredQuestions}/{questionsWithIds.length}</span></span>
+                        {areQuestionsLoaded ?
+                            <span>Answered: <span className="fade-in bold">{nrOfAnsweredQuestions}/{questionsWithIds.length}</span></span>
+                            :
+                            null
+                        }
                     </section>
                 </div>
                 {isUserWantingToSubmitWithoutAllAnswers ?
@@ -196,6 +209,17 @@ export default () => {
             </main>
             <style jsx>
                 {`
+                    main {
+                        width: 100%;
+                        height: 100vh;
+                        font-size: 1.05rem;
+                        overflow-y: auto;
+                    }
+                    @media (min-width: 800px) {
+                        main {
+                            font-size: 1.2rem;
+                        }
+                    }
                     header {
                         pointer-events: none;
                     }
@@ -214,12 +238,6 @@ export default () => {
                         font-weight: 400;
                         color: rgba(0,0,0,0.8);
                         font-size: 1.5em;
-                    }
-                    main {
-                        width: 100%;
-                        height: 100vh;
-                        font-size: 0.8rem;
-                        overflow-y: auto;
                     }
                     .main-button-container {
                         grid-area: main-button;
@@ -264,14 +282,10 @@ export default () => {
                         display: flex;
                         flex-direction:column;
                     }
-                    @media (min-width: 800px) {
-                        main {
-                            font-size: 1rem;
-                        }
-                    }
+                    
                     @media (min-width: 1000px) {
                         .layout-organizer {
-                            padding: 50px;
+                            padding: 35px;
                             grid-template-rows: auto 1fr auto;
                             grid-template-columns: 1.2fr 5fr;
                             grid-template-areas:
@@ -307,16 +321,19 @@ export default () => {
 }
 
 const Question = ({ question, options = [], onAnswerSelected, currentlySelectedAnswerOrderNr }) => {
+    const getOnOptionPressedCallback = React.useCallback((index) => () => {
+        onAnswerSelected(index);
+    }, [onAnswerSelected]);
+
     return (
         <>
-            <div className="outer-container">
+            <div className="fade-in outer-container">
                 <span className="question">{question}</span>
                 {options.map((option, index) => {
                     const extraClassNames = currentlySelectedAnswerOrderNr != null ?
                         index === currentlySelectedAnswerOrderNr ? "selected" : "" : "";
-
                     return (
-                        <div className={`option ${extraClassNames}`} key={option.id} onClick={() => onAnswerSelected(index)}>
+                        <div className={`option ${extraClassNames}`} key={option.id} onClick={getOnOptionPressedCallback(index)}>
                             <span className="nr">{index + 1}.</span>
                             <span className="answer">
                                 {option.questionOptionText}
@@ -350,6 +367,7 @@ const Question = ({ question, options = [], onAnswerSelected, currentlySelectedA
                         transition: all 0.3s ease-out;
                         font-weight: 300;
                         font-size: 1.5em;
+                        outline: none;
                     }
 
                     .option.selected {
@@ -393,6 +411,11 @@ const QuestionsList = ({ numberOfQuestions = 23, currentQuestionOrderNr = 1, onQ
         onQuestionSelected(index);
     }, [onQuestionSelected]);
 
+    const getCallbackForQuestionSelectKeyDown = useCallback(index => ({ keyCode }) => {
+        if (keyCode == 13) {
+            onQuestionSelected(index);
+        }
+    }, [onQuestionSelected]);
     return (
         <>
             <div className="layout">
@@ -400,9 +423,10 @@ const QuestionsList = ({ numberOfQuestions = 23, currentQuestionOrderNr = 1, onQ
                     let extraCSS = index + 1 == currentQuestionOrderNr ? " current" : "";
                     extraCSS += questionsState[index] ? questionsState[index].answered ? ' answered' : '' : '';
                     return (
-                        <div key={index}
-                            className={`element${extraCSS}`}
+                        <div tabIndex={0} key={index}
+                            className={`fade-in element${extraCSS}`}
                             title={`Go to question ${index + 1}`}
+                            onKeyDown={getCallbackForQuestionSelect(index)}
                             onClick={getCallbackForQuestionSelect(index)}>
                             <span className="element-text">{index + 1}</span>
                         </div>
@@ -453,6 +477,10 @@ const QuestionsList = ({ numberOfQuestions = 23, currentQuestionOrderNr = 1, onQ
                 .element:active,
                 .element.current {
                     opacity:1;
+                }
+                .element:focus {
+                    outline: none;
+                    background-color: rgba(10,0,0,0.15);
                 }
                 .element-text {
                     display: block;

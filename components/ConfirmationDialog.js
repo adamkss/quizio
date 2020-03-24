@@ -37,7 +37,7 @@ export default ({ title, text = null, onConfirm, onCancel, positiveAnswer = "Yes
                     }
                 }
                 .description-text {
-                    font-size: 1.2rem;
+                    font-size: 1.3em;
                     font-weight: 300;
                 }
             `}
