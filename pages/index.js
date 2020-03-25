@@ -28,7 +28,7 @@ export default () => {
 
     return (
         <>
-            <LayoutSetup />
+            <LayoutSetup title="Quizio - Beautiful quizzes" />
             <header className={`${isHeaderSticky ? "sticky" : ""}`}>
                 <h1>Quizio</h1>
                 <nav>
@@ -88,18 +88,17 @@ export default () => {
                     </div>
                 </section>
                 <div className="quizio-schools-teaser-container">
-                    <div className="quizio-schools-teaser">
-                        <p className="quizio-schools-teaser__text">
-                            Explore <span>Quizio Schools</span>
-                        </p>
-                        <PrimaryButton
-                            title="Go to Quizio Schools"
-                            color="purple"
-                            big
-                            growWithScreenSize
-                            marginTop
-                        />
-                    </div>
+                    <p className="quizio-schools-teaser__text">
+                        Explore <span>Quizio Schools</span>
+                    </p>
+                    <PrimaryButton
+                        title="Go to Quizio Schools"
+                        color="pink"
+                        big
+                        growWithScreenSize
+                        customMarginTop="75"
+                        linkTo="/schools"
+                    />
                 </div>
                 <section id="quizio-presentation" className="quizio-presentation">
                     <QuizioIllustrationMain />
@@ -148,7 +147,8 @@ export default () => {
                     padding-left: 10px;
                     transition: all 0.3s;
                     opacity: 0;
-                    font-size: 1.4em;
+                    font-size: 1.5rem;
+                    display: none;
                 }
                 header.sticky h1 {
                     opacity: 1;
@@ -156,14 +156,35 @@ export default () => {
                 header.sticky {
                     box-shadow: 0px 0px 12px hsl(0, 0%, 70%);
                 }
+                nav {
+                    flex: 1;
+                }
                 nav ul {
                     display: flex;
+                    align-items: center;
+                    justify-content: space-around;
+                }
+                @media (min-width: 500px) {
+                    header {
+                        display: flex;
+                    }
+                    header h1 {
+                        display: block;
+                    }
+                    nav {
+                        flex: none;
+                    }
+                    nav ul {
+                        justify-content: center;
+                    }
                 }
                 nav li {
+                    display: block;
                     padding: 2px;
                     list-style-type: none;
                     font-size: 1em;
                     margin-right: 5px;
+                    text-align: center;
                 }
                 nav a {
                     color: inherit;
@@ -231,29 +252,26 @@ export default () => {
                 }
                 .quizio-schools-teaser-container {
                     width: 100%;
-                    display: flex;
+                    height: 400px;
                     justify-content: center;
-                }
-                .quizio-schools-teaser {
+                    background-color: #43318D;
+                    clip-path: polygon(50% 0%, 100% 30px, 100% 100%, 0 100%, 0 30px);
+                    padding: 15px;
+                    padding-top: 30px;
                     display: flex;
+                    flex-direction: column;
                     justify-content: center;
                     align-items: center;
-                    flex-direction: column;
-                    padding: 24px 15px;
-                    margin-bottom: 30px;
-                    background-color: hsl(347,88%,96%);
-                    border-radius: 10px;
-                    box-shadow: 2px 2px 8px rgba(0, 0, 0, 30%);
                 }
-                .quizio-schools-teaser__text {
-                    text-align: center;
-                    color: black;
+                main p.quizio-schools-teaser__text {
+                    color: white;
                     font-weight: 400;
-                    font-size: 1.6rem;
+                    font-size: 2.1rem;
+                    margin-top: 20px;
                 }
                 .quizio-schools-teaser__text > span {
                     font-weight: 700;
-                    font-size: 1.8rem;
+                    font-size: 2.3rem;
                 }
                 @media (min-width: 450px) {
                     .quizio-schools-teaser {
@@ -322,18 +340,12 @@ export default () => {
                 .quizio-schools-teaser-big__content {
                     margin-left: 25px;
                 }
-                @media (min-width: 1195px) {
-                    .quizio-schools-teaser-big {
-                        display: flex;
-                    }
-                }
                 .entry-stuff-container {
                     width: 100%;
                     height: calc(100vh - 50px);
                     display: flex;
                     flex-direction: column;
                     align-items: center;
-                    padding-top: 20px;
                     animation: SlideDownAndFadeIn 1s;
                 }
                 .entry-stuff-container h1 {
@@ -365,11 +377,19 @@ export default () => {
                     }
                 }
                 .quizio-presentation {
-                    margin-top: 25px;
+                    margin-top: -30px;
                     min-height: calc(100vh - 25px);
                     background-color: hsl(347,90%,97%);
                     clip-path: polygon(50% 0%, 100% 30px, 100% 100%, 0 100%, 0 30px);
                     padding-bottom: 20px;
+                }
+                @media (min-width: 1195px) {
+                    .quizio-schools-teaser-big {
+                        display: flex;
+                    }
+                    .quizio-presentation {
+                        margin-top: 30px;
+                    }
                 }
                 .about-us-container {
                     width: 100%;
