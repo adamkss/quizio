@@ -110,6 +110,7 @@ const Tests = () => {
                         margin: 13px;
                         animation: SlideUp 0.3s;
                         position: relative;
+                        overflow: hidden;
                     }
                     @keyframes SlideUp {
                         0% {

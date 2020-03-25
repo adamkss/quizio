@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 
-export const Code = ({ code = "1234", fontSize = "1rem", extraCSS = "", inversedColors = false }) => {
+export const Code = ({ code = "1234", fontSize = "1em", extraCSS = "", inversedColors = false }) => {
     const [codeElements, setCodeElements] = useState([]);
 
     useEffect(() => {
@@ -29,9 +29,14 @@ export const Code = ({ code = "1234", fontSize = "1rem", extraCSS = "", inversed
                 ${extraCSS}
             }
             .code__element {
-                padding: 8px;
+                padding: 5px;
                 background-color: ${inversedColors ? "black" : "white"};
                 color: ${inversedColors ? "white" : "black"};
+            }
+            @media (min-width: 510px) {
+                .code__element {
+                    padding: 7px;
+                }
             }
             .code__element:not(:last-child) {
                 margin-right: 4px;

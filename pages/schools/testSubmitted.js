@@ -138,6 +138,7 @@ export default ({ }) => {
                     left: 20px;
                     font-size: 1.3em;
                     color: rgba(0,0,0,0.85);
+                    cursor: pointer;
                 }
             `}
             </style>

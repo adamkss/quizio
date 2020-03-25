@@ -2,10 +2,10 @@ import GenericDialog from '../../GenericDailog';
 import PrimaryButton from '../../PrimaryButton';
 import { useState, useCallback, useEffect } from 'react';
 import { Code } from '../Code';
-import { getAllUnfinishedEntryCodesOfATest, updateEntryCodeName } from '../../../utils/TestRequests';
+import { getAllFinishedEntryCodesOfATest, updateEntryCodeName } from '../../../utils/TestRequests';
 import { SecondStepInput, getNewEntryCodesArrayWithModifiedElement } from './GenerateNewCodesDialog';
 
-export const ViewUnfinishedCodesDialog = ({ testId, onDismissDialog, ...rest }) => {
+export const ViewFinishedCodesDialog = ({ testId, onDismissDialog, ...rest }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [entryCodes, setEntryCodes] = useState([]);
     const [codeIdToEditNameOf, setCodeIdToEditNameOf] = useState(null);
@@ -14,7 +14,7 @@ export const ViewUnfinishedCodesDialog = ({ testId, onDismissDialog, ...rest }) 
     useEffect(() => {
         (async () => {
             setIsLoading(true);
-            const entryCodes = await getAllUnfinishedEntryCodesOfATest(testId);
+            const entryCodes = await getAllFinishedEntryCodesOfATest(testId);
             setEntryCodes(entryCodes);
             setIsLoading(false);
         })();
@@ -58,15 +58,15 @@ export const ViewUnfinishedCodesDialog = ({ testId, onDismissDialog, ...rest }) 
 
     return (
         <>
-            <GenericDialog loading={isLoading} onDismissDialog={onDismissDialog} {...rest} title="View unfinished codes">
+            <GenericDialog loading={isLoading} onDismissDialog={onDismissDialog} {...rest} title="View finished codes">
                 <div className="dialog-content">
                     <div className="codes-list">
-                        <span className="section-title">List with all the unfinished entry codes:</span>
+                        <span className="section-title">List with all the finished entry codes:</span>
                         <div className="table">
                             <div className="table-header">
                                 <span>Code</span>
                                 <span>Name</span>
-                                <span>Status</span>
+                                <span>Result</span>
                             </div>
                             <div className="table-rows">
                                 {entryCodes.map((entryCode, index) =>
@@ -85,7 +85,7 @@ export const ViewUnfinishedCodesDialog = ({ testId, onDismissDialog, ...rest }) 
                                             :
                                             <span onClick={getOnClickCodeNameCallback(entryCode.id, index)}>{entryCode.name || 'Not set'}</span>
                                         }
-                                        <span>{entryCode.status}</span>
+                                        <span>{entryCode.testSession.result}%</span>
                                     </div>
                                 )}
                             </div>

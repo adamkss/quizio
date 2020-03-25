@@ -76,6 +76,10 @@ export const getAllUnfinishedEntryCodesOfATest = (testId) => {
     return axios.get(`/tests/${testId}/entryCodes/unfinished`).then(getDataFromResponseAsPromise);
 }
 
+export const getAllFinishedEntryCodesOfATest = (testId) => {
+    return axios.get(`/tests/${testId}/entryCodes/finished`).then(getDataFromResponseAsPromise);
+}
+
 export const createSessionByEntryCode = (entryCode) => {
     return axios.post(`/test-sessions/by-entry-codes/${entryCode}`, null, {
         validateStatus: false

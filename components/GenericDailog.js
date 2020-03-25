@@ -32,6 +32,12 @@ export default ({ children, title, onDismissDialog, loading = false, ...rest }) 
                 justify-content: center;
                 align-items: center;
                 z-index: 99999;
+                font-size: 0.9rem;
+            }
+            @media (min-width: 500px ) {
+                .dialog-wrapper {
+                    font-size: 1rem;
+                }
             }
             .dialog-content-wrapper {
                 width: calc(100% - 30px);
@@ -40,11 +46,21 @@ export default ({ children, title, onDismissDialog, loading = false, ...rest }) 
                 max-height: 95vh;
                 border-radius: 8px;
                 box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.3);
-                padding: 25px;
+                padding: 8px;
                 background-color: white;
                 animation: DialogIn 0.2s;
                 position: relative;
-                overflow: hidden;
+                overflow: auto;
+            }
+            @media (min-width: 340px) {
+                .dialog-content-wrapper {
+                    padding: 15px;
+                }
+            }
+            @media (min-width: 440px) {
+                .dialog-content-wrapper {
+                    padding: 25px;
+                }
             }
             @keyframes DialogIn { 
                 0% {

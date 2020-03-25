@@ -3,11 +3,13 @@ import { Code } from "../../../components/schools/Code"
 import { useCallback, useState } from "react"
 import { GenerateNewCodesDialog } from "../../../components/schools/codes/GenerateNewCodesDialog";
 import { ViewUnfinishedCodesDialog } from "../../../components/schools/codes/ViewUnfinishedCodesDialog";
+import { ViewFinishedCodesDialog } from "../../../components/schools/codes/ViewFinishedCodesDialog";
 import { useRouter } from "next/router";
 
 export default () => {
     const [isGenerateNewCodesInProgress, setIsGenerateNewCodesInProgress] = useState(false);
-    const [isViewingUnfinishedCodes, setIsViewingUnfinishedCodes] = useState(true);
+    const [isViewingUnfinishedCodes, setIsViewingUnfinishedCodes] = useState(false);
+    const [isViewingFinishedCodes, setIsViewingFinishedCodes] = useState(false);
     const { testId } = useRouter().query;
 
     const onGenerateCodesTileClick = useCallback(() => {
@@ -24,6 +26,14 @@ export default () => {
 
     const onDismissViewUnfinishedCodesDialog = useCallback(() => {
         setIsViewingUnfinishedCodes(false);
+    }, []);
+
+    const onViewFinishedCodesClick = useCallback(() => {
+        setIsViewingFinishedCodes(true);
+    }, []);
+
+    const onDismissViewFinishedCodesDialog = useCallback(() => {
+        setIsViewingFinishedCodes(false);
     }, []);
 
     return (
@@ -51,7 +61,7 @@ export default () => {
                             </div>
                         </div>
                     </div>
-                    <div className="tile tile-results">
+                    <div className="tile tile-results" onClick={onViewFinishedCodesClick}>
                         <h1>View finished codes results</h1>
                         <div className="results-tile__illustration">
                             <div className="results-tile__element">
@@ -87,6 +97,13 @@ export default () => {
                 :
                 null
             }
+            {isViewingFinishedCodes ?
+                <ViewFinishedCodesDialog
+                    testId={testId}
+                    onDismissDialog={onDismissViewFinishedCodesDialog} />
+                :
+                null
+            }
             <style jsx>
                 {`
                     main {
@@ -98,6 +115,7 @@ export default () => {
                                              "status"
                                              "results";
                         justify-items: center;
+                        justify-content: center;
                     }
                     @media (min-width: 1030px) {
                         main {
@@ -111,11 +129,13 @@ export default () => {
                     .tile {
                         border-radius: 10px;
                         width: 300px;
+                        max-width: 98vw;
                         padding: 20px;
                         color: white;
                         transition: all 0.3s;
                         filter: brightness(100%);
                         animation: TileEntry 1.3s;
+                        overflow: hidden;
                     }
                     @keyframes TileEntry {
                         0% {

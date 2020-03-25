@@ -6,7 +6,7 @@ import { useState, useCallback } from 'react';
 import { createNewEntryCodes, updateEntryCodeName } from '../../../utils/TestRequests';
 import { Code } from '../Code';
 
-const getNewEntryCodesArrayWithModifiedElement = (oldEntryCodes, entryCodeId, newEntryCode) => {
+export const getNewEntryCodesArrayWithModifiedElement = (oldEntryCodes, entryCodeId, newEntryCode) => {
     let newEntryCodes = [...oldEntryCodes];
     const entryCodeToModifyIndex = newEntryCodes.findIndex(el => el.id === entryCodeId);
     newEntryCodes[entryCodeToModifyIndex] = {
@@ -245,8 +245,18 @@ const SecondStep = ({ testId, entryCodes = [], onUpdateEntryCodeName }) => {
                     margin-top: 10px;
                 }
                 .table-rows {
-                    max-height: 200px;
+                    max-height: 120px;
                     overflow: auto;
+                }
+                @media (min-height:600px) {
+                    .table-rows {
+                        max-height: 175px;
+                    }
+                }
+                @media (min-height:720px) {
+                    .table-rows {
+                        max-height: 200px;
+                    }
                 }
                 .table-row,
                 .table-header {
@@ -276,7 +286,7 @@ const SecondStep = ({ testId, entryCodes = [], onUpdateEntryCodeName }) => {
                 }
                 .modify-entry-code-name-wrapper {
                     display: grid;
-                    grid-template-columns: 1fr 30px 30px;
+                    grid-template-columns: 5fr 1fr 1fr;
                     align-items: center;
                     justify-items: center;
                 }
@@ -290,13 +300,14 @@ const SecondStep = ({ testId, entryCodes = [], onUpdateEntryCodeName }) => {
     )
 }
 
-const SecondStepInput = ({ value, valueSetter }) => {
+export const SecondStepInput = ({ value, valueSetter }) => {
     return (
         <>
             <input autoFocus type="text" value={value} onChange={valueSetter} />
             <style jsx>
                 {`
                 input {
+                    width: 100%;
                     outline: none;
                     border: none;
                     font-family: inherit;
