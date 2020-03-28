@@ -6,36 +6,38 @@ import { clearToken } from '../../utils/AuthUtils';
 
 const getRouteNameAfterPath = (path) => {
     switch (path) {
-        case "/quizzes": return "quizzes";
-        case "/homepage": return "homepage";
-        case "/genericQuizzes/[genericQuizId]/results": return "quizResults";
-        case "/schools/tests": return "schools-tests";
-        case "/schools/[testId]/codes": return "schools-codes";
+        case "/quizzes": return "Quizio - My quizzes";
+        case "/homepage": return "Quizio - Homepage";
+        case "/genericQuizzes/[genericQuizId]/results": return "Quizio - Quiz results";
+        case "/schools/tests": return "Quizio Schools - Tests";
+        case "/schools/[testId]/codes": return "Quizio Schools - Entry Codes";
     }
 }
 
 export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
-    const { pathname: pathName, query } = useRouter();
+    const { pathname: pathName } = useRouter();
     const [page, setPage] = useState("");
+    const [formalPageName, setFormalPageName] = useState('Quizio');
     const [breadcrumbParts, setBreadcrumbParts] = useState([]);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     useEffect(() => {
         if (pathName) {
             const routeName = getRouteNameAfterPath(pathName);
+            setFormalPageName(routeName);
             setPage(routeName);
             switch (routeName) {
-                case "homepage": setBreadcrumbParts([{
+                case "Quizio - Homepage": setBreadcrumbParts([{
                     text: "Homepage",
                     link: null
                 }]); break;
-                case "quizzes": setBreadcrumbParts([
+                case "Quizio - My quizzes": setBreadcrumbParts([
                     {
                         text: "My quizzes",
                         link: "/quizzes"
                     }
                 ]); break;
-                case "quizResults": extraParamFromChild && setBreadcrumbParts([
+                case "Quizio - Quiz results": extraParamFromChild && setBreadcrumbParts([
                     {
                         text: "My quizzes",
                         link: "/quizzes"
@@ -49,13 +51,13 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
                         link: null
                     }
                 ]); break;
-                case "schools-tests": setBreadcrumbParts([
+                case "Quizio Schools - Tests": setBreadcrumbParts([
                     {
                         text: "Tests (Quizio Schools)",
                         link: "/schools/tests"
                     },
                 ]); break;
-                case "schools-codes": setBreadcrumbParts([
+                case "Quizio Schools - Entry Codes": setBreadcrumbParts([
                     {
                         text: "Tests (Quizio Schools)",
                         link: "/schools/tests"
@@ -80,7 +82,7 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
 
     return (
         <>
-            <LayoutSetup />
+            <LayoutSetup title={formalPageName} />
             <div className="main-layout-orchestrator">
                 <aside>
                     <section className="aside__app-title-container">
@@ -93,13 +95,13 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
                     </section>
                     <section className="aside__menu-items">
                         <Link href="/homepage">
-                            <MenuItem name="Homepage" isSelected={page === "homepage"} />
+                            <MenuItem name="Homepage" isSelected={page === "Quizio - Homepage"} />
                         </Link>
                         <Link href="/quizzes">
-                            <MenuItem name="Quizzes" isSelected={page === "quizzes" || page === "quizResults"} />
+                            <MenuItem name="Quizzes" isSelected={page === "Quizio - My quizzes" || page === "Quizio - Quiz results"} />
                         </Link>
                         <Link href="/schools/tests">
-                            <MenuItem name="Tests (Quizio Schools)" isSelected={page === "schools-tests" || page === "schools-codes"} />
+                            <MenuItem name="Tests (Quizio Schools)" isSelected={page === "Quizio Schools - Tests" || page === "Quizio Schools - Entry Codes"} />
                         </Link>
                         <div className="aside__menu-separator" />
                         <MenuItem name="Logout" onClick={onLogoutClick} />

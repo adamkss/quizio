@@ -114,6 +114,11 @@ export default ({ title = null }) => {
                 .flex-space {
                     flex-grow: 1;
                 }
+                h1,
+                span,
+                p {
+                    cursor: default;
+                }
             `}
             </style>
         </>
