@@ -1,21 +1,40 @@
 import GenericDialog from '../../GenericDailog';
 import PrimaryButton from '../../PrimaryButton';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { Code } from '../Code';
-import { getAllUnfinishedEntryCodesOfATest, updateEntryCodeName } from '../../../utils/TestRequests';
+import { getAllUnfinishedEntryCodesOfATest, updateEntryCodeName, searchEntryCodes } from '../../../utils/TestRequests';
 import { SecondStepInput, getNewEntryCodesArrayWithModifiedElement } from './GenerateNewCodesDialog';
+import lodash from 'lodash';
 
 export const ViewUnfinishedCodesDialog = ({ testId, onDismissDialog, ...rest }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [entryCodes, setEntryCodes] = useState([]);
+    const [initialEntryCodes, setInitialEntryCodes] = useState([]);
     const [codeIdToEditNameOf, setCodeIdToEditNameOf] = useState(null);
     const [codeNameToEdit, setCodeNameToEdit] = useState(null);
+    const [searchTerm, setSearchTerm] = useState(null);
+    const searchFunctionRef = useRef(lodash.throttle((async (searchTerm, testId, initialCodes) => {
+        if (searchTerm) {
+            setIsLoading(true);
+            const searchedResults = await searchEntryCodes(testId, searchTerm);
+            setEntryCodes(searchedResults);
+            setIsLoading(false);
+        } else {
+            setEntryCodes(initialCodes);
+        }
+    }), 300));
+
+    const loadEntryCodesIntoInitial = useCallback(async () => {
+        const entryCodes = await getAllUnfinishedEntryCodesOfATest(testId);
+        setInitialEntryCodes(entryCodes);
+    }, [testId]);
 
     useEffect(() => {
         (async () => {
             setIsLoading(true);
             const entryCodes = await getAllUnfinishedEntryCodesOfATest(testId);
             setEntryCodes(entryCodes);
+            setInitialEntryCodes(entryCodes);
             setIsLoading(false);
         })();
     }, [testId]);
@@ -51,10 +70,18 @@ export const ViewUnfinishedCodesDialog = ({ testId, onDismissDialog, ...rest }) 
                     }
                 )
             )
+            if (searchTerm)
+                loadEntryCodesIntoInitial();
         }
         onCancelEntryCodeNameEdit();
         setIsLoading(false);
-    }, [codeIdToEditNameOf, codeNameToEdit]);
+    }, [codeIdToEditNameOf, codeNameToEdit, searchTerm, loadEntryCodesIntoInitial]);
+
+    const onSearchChange = useCallback((event) => {
+        const searchTerm = event.target.value;
+        setSearchTerm(searchTerm);
+        searchFunctionRef.current(searchTerm, testId, initialEntryCodes);
+    }, [testId, initialEntryCodes]);
 
     return (
         <>
@@ -67,6 +94,14 @@ export const ViewUnfinishedCodesDialog = ({ testId, onDismissDialog, ...rest }) 
                                 <span>Code</span>
                                 <span>Name</span>
                                 <span>Status</span>
+                            </div>
+                            <div className="table-search">
+                                <input
+                                    placeholder="Search here..."
+                                    type="text"
+                                    className="table-search-input"
+                                    value={searchTerm}
+                                    onChange={onSearchChange} />
                             </div>
                             <div className="table-rows">
                                 {entryCodes.map((entryCode, index) =>
@@ -133,9 +168,10 @@ export const ViewUnfinishedCodesDialog = ({ testId, onDismissDialog, ...rest }) 
                     margin-top: 10px;
                 }
                 .table-rows {
-                    max-height: 200px;
+                    max-height: 260px;
                     overflow: auto;
                     text-align: center;
+                    padding-bottom: 5px;
                 }
                 .table-row,
                 .table-header {
@@ -144,6 +180,20 @@ export const ViewUnfinishedCodesDialog = ({ testId, onDismissDialog, ...rest }) 
                     grid-template-rows: 1fr;
                     align-items: center;
                     justify-items: center;
+                }
+                .table-search {
+                    display: grid;
+                    grid-template-columns: 1fr;
+                }
+                .table-search-input {
+                    border: none;
+                    outline: none;
+                    font-family: inherit;
+                    padding: 5px;
+                    padding-left: 7px;
+                    font-size: 1.15em;
+                    font-weight: 300;
+                    border-bottom: 1px solid rgba(0,0,0,0.3);
                 }
                 .table-row {
                     padding: 8px;
@@ -158,6 +208,7 @@ export const ViewUnfinishedCodesDialog = ({ testId, onDismissDialog, ...rest }) 
                 }
                 .table-row:not(:last-child) {
                     border-bottom: 1px solid grey;
+                    overflow: none;
                 }
                 .code-name {
                     text-align: center;

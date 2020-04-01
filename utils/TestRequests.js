@@ -109,3 +109,7 @@ export const submitTestSession = (sessionId, testQuestionsState) => {
 export const updateTestSettings = (testId, testSettings) => {
     return axios.put(`/tests/${testId}/settings`, testSettings);
 }
+
+export const searchEntryCodes = (testId, searchTerm) => {
+    return axios.get(`/elastic-search/unfinished-entry-codes?testId=${testId}&searchTerm=${searchTerm}`).then(getDataFromResponseAsPromise);
+}

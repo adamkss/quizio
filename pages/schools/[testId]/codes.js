@@ -5,8 +5,9 @@ import { GenerateNewCodesDialog } from "../../../components/schools/codes/Genera
 import { ViewUnfinishedCodesDialog } from "../../../components/schools/codes/ViewUnfinishedCodesDialog";
 import { ViewFinishedCodesDialog } from "../../../components/schools/codes/ViewFinishedCodesDialog";
 import { useRouter } from "next/router";
+import withAuthSetUp from "../../../hocs/withAuthSetUp";
 
-export default () => {
+const Codes = () => {
     const [isGenerateNewCodesInProgress, setIsGenerateNewCodesInProgress] = useState(false);
     const [isViewingUnfinishedCodes, setIsViewingUnfinishedCodes] = useState(false);
     const [isViewingFinishedCodes, setIsViewingFinishedCodes] = useState(false);
@@ -228,3 +229,5 @@ export default () => {
         </>
     )
 }
+
+export default withAuthSetUp(Codes);
