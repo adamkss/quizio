@@ -2,7 +2,7 @@ import GenericDialog from '../../GenericDailog';
 import PrimaryButton from '../../PrimaryButton';
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { Code } from '../Code';
-import { getAllUnfinishedEntryCodesOfATest, updateEntryCodeName, searchEntryCodes } from '../../../utils/TestRequests';
+import { getAllUnfinishedEntryCodesOfATest, updateEntryCodeName, searchUnfinishedEntryCodes } from '../../../utils/TestRequests';
 import { SecondStepInput, getNewEntryCodesArrayWithModifiedElement } from './GenerateNewCodesDialog';
 import lodash from 'lodash';
 
@@ -16,7 +16,7 @@ export const ViewUnfinishedCodesDialog = ({ testId, onDismissDialog, ...rest }) 
     const searchFunctionRef = useRef(lodash.throttle((async (searchTerm, testId, initialCodes) => {
         if (searchTerm) {
             setIsLoading(true);
-            const searchedResults = await searchEntryCodes(testId, searchTerm);
+            const searchedResults = await searchUnfinishedEntryCodes(testId, searchTerm);
             setEntryCodes(searchedResults);
             setIsLoading(false);
         } else {

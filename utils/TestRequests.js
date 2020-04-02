@@ -110,6 +110,10 @@ export const updateTestSettings = (testId, testSettings) => {
     return axios.put(`/tests/${testId}/settings`, testSettings);
 }
 
-export const searchEntryCodes = (testId, searchTerm) => {
+export const searchUnfinishedEntryCodes = (testId, searchTerm) => {
     return axios.get(`/elastic-search/unfinished-entry-codes?testId=${testId}&searchTerm=${searchTerm}`).then(getDataFromResponseAsPromise);
+}
+
+export const searchFinishedEntryCodes = (testId, searchTerm) => {
+    return axios.get(`/elastic-search/finished-entry-codes?testId=${testId}&searchTerm=${searchTerm}`).then(getDataFromResponseAsPromise);
 }

@@ -1,21 +1,41 @@
 import GenericDialog from '../../GenericDailog';
 import PrimaryButton from '../../PrimaryButton';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { Code } from '../Code';
-import { getAllFinishedEntryCodesOfATest, updateEntryCodeName } from '../../../utils/TestRequests';
+import lodash from 'lodash';
+import { getAllFinishedEntryCodesOfATest, updateEntryCodeName, searchFinishedEntryCodes } from '../../../utils/TestRequests';
 import { SecondStepInput, getNewEntryCodesArrayWithModifiedElement } from './GenerateNewCodesDialog';
 
 export const ViewFinishedCodesDialog = ({ testId, onDismissDialog, ...rest }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [entryCodes, setEntryCodes] = useState([]);
+    const [initialEntryCodes, setInitialEntryCodes] = useState([]);
     const [codeIdToEditNameOf, setCodeIdToEditNameOf] = useState(null);
     const [codeNameToEdit, setCodeNameToEdit] = useState(null);
+    const [searchTerm, setSearchTerm] = useState(null);
+
+    const searchFunctionRef = useRef(lodash.throttle((async (searchTerm, testId, initialCodes) => {
+        if (searchTerm) {
+            setIsLoading(true);
+            const searchedResults = await searchFinishedEntryCodes(testId, searchTerm);
+            setEntryCodes(searchedResults);
+            setIsLoading(false);
+        } else {
+            setEntryCodes(initialCodes);
+        }
+    }), 300));
+
+    const loadEntryCodesIntoInitial = useCallback(async () => {
+        const entryCodes = await getAllFinishedEntryCodesOfATest(testId);
+        setInitialEntryCodes(entryCodes);
+    }, [testId]);
 
     useEffect(() => {
         (async () => {
             setIsLoading(true);
             const entryCodes = await getAllFinishedEntryCodesOfATest(testId);
             setEntryCodes(entryCodes);
+            setInitialEntryCodes(entryCodes);
             setIsLoading(false);
         })();
     }, [testId]);
@@ -52,9 +72,17 @@ export const ViewFinishedCodesDialog = ({ testId, onDismissDialog, ...rest }) =>
                 )
             )
         }
+        if (searchTerm)
+            loadEntryCodesIntoInitial();
         onCancelEntryCodeNameEdit();
         setIsLoading(false);
-    }, [codeIdToEditNameOf, codeNameToEdit]);
+    }, [codeIdToEditNameOf, codeNameToEdit, searchTerm, loadEntryCodesIntoInitial]);
+
+    const onSearchChange = useCallback((event) => {
+        const searchTerm = event.target.value;
+        setSearchTerm(searchTerm);
+        searchFunctionRef.current(searchTerm, testId, initialEntryCodes);
+    }, [testId, initialEntryCodes]);
 
     return (
         <>
@@ -67,6 +95,14 @@ export const ViewFinishedCodesDialog = ({ testId, onDismissDialog, ...rest }) =>
                                 <span>Code</span>
                                 <span>Name</span>
                                 <span>Result</span>
+                            </div>
+                            <div className="table-search">
+                                <input
+                                    placeholder="Search here..."
+                                    type="text"
+                                    className="table-search-input"
+                                    value={searchTerm}
+                                    onChange={onSearchChange} />
                             </div>
                             <div className="table-rows">
                                 {entryCodes.map((entryCode, index) =>
@@ -85,7 +121,7 @@ export const ViewFinishedCodesDialog = ({ testId, onDismissDialog, ...rest }) =>
                                             :
                                             <span onClick={getOnClickCodeNameCallback(entryCode.id, index)}>{entryCode.name || 'Not set'}</span>
                                         }
-                                        <span>{entryCode.testSession.result}%</span>
+                                        <span>{entryCode.result}%</span>
                                     </div>
                                 )}
                             </div>
@@ -155,6 +191,20 @@ export const ViewFinishedCodesDialog = ({ testId, onDismissDialog, ...rest }) =>
                 }
                 .table-header span {
                     text-align: center;
+                }
+                .table-search {
+                    display: grid;
+                    grid-template-columns: 1fr;
+                }
+                .table-search-input {
+                    border: none;
+                    outline: none;
+                    font-family: inherit;
+                    padding: 5px;
+                    padding-left: 7px;
+                    font-size: 1.15em;
+                    font-weight: 300;
+                    border-bottom: 1px solid rgba(0,0,0,0.3);
                 }
                 .table-row:not(:last-child) {
                     border-bottom: 1px solid grey;

@@ -36,7 +36,7 @@ export default ({ }) => {
 
     return (
         <>
-            <LayoutSetup title="Test submitted" />
+            <LayoutSetup title="Quizio - Test submitted" />
             <main>
                 <Link href="/">
                     <span className="back-to-home">Back to Quizio</span>

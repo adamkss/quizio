@@ -56,7 +56,6 @@ const Editor = () => {
     const [isCreatingQuestionInProgress, setIsCreatingQuestionsInProgress] = useState(false);
     const [isDNDEnabled, setIsDNDEnabled] = useState(false);
     const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState(false);
-
     const loadTestInfo = React.useCallback(async () => {
         const testInfo = await executeAsyncFunctionAndObserveState(
             setIsLoadingInProgress,
@@ -206,7 +205,7 @@ const Editor = () => {
 
     return (
         <>
-            <LayoutSetup />
+            <LayoutSetup title="Quizio Schools - Test editor" />
             {isLoadingInProgress ?
                 <LoadingSpinner />
                 :
@@ -216,10 +215,11 @@ const Editor = () => {
                 <Link href="/schools/tests">
                     <a className="header__back-button" title="Back">
                         <img src="/static/left-arrow.svg" alt="Back" />
+                        <span className="header-back__title">Quizio Schools</span>
                     </a>
                 </Link>
                 <div className="flex-space" />
-                <h1 className="header__title">Quizio Schools</h1>
+                <h1 className="header__title">EDITING TEST: "<span className="header-title__quiz-name">{(testInfo && testInfo.name) || ''}</span>"</h1>
                 <CheckBox
                     title={"Reorganize:"}
                     checked={isDNDEnabled}
@@ -308,8 +308,14 @@ const Editor = () => {
                         display: none;
                         vertical-align: middle;
                         text-align: center;
+                        font-weight: 400;
+                        font-size: 1.4rem;
                     }
-                    @media (min-width: 475px) {
+                    .header-title__quiz-name {
+                        font-weight: 500;
+                        font-size: 1.6rem;
+                    }
+                    @media (min-width: 924px) {
                         .header__title {
                             display: block;
                             position: absolute;
@@ -325,20 +331,47 @@ const Editor = () => {
                     }
                     .header__test-settings-button > img {
                         width: 15px;
-                        margin-right: 5px;
                     }
-                    .header__back-button{
+                    .header__test-settings-button > span {
+                        width: 15px;
+                        margin-left: 5px;
+                        margin-right: 5px;
+                        display: none;
+                    }
+                    @media (min-width: 600px) {
+                        .header__test-settings-button > span {
+                            display: inline;
+                        }
+                    }
+                    .header__back-button {
+                        display: flex;
+                        align-items: center;
+                        text-decoration: none;
+                    }
+                    .header__back-button > img{
                         width: 34px;
                         height: 34px;
                         padding: 7px;
                         border-radius: 50%;
                         transition: all 0.3s;
                     }
-                    .header__back-button:hover {
+                    .header__back-button > img:hover {
                         background-color: hsl(0, 0%, 85%);
                     }
-                    .header__back-button:active {
+                    .header__back-button > img:active {
                         background-color: hsl(0, 0%, 75%);
+                    }
+                    .header-back__title {
+                        color: black;
+                        cursor: pointer;
+                        font-size: 1.2rem;
+                        margin-left: 5px;
+                        display: none;
+                    }
+                    @media (min-width: 780px) {
+                        .header-back__title {
+                            display: inline;
+                        }
                     }
                     main {
                         height: calc(100vh - 50px);

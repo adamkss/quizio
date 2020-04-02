@@ -111,17 +111,17 @@ const Codes = () => {
                         padding: 20px;
                         display: grid;
                         grid-template-columns: 1fr;
-                        grid-template-rows: 250px 500px 300px;
                         grid-template-areas: "generate"
                                              "status"
                                              "results";
+                        grid-gap: 25px;
                         justify-items: center;
                         justify-content: center;
                     }
-                    @media (min-width: 1030px) {
+                    @media (min-width: 1100px) {
                         main {
                             grid-template-columns: 400px 1fr;
-                            grid-template-rows: 250px 300px;
+                            grid-template-rows: 250px 400px;
                             grid-template-areas: "generate results"
                                              "status results";
                             justify-items: start;
@@ -155,7 +155,8 @@ const Codes = () => {
                             filter: brightness(90%);
                         }
                     }
-                    .tile:hover {
+                    .tile:hover,
+                    .tile * {
                         cursor: pointer;
                         filter: brightness(105%);
                     }
