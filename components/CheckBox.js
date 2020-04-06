@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default ({ title = "", checked, onChange, marginTop = false, leftSideTitle = false , extraCSS = ''}) => {
+export default ({ title = "", checked, onChange, marginTop = false, leftSideTitle = false, customMarginTop = null, extraCSS = '' }) => {
     return (
         <>
             <label>
@@ -32,26 +32,26 @@ export default ({ title = "", checked, onChange, marginTop = false, leftSideTitl
                         display: flex;
                         align-items: center;
                         ${marginTop ?
-                        "margin-top: 10px;"
+                        `margin-top: ${customMarginTop ? customMarginTop : '10px'};`
                         :
                         ""
                     }
                     }
                     input {
-                        position: absolute;
+                    position: absolute;
                         opacity: 0;
                         height: 100%;
                     }
                     .checkbox-container {
-                        display: inline-block;
+                    display: inline-block;
                         margin-right: 5px;
                         ${extraCSS}
                     }
                     .leftside-text {
-                        margin-right: 5px;
+                    margin-right: 5px;
                     }
                    .shell {
-                       position: relative;
+                    position: relative;
                        width: 64px;
                        height: 31px;
                        box-shadow: 0px 0px 8px hsl(0, 0%, 70%);
@@ -70,14 +70,14 @@ export default ({ title = "", checked, onChange, marginTop = false, leftSideTitl
                        transition: all 0.5s;
                    }
                    input:checked ~ .shell .shell__active-indicator {
-                       right: 2px;
+                    right: 2px;
                    }
                    input:checked ~ .shell {
-                       background-color: #4CAC60;
-                       box-shadow: 0px 0px 8px #4CAC60;
+                    background-color: #4CAC60;
+                    box-shadow: 0px 0px 8px #4CAC60;
                    }
                    .title {
-                       font-size: 1.1rem;
+                    font-size: 1.1rem;
                    }
                 `}
             </style>

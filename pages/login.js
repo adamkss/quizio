@@ -36,7 +36,7 @@ export default () => {
 
     return (
         <>
-            <LayoutSetup />
+            <LayoutSetup title="Quizio - Login" />
             <main>
                 <div className="login-window fade-and-slide-in">
                     <Link href="/">

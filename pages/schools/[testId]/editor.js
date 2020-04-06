@@ -425,47 +425,58 @@ const TestSettingsDialog = (
             onCancel();
     }, [onSave, initialTestName, testName, initialIsShowingOfFinalProcentEnabled, isShowingOfFinalProcentEnabled]);
     return (
-        !isCancellationConfirmationShown ?
-            <GenericDialog
-                title="Customize Your test"
-                onDismissDialog={onCancelClick}
-                {...restGenericDialogProps}>
-                <TextInput
-                    title="Test name:"
-                    value={testName}
-                    width="100%"
-                    valueSetter={setTestName} />
-                <CheckBox
-                    title={"Show result of the test to the user."}
-                    checked={isShowingOfFinalProcentEnabled}
-                    onChange={showingOfFinalProcentCheckBoxStateChangeCallback}
-                    marginTop
-                />
-                <div className="horizontally-end-positioned">
-                    <PrimaryButton
-                        title="Done"
-                        marginRight
-                        medium
+        <>
+            {!isCancellationConfirmationShown ?
+                <GenericDialog
+                    title="Customize Your test"
+                    onDismissDialog={onCancelClick}
+                    {...restGenericDialogProps}>
+                    <TextInput
+                        title="Test name:"
+                        value={testName}
+                        width="100%"
+                        valueSetter={setTestName} />
+                    <CheckBox
+                        title={"Show result of the test to the user."}
+                        checked={isShowingOfFinalProcentEnabled}
+                        onChange={showingOfFinalProcentCheckBoxStateChangeCallback}
                         marginTop
-                        onClick={onDoneClick}
+                        customMarginTop="15px"
                     />
-                    <PrimaryButton
-                        title="Cancel"
-                        color="red"
-                        marginTop
-                        medium
-                        onClick={onCancelClick}
-                    />
-                </div>
-            </GenericDialog>
-            :
-            <ConfirmationDialog
-                title="You made changes to the test. Abandon them?"
-                negativeAnswer="No"
-                positiveAnswer="Abandon"
-                positiveIsRed
-                onConfirm={onCancel}
-                onCancel={onConfirmationDialogCancel} />
+                    <div className="horizontally-end-positioned margin-top">
+                        <PrimaryButton
+                            title="Done"
+                            marginRight
+                            medium
+                            marginTop
+                            onClick={onDoneClick}
+                        />
+                        <PrimaryButton
+                            title="Cancel"
+                            color="red"
+                            marginTop
+                            medium
+                            onClick={onCancelClick}
+                        />
+                    </div>
+                </GenericDialog>
+                :
+                <ConfirmationDialog
+                    title="You made changes to the test. Abandon them?"
+                    negativeAnswer="No"
+                    positiveAnswer="Abandon"
+                    positiveIsRed
+                    onConfirm={onCancel}
+                    onCancel={onConfirmationDialogCancel} />
+            }
+            <style jsx>
+                {`
+                    .margin-top {
+                        margin-top: 10px;
+                    }
+                `}
+            </style>
+        </>
     )
 }
 
