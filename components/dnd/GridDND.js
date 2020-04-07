@@ -3,16 +3,21 @@ import { useCallback, useState, createContext, useContext, useRef, useEffect, fo
 export const GridElement = forwardRef(({ leftOffset = 0, topOffset = 0, dndIndex, children }, ref) => {
     const { gridState, setDraggedItemInfo, setDragEnd, isDragEnabled } = useContext(DNDContext);
     const [wasWiggleAnimationPlayed, setWasWiggleAnimationPlayed] = useState(false);
+    const longPressTimer = useRef(null);
+
+    const enableDragging = useCallback(() => {
+        setDraggedItemInfo({
+            clientX: leftOffset,
+            clientY: topOffset,
+            dndIndex
+        });
+    }, [leftOffset, topOffset, dndIndex, setDraggedItemInfo]);
 
     const onMouseDown = useCallback(() => {
         if (isDragEnabled) {
-            setDraggedItemInfo({
-                clientX: leftOffset,
-                clientY: topOffset,
-                dndIndex
-            });
+            enableDragging();
         }
-    }, [leftOffset, topOffset, isDragEnabled]);
+    }, [isDragEnabled, enableDragging]);
 
     const onMouseUp = useCallback(() => {
         if (isDragEnabled) {
@@ -30,9 +35,30 @@ export const GridElement = forwardRef(({ leftOffset = 0, topOffset = 0, dndIndex
         }
     }, [isDragEnabled]);
 
+    const onTouchStart = useCallback(() => {
+        if (isDragEnabled) {
+            longPressTimer.current = setTimeout(enableDragging, 1000);
+        }
+    }, [longPressTimer, isDragEnabled, enableDragging]);
+
+    const onTouchEnd = useCallback(() => {
+        if (isDragEnabled) {
+            if (longPressTimer.current) {
+                clearTimeout(longPressTimer.current);
+            }
+            setDragEnd();
+        }
+    }, [longPressTimer, isDragEnabled, setDragEnd]);
+
     return (
         <>
-            <div className={`draggable${isDragEnabled && !wasWiggleAnimationPlayed ? ' wiggle-animation' : ''}`} ref={ref} onMouseDown={onMouseDown} onMouseUp={onMouseUp}>
+            <div
+                className={`draggable${isDragEnabled && !wasWiggleAnimationPlayed ? ' wiggle-animation' : ''}`}
+                ref={ref}
+                onTouchStart={onTouchStart}
+                onTouchEnd={onTouchEnd}
+                onMouseDown={onMouseDown}
+                onMouseUp={onMouseUp}>
                 <div className="children">
                     {children}
                 </div>
@@ -235,7 +261,9 @@ export const Grid = ({
                 targetIndex = spaceAfterIndex + 1;
             }
         }
-        onElementMove({ sourceIndex: gridState.draggedElementIndex, targetIndex });
+        if (targetIndex) {
+            onElementMove({ sourceIndex: gridState.draggedElementIndex, targetIndex });
+        }
         setGridState(getInitialGridState());
         setMaskedElementSpaceIndex(null);
         setSpaceBeforeIndex(null);

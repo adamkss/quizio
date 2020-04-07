@@ -219,7 +219,11 @@ const Editor = () => {
                     </a>
                 </Link>
                 <div className="flex-space" />
-                <h1 className="header__title">EDITING TEST: "<span className="header-title__quiz-name">{(testInfo && testInfo.name) || ''}</span>"</h1>
+                {testInfo ?
+                    <h1 className="header__title fade-in">EDITING TEST: "<span className="header-title__quiz-name">{testInfo.name || ''}</span>"</h1>
+                    :
+                    null
+                }
                 <CheckBox
                     title={"Reorganize:"}
                     checked={isDNDEnabled}
@@ -234,7 +238,12 @@ const Editor = () => {
                 <button className="header__done-button" onClick={() => { }}>Done</button>
             </header>
             <main>
-                <Grid isDragEnabled={isDNDEnabled} scrollable insidePadding={20} fixedHeight="100%" onElementMove={onElementMove}>
+                <Grid
+                    isDragEnabled={isDNDEnabled}
+                    scrollable
+                    insidePadding={20}
+                    fixedHeight="100%"
+                    onElementMove={onElementMove}>
                     {questions.map((question, index) =>
                         <GridElement key={question.id}>
                             <Question
