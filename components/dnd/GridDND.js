@@ -89,7 +89,20 @@ export const GridElement = forwardRef(({ leftOffset = 0, topOffset = 0, dndIndex
                             left: ${leftOffset}px;
                             top: ${topOffset}px;
                         `}
+                    -webkit-touch-callout: none;
+                    -webkit-user-select: none;
+                    -khtml-user-select: none;
+                    -moz-user-select: none;
+                    -ms-user-select: none;
+                    user-select: none;
+                    touch-callout: none;
+                    -webkit-tap-highlight-color: transparent;
                 }
+                .draggable:active,
+                .draggable:focus {
+                    outline: none;
+                }
+
                 .wiggle-animation {
                     animation: DragEnabledWiggleAnimation 0.5s;
                 }
