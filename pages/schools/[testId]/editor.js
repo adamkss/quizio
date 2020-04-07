@@ -16,6 +16,7 @@ import GenericDialog from '../../../components/GenericDailog';
 import ConfirmationDialog from '../../../components/ConfirmationDialog';
 import TextInput from '../../../components/TextInput';
 import PrimaryButton from '../../../components/PrimaryButton';
+import useMediaQuery from 'react-use-media-query-hook';
 
 const findQuestionById = (questions, id) => {
     return questions.find(question => question.id == id);
@@ -56,6 +57,8 @@ const Editor = () => {
     const [isCreatingQuestionInProgress, setIsCreatingQuestionsInProgress] = useState(false);
     const [isDNDEnabled, setIsDNDEnabled] = useState(false);
     const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState(false);
+    const isSmallWidth = useMediaQuery('(max-width: 500px)');
+
     const loadTestInfo = React.useCallback(async () => {
         const testInfo = await executeAsyncFunctionAndObserveState(
             setIsLoadingInProgress,
@@ -247,6 +250,7 @@ const Editor = () => {
                     {questions.map((question, index) =>
                         <GridElement key={question.id}>
                             <Question
+                                miniMode={isDNDEnabled && isSmallWidth}
                                 questionTitle={(index + 1) + '. ' + question.questionTitle}
                                 questionOptions={question.questionOptions}
                                 questionOptionTitleKey={'questionOptionText'}

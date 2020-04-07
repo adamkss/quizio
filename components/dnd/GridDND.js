@@ -158,7 +158,7 @@ const getOverlapCoefficient = ({
     const direction = (targetX - draggedX) > 0 ? 'LEFT' : 'RIGHT';
     let overlapCoefficient;
     //TODO: Make this changeable
-    if (percentageFromTotalPossible < 30) {
+    if (percentageFromTotalPossible < 20) {
         overlapCoefficient = totalDelta;
     } else {
         overlapCoefficient = -1;
@@ -199,7 +199,7 @@ export const Grid = ({
 
             const childWidth = Math.ceil(childrenRefs.current[0] ? childrenRefs.current[0].current.getBoundingClientRect().width : 0);
             const childHeight = Math.ceil(childrenRefs.current[0] ? childrenRefs.current[0].current.getBoundingClientRect().height : 0);
-            const numberOfElementsPerRow = getNumberOfElementsPerRow({ gridWidth, childWidth, gap });
+            const numberOfElementsPerRow = getNumberOfElementsPerRow({ gridWidth, childWidth, gap }) || 1;
             const numberOfRows = getNumberOfRows({ numberOfElementsPerRow, numberOfElements: childrenRefs.current.length });
             const gridHeight = numberOfRows * childHeight + 2 * insidePadding + gap * (numberOfRows - 1);
             setGridHeight(gridHeight);

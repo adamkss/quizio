@@ -1,8 +1,8 @@
 import { useState, useRef, useCallback } from 'react';
 
-const Question = ({ 
+const Question = ({
     questionTitle, questionOptions, onAddNewOption, onSetNewCorrectAnswer,
-    onDeleteQuestionOption, onDeleteQuestion, questionOptionTitleKey = "title" }) => {
+    onDeleteQuestionOption, onDeleteQuestion, questionOptionTitleKey = "title", miniMode = false }) => {
     const [isNewOptionWanted, setIsNewOptionWanted] = useState(false);
     const [newOption, setNewOption] = useState("");
     const newOptionInputRef = useRef(null);
@@ -67,34 +67,37 @@ const Question = ({
         <>
             <article onClick={onCancelNewOptionCreation}>
                 <h2>{questionTitle}</h2>
-                <div className="question-options">
-                    {questionOptions.map((questionOption, index) => {
-                        return (
-                            <div className="question-option" key={questionOption.id}>
-                                <span className="order-index">{index + 1}.</span>
-                                <span key={questionOption.id}>
-                                    {questionOption[questionOptionTitleKey]}
-                                </span>
-                                {questionOption.amITheRightAnswer ?
-                                    <img className="right-answer-icon initially-less-visible" src="/static/check_circle-24px.svg" title="This is the right answer." />
-                                    :
-                                    null
-                                }
-                                {!questionOption.amITheRightAnswer ?
-                                    <img title="Set as right answer"
-                                        className={`accent-on-question-hover not-visible-implicitly-no-hover${areSetRightAnswerVisible ? " visible" : ""}`}
-                                        src="/static/check_circle_black.svg"
-                                        onClick={getSetNewCorrectQuestionOptionCallback(questionOption.id)} />
-                                    :
-                                    null
-                                }
-                                <img title="Delete answer"
-                                    className={`accent-on-question-hover not-visible-implicitly-no-hover${areDeleteOptionVisible ? " visible" : ""}`}
-                                    src="/static/delete-24px.svg"
-                                    onClick={getDeleteQuestionOptionCallback(questionOption.id)} />
-                            </div>
-                        )
-                    })}
+                <div className="question-options-container">
+                    <div className="question-options">
+                        {questionOptions.map((questionOption, index) => {
+                            return (
+                                <div className="question-option" key={questionOption.id}>
+                                    <span className="order-index">{index + 1}.</span>
+                                    <span key={questionOption.id}>
+                                        {questionOption[questionOptionTitleKey]}
+                                    </span>
+                                    {questionOption.amITheRightAnswer ?
+                                        <img className="right-answer-icon initially-less-visible" src="/static/check_circle-24px.svg" title="This is the right answer." />
+                                        :
+                                        null
+                                    }
+                                    {!questionOption.amITheRightAnswer ?
+                                        <img title="Set as right answer"
+                                            className={`accent-on-question-hover not-visible-implicitly-no-hover${areSetRightAnswerVisible ? " visible" : ""}`}
+                                            src="/static/check_circle_black.svg"
+                                            onClick={getSetNewCorrectQuestionOptionCallback(questionOption.id)} />
+                                        :
+                                        null
+                                    }
+                                    <img title="Delete answer"
+                                        className={`accent-on-question-hover not-visible-implicitly-no-hover${areDeleteOptionVisible ? " visible" : ""}`}
+                                        src="/static/delete-24px.svg"
+                                        onClick={getDeleteQuestionOptionCallback(questionOption.id)} />
+                                </div>
+                            )
+                        })}
+                    </div>
+                    <div className="question-options-dimmer"/>
                 </div>
                 {isNewOptionWanted ?
                     <div className="add-new-option-section">
@@ -107,10 +110,10 @@ const Question = ({
                     :
                     null
                 }
-                <img title="Delete question" src="/static/delete-24px.svg" className="delete-icon initially-less-visible" onClick={onDeleteQuestion} />
-                <img title="New answer option" src="/static/add-icon.svg" className="add-icon initially-less-visible" onClick={onAddNewOptionButtonClick} />
-                <img title="New right answer" className="new-right-answer-icon initially-less-visible visible-only-mobile" src="/static/check_circle_black.svg" onClick={onAreAllSetAsRightAnswerOptionsVisibleTogglePress} />
-                <img title="Delete answer option" className="delete-answer-icon initially-less-visible visible-only-mobile" src="/static/minus.svg" onClick={onAreAllDeleteOptionsVisibleTogglePress} />
+                <img title="Delete question" src="/static/delete-24px.svg" className="icon-button delete-icon initially-less-visible" onClick={onDeleteQuestion} />
+                <img title="New answer option" src="/static/add-icon.svg" className="icon-button add-icon initially-less-visible" onClick={onAddNewOptionButtonClick} />
+                <img title="New right answer" className="icon-button new-right-answer-icon initially-less-visible visible-only-mobile" src="/static/check_circle_black.svg" onClick={onAreAllSetAsRightAnswerOptionsVisibleTogglePress} />
+                <img title="Delete answer option" className="icon-button delete-answer-icon initially-less-visible visible-only-mobile" src="/static/minus.svg" onClick={onAreAllDeleteOptionsVisibleTogglePress} />
             </article>
             <style jsx>
                 {`
@@ -119,15 +122,51 @@ const Question = ({
                         padding: 0;
                         font-weight: 400;
                         margin-bottom: 15px;
+                        ${miniMode ?
+                        `
+                            font-size: 1rem;
+                            margin-bottom: 0px;
+                            text-align: center;
+                            text-overflow: ellipsis;
+                            white-space: nowrap;
+                            overflow: hidden;
+                            width: 100%;
+                        `
+                        :
+                        null
+                    }
                     }
                     p {
                         margin: 0;
                         padding: 0;
                     }
-                    .question-options {
-                        height: 220px;
-                        overflow-y: auto;
+                    .question-options-container {
+                        height: 130px;
+                        position: relative;
                         margin-bottom: 13px;
+                        overflow: hidden;
+                        ${miniMode ?
+                        `
+                            display: none;
+                        `
+                        :
+                        ''
+                        }
+                    }
+                    .question-options {
+                        height: 100%;
+                        overflow-y: auto;
+                    }
+                    .question-options-dimmer {
+                        pointer-events: none;
+                        content: '';
+                        display: block;
+                        position: absolute;
+                        left: 0px;
+                        bottom: 0px;
+                        width: 100%;
+                        height: 20px;
+                        background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%);
                     }
                     .question-option {
                         font-family: Arial;
@@ -182,10 +221,8 @@ const Question = ({
                     }
                     article {
                         position: relative;
-                        width: calc(100% - 20px);
-                        max-width: 400px;
-                        min-width: 300px;
-                        max-height: 300px;
+                        width: 250px;   
+                        height: 250px;
                         background-color: white;
                         border-radius: 8px;
                         padding: 25px;
@@ -193,6 +230,36 @@ const Question = ({
                         flex-direction: column;
                         box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.3);
                         margin: 10px;
+                        overflow: hidden;
+                        ${miniMode ?
+                        `
+                            width: 80px;
+                            height: 80px;
+                            padding: 5px;
+                            justify-content: center;
+                            align-items: center;
+                        `
+                        :
+                        null
+                    }
+                    }
+                    @media (min-width: 450px) {
+                        article {
+                            width: 275px;
+                            height: 300px;
+                        }
+                        .question-options-container {
+                            height: 175px;
+                        }
+                    }
+                    @media (min-width: 1100px) {
+                        article {
+                            width: 300px;
+                            height: 325px;
+                        }
+                        .question-options-container {
+                            height: 195px;
+                        }
                     }
                     @keyframes SlideUp {
                         0% {
@@ -203,6 +270,15 @@ const Question = ({
                             transform: translateY(0px);
                             opacity: 1;
                         }
+                    }
+                    .icon-button {
+                        ${miniMode ?
+                        `
+                            display: none;
+                        `
+                        :
+                        null
+                    }
                     }
                     .delete-icon {
                         position: absolute;
