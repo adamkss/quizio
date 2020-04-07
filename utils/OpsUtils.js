@@ -24,9 +24,10 @@ export const copyToClipboard = function (text) {
     }
 }
 
+//moves the element with sourceIndex after the element with targetIndex, if sourceIndex < targetIndex
 export const getArrayAfterElementMove = (array, sourceIndex, targetIndex) => {
     const elementToMove = array[sourceIndex];
-    if (sourceIndex < 0 || sourceIndex >= array.length || targetIndex < 0 || targetIndex >= array.length) {
+    if (sourceIndex < 0 || sourceIndex >= array.length || targetIndex < 0 || targetIndex >= (array.length + 1)) {
         console.log('Array move source or target index false value.');
         return array;
     }

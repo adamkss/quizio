@@ -116,11 +116,15 @@ const getOverlapCoefficient = ({
     const deltaY = Math.abs(targetY - draggedY);
     const totalDelta = deltaX + deltaY;
     const percentageFromTotalPossible = totalDelta / (draggedWidth + draggedHeight) * 100;
-
+    const direction = (targetX - draggedX) > 0 ? 'LEFT' : 'RIGHT';
+    let overlapCoefficient;
     //TODO: Make this changeable
-    if (percentageFromTotalPossible < 20)
-        return totalDelta;
-    return -1;
+    if (percentageFromTotalPossible < 30) {
+        overlapCoefficient = totalDelta;
+    } else {
+        overlapCoefficient = -1;
+    }
+    return { overlapCoefficient, direction };
 }
 
 const getNumberOfRows = ({ numberOfElementsPerRow, numberOfElements }) => {
@@ -147,6 +151,7 @@ export const Grid = ({
     const childrenRefs = useRef([]);
     const [elementPositions, setElementPositions] = useState({});
     const [spaceBeforeIndex, setSpaceBeforeIndex] = useState(null);
+    const [spaceAfterIndex, setSpaceAfterIndex] = useState(null);
     const [maskedElementSpaceIndex, setMaskedElementSpaceIndex] = useState(null);
 
     const LayoutElements = useCallback(() => {
@@ -163,6 +168,10 @@ export const Grid = ({
                 let indexInCalculation = index;
 
                 if (spaceBeforeIndex != null && index >= spaceBeforeIndex) {
+                    indexInCalculation++;
+                }
+
+                if (spaceAfterIndex != null && index >= (spaceAfterIndex + 1)) {
                     indexInCalculation++;
                 }
 
@@ -187,11 +196,11 @@ export const Grid = ({
                 })
             })
         }
-    }, [childrenRefs, spaceBeforeIndex, maskedElementSpaceIndex, insidePadding, gridRef]);
+    }, [childrenRefs, spaceBeforeIndex, spaceAfterIndex, maskedElementSpaceIndex, insidePadding, gridRef]);
 
     useEffect(() => {
         LayoutElements();
-    }, [childrenRefs, spaceBeforeIndex, maskedElementSpaceIndex, children]);
+    }, [childrenRefs, spaceBeforeIndex, spaceAfterIndex, maskedElementSpaceIndex, children]);
 
     useEffect(() => {
         const listener = () => {
@@ -218,15 +227,23 @@ export const Grid = ({
     }, [isDragEnabled]);
 
     const setDragEnd = useCallback(() => {
-        onElementMove({ sourceIndex: gridState.draggedElementIndex, targetIndex: spaceBeforeIndex });
+        let targetIndex;
+        if (spaceBeforeIndex != null) {
+            targetIndex = spaceBeforeIndex;
+        } else {
+            if (spaceAfterIndex != null) {
+                targetIndex = spaceAfterIndex + 1;
+            }
+        }
+        onElementMove({ sourceIndex: gridState.draggedElementIndex, targetIndex });
         setGridState(getInitialGridState());
         setMaskedElementSpaceIndex(null);
         setSpaceBeforeIndex(null);
-    }, [gridState, spaceBeforeIndex, onElementMove]);
+        setSpaceAfterIndex(null);
+    }, [gridState, spaceBeforeIndex, spaceAfterIndex, onElementMove]);
 
     const verifyOverlappingItems = useCallback(() => {
         const draggedItemBoundingRect = childrenRefs.current[gridState.draggedElementIndex].current.getBoundingClientRect();
-        let overlappingItem;
         const overlappedElements = childrenRefs.current
             .map((child, index) => ({
                 boundingRect: child.current.getBoundingClientRect(),
@@ -236,7 +253,7 @@ export const Grid = ({
             .map((element) => {
                 return {
                     index: element.index,
-                    overlapCoeficcient: getOverlapCoefficient({
+                    overlapInformation: getOverlapCoefficient({
                         draggedX: draggedItemBoundingRect.x,
                         draggedY: draggedItemBoundingRect.y,
                         draggedWidth: draggedItemBoundingRect.width,
@@ -248,11 +265,17 @@ export const Grid = ({
                     })
                 };
             })
-            .filter(element => element.overlapCoeficcient != -1)
-            .sort((a, b) => a.overlapCoeficcient - b.overlapCoeficcient);
-        const elementToMoveIndex = overlappedElements.length > 0 ? overlappedElements[0].index : null;
-        if (elementToMoveIndex != null) {
-            setSpaceBeforeIndex(elementToMoveIndex);
+            .filter(element => element.overlapInformation.overlapCoefficient != -1)
+            .sort((a, b) => a.overlapInformation.overlapCoefficient - b.overlapInformation.overlapCoefficient);
+        const overlappedElement = overlappedElements.length > 0 ? overlappedElements[0] : null;
+        if (overlappedElement != null) {
+            if (overlappedElement.overlapInformation.direction === 'LEFT') {
+                setSpaceBeforeIndex(overlappedElement.index);
+                setSpaceAfterIndex(null);
+            } else {
+                setSpaceAfterIndex(overlappedElement.index);
+                setSpaceBeforeIndex(null);
+            }
         }
     }, [childrenRefs.current, gridState]);
 
