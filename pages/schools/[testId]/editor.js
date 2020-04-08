@@ -246,6 +246,7 @@ const Editor = () => {
                     scrollable
                     insidePadding={20}
                     fixedHeight="100%"
+                    centeredHorizontally
                     onElementMove={onElementMove}>
                     {questions.map((question, index) =>
                         <GridElement key={question.id}>

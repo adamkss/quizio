@@ -174,6 +174,10 @@ const getNumberOfElementsPerRow = ({ gridWidth, childWidth, gap }) => {
     return Math.floor(gridWidth / (childWidth + gap));
 }
 
+const getEffectiveGridWidth = ({ childWidth, numberOfElementsPerRow, gap, insidePadding }) => {
+    return Math.ceil((childWidth + gap) * numberOfElementsPerRow) + 2 * insidePadding;
+}
+
 export const Grid = ({
     children,
     gap = 0,
@@ -183,10 +187,12 @@ export const Grid = ({
     fixedHeight = null,
     insidePadding = 0,
     isDragEnabled = true,
+    centeredHorizontally = false
 }) => {
     const [gridState, setGridState] = useState(getInitialGridState());
-    const gridRef = useRef(null);
+    const gridContainerRef = useRef(null);
     const [gridHeight, setGridHeight] = useState(0);
+    const [effectiveGridWidth, setEffectiveGridWidth] = useState(0);
     const childrenRefs = useRef([]);
     const [elementPositions, setElementPositions] = useState({});
     const [spaceBeforeIndex, setSpaceBeforeIndex] = useState(null);
@@ -194,12 +200,16 @@ export const Grid = ({
     const [maskedElementSpaceIndex, setMaskedElementSpaceIndex] = useState(null);
 
     const LayoutElements = useCallback(() => {
-        if (gridRef.current && childrenRefs.current) {
-            const gridWidth = Math.floor(gridRef.current.getBoundingClientRect().width) - 2 * insidePadding;
-
+        if (gridContainerRef.current && childrenRefs.current) {
             const childWidth = Math.ceil(childrenRefs.current[0] ? childrenRefs.current[0].current.getBoundingClientRect().width : 0);
             const childHeight = Math.ceil(childrenRefs.current[0] ? childrenRefs.current[0].current.getBoundingClientRect().height : 0);
+
+            const gridWidth = Math.floor(gridContainerRef.current.getBoundingClientRect().width) - 2 * insidePadding;
+
             const numberOfElementsPerRow = getNumberOfElementsPerRow({ gridWidth, childWidth, gap }) || 1;
+            const effectiveGridWidth = getEffectiveGridWidth({ childWidth, numberOfElementsPerRow, gap, insidePadding });
+            setEffectiveGridWidth(effectiveGridWidth);
+            console.log(effectiveGridWidth)
             const numberOfRows = getNumberOfRows({ numberOfElementsPerRow, numberOfElements: childrenRefs.current.length });
             const gridHeight = numberOfRows * childHeight + 2 * insidePadding + gap * (numberOfRows - 1);
             setGridHeight(gridHeight);
@@ -235,7 +245,7 @@ export const Grid = ({
                 })
             })
         }
-    }, [childrenRefs, spaceBeforeIndex, spaceAfterIndex, maskedElementSpaceIndex, insidePadding, gridRef]);
+    }, [childrenRefs, spaceBeforeIndex, spaceAfterIndex, maskedElementSpaceIndex, insidePadding, gridContainerRef]);
 
     useEffect(() => {
         LayoutElements();
@@ -266,7 +276,7 @@ export const Grid = ({
     }, [isDragEnabled]);
 
     const setDragEnd = useCallback(() => {
-        let targetIndex;
+        let targetIndex = null;
         if (spaceBeforeIndex != null) {
             targetIndex = spaceBeforeIndex;
         } else {
@@ -274,7 +284,7 @@ export const Grid = ({
                 targetIndex = spaceAfterIndex + 1;
             }
         }
-        if (targetIndex) {
+        if (targetIndex != null) {
             onElementMove({ sourceIndex: gridState.draggedElementIndex, targetIndex });
         }
         setGridState(getInitialGridState());
@@ -336,8 +346,8 @@ export const Grid = ({
     return (
         <>
             <DNDContext.Provider value={{ gridState, setDraggedItemInfo, setDragEnd, isDragEnabled }}>
-                <div className="wrapper">
-                    <div ref={gridRef} className="grid" onMouseMove={onMouseMove}>
+                <div className="wrapper" ref={gridContainerRef}>
+                    <div className="grid" onMouseMove={onMouseMove}>
                         {React.Children.map(children, (child, index) => {
                             let childRef = childrenRefs.current[index];
                             //we assign it a ref if it doesn't have one
@@ -361,22 +371,29 @@ export const Grid = ({
                 {`
                 .wrapper {
                     width: 100%;
-                    ${wrapperCSS}
-                }
-                .grid {
-                    width: 100%;
-                    position: relative;
-                    ${scrollable ?
+                    height: ${fixedHeight ? fixedHeight : `${gridHeight}px`};
+                    ${centeredHorizontally ?
+                        `
+                    display: flex;
+                    justify-content: center;`
+                        :
+                        ``
+                    }
+                     ${scrollable ?
                         `overflow: auto;`
                         :
                         ``
                     }
+                    ${wrapperCSS}
+                }
+                .grid {
+                    width: ${effectiveGridWidth ? `${effectiveGridWidth}px` : '100%'};
+                    position: relative;
                     ${insidePadding ?
                         `padding: ${insidePadding}px;`
                         :
                         ``
                     }
-                    height: ${fixedHeight ? fixedHeight : `${gridHeight}px`};
                     transition: all 0.3s;
                     ${fixedHeight || gridHeight > 0 ?
                         `
