@@ -5,17 +5,29 @@ export const GridElement = forwardRef(({ leftOffset = 0, topOffset = 0, dndIndex
     const [wasWiggleAnimationPlayed, setWasWiggleAnimationPlayed] = useState(false);
     const longPressTimer = useRef(null);
 
-    const enableDragging = useCallback(() => {
-        setDraggedItemInfo({
-            clientX: leftOffset,
-            clientY: topOffset,
-            dndIndex
-        });
+    const enableDragging = useCallback(({ byTouch = false, initialTouchClientX = null, initialTouchClientY = null }) => {
+        if (byTouch) {
+            setDraggedItemInfo({
+                clientX: leftOffset,
+                clientY: topOffset,
+                initialTouchClientX,
+                initialTouchClientY,
+                dndIndex,
+                byTouch
+            });
+        } else {
+            setDraggedItemInfo({
+                clientX: leftOffset,
+                clientY: topOffset,
+                dndIndex,
+                byTouch
+            });
+        }
     }, [leftOffset, topOffset, dndIndex, setDraggedItemInfo]);
 
     const onMouseDown = useCallback(() => {
         if (isDragEnabled) {
-            enableDragging();
+            enableDragging({});
         }
     }, [isDragEnabled, enableDragging]);
 
@@ -35,9 +47,17 @@ export const GridElement = forwardRef(({ leftOffset = 0, topOffset = 0, dndIndex
         }
     }, [isDragEnabled]);
 
-    const onTouchStart = useCallback(() => {
+    const onTouchStart = useCallback((event) => {
         if (isDragEnabled) {
-            longPressTimer.current = setTimeout(enableDragging, 1000);
+            const initialTouchClientX = event.nativeEvent.touches[0].clientX;
+            const initialTouchClientY = event.nativeEvent.touches[0].clientY;
+            longPressTimer.current = setTimeout(() => {
+                enableDragging({
+                    byTouch: true,
+                    initialTouchClientX,
+                    initialTouchClientY
+                });
+            }, 1000);
         }
     }, [longPressTimer, isDragEnabled, enableDragging]);
 
@@ -144,6 +164,11 @@ const getInitialGridState = () => {
         draggedElementIndex: null,
         clientX: 0,
         clientY: 0,
+        byTouch: false,
+        initialClientX: null,
+        initialClientY: null,
+        initialTouchClientY: null,
+        initialTouchClientY: null
     }
 }
 
@@ -207,12 +232,15 @@ export const Grid = ({
             const gridWidth = Math.floor(gridContainerRef.current.getBoundingClientRect().width) - 2 * insidePadding;
 
             const numberOfElementsPerRow = getNumberOfElementsPerRow({ gridWidth, childWidth, gap }) || 1;
+
             const effectiveGridWidth = getEffectiveGridWidth({ childWidth, numberOfElementsPerRow, gap, insidePadding });
             setEffectiveGridWidth(effectiveGridWidth);
-            console.log(effectiveGridWidth)
+
             const numberOfRows = getNumberOfRows({ numberOfElementsPerRow, numberOfElements: childrenRefs.current.length });
-            const gridHeight = numberOfRows * childHeight + 2 * insidePadding + gap * (numberOfRows - 1);
-            setGridHeight(gridHeight);
+            if (gridState.draggedElementIndex == null) {
+                const gridHeight = numberOfRows * childHeight + 2 * insidePadding + gap * (numberOfRows - 1);
+                setGridHeight(gridHeight);
+            }
             childrenRefs.current.forEach((childRef, index) => {
                 let indexInCalculation = index;
 
@@ -245,7 +273,7 @@ export const Grid = ({
                 })
             })
         }
-    }, [childrenRefs, spaceBeforeIndex, spaceAfterIndex, maskedElementSpaceIndex, insidePadding, gridContainerRef]);
+    }, [childrenRefs, spaceBeforeIndex, spaceAfterIndex, maskedElementSpaceIndex, insidePadding, gridContainerRef, gridState]);
 
     useEffect(() => {
         LayoutElements();
@@ -262,15 +290,31 @@ export const Grid = ({
     }, [LayoutElements]);
 
     const setDraggedItemInfo = useCallback(({
-        clientX, clientY, dndIndex
+        clientX, clientY, dndIndex, byTouch = false,
+        initialTouchClientX = null, initialTouchClientY = null
     }) => {
         if (isDragEnabled) {
-            setGridState(gridState => ({
-                ...gridState,
-                clientX,
-                clientY,
-                draggedElementIndex: dndIndex
-            }));
+            if (byTouch) {
+                setGridState(gridState => ({
+                    ...gridState,
+                    initialClientY: clientY,
+                    initialClientX: clientX,
+                    clientX,
+                    clientY,
+                    initialTouchClientX,
+                    initialTouchClientY,
+                    draggedElementIndex: dndIndex,
+                    byTouch
+                }));
+            } else {
+                setGridState(gridState => ({
+                    ...gridState,
+                    clientX,
+                    clientY,
+                    draggedElementIndex: dndIndex,
+                    byTouch
+                }));
+            }
             setMaskedElementSpaceIndex(dndIndex);
         }
     }, [isDragEnabled]);
@@ -343,11 +387,27 @@ export const Grid = ({
         }
     }, [gridState, isDragEnabled]);
 
+    const onTouchMove = useCallback((event) => {
+        if (gridState.draggedElementIndex != null && isDragEnabled) {
+            event.preventDefault();
+            const movementX = gridState.initialTouchClientX - event.nativeEvent.touches[0].clientX;
+            const movementY = gridState.initialTouchClientY - event.nativeEvent.touches[0].clientY;
+            setGridState(gridState => ({
+                ...gridState,
+                clientX: gridState.initialClientX - movementX,
+                clientY: gridState.initialClientY - movementY
+            }))
+            verifyOverlappingItems();
+        }
+    }, [gridState, isDragEnabled]);
+
     return (
         <>
             <DNDContext.Provider value={{ gridState, setDraggedItemInfo, setDragEnd, isDragEnabled }}>
                 <div className="wrapper" ref={gridContainerRef}>
-                    <div className="grid" onMouseMove={onMouseMove}>
+                    <div className="grid"
+                        onMouseMove={onMouseMove}
+                        onTouchMove={onTouchMove}>
                         {React.Children.map(children, (child, index) => {
                             let childRef = childrenRefs.current[index];
                             //we assign it a ref if it doesn't have one
