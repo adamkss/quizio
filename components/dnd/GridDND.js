@@ -224,7 +224,11 @@ export const Grid = ({
     const [spaceBeforeIndex, setSpaceBeforeIndex] = useState(null);
     const [spaceAfterIndex, setSpaceAfterIndex] = useState(null);
     const [maskedElementSpaceIndex, setMaskedElementSpaceIndex] = useState(null);
+    const [isScrollingUpNeeded, setIsScrollingUpNeeded] = useState(false);
+    const [isScrollingDownNeeded, setIsScrollingDownNeeded] = useState(false);
     const [gridScrollX, setGridScrollX] = useState(null);
+    const [gridScrollXLimit, setGridScrollXLimit] = useState(null);
+    const scrollTimer = useRef(null);
 
     const LayoutElements = useCallback(() => {
         if (gridContainerRef.current && childrenRefs.current) {
@@ -379,30 +383,61 @@ export const Grid = ({
     //Smooth scrolling here! (setTimeout always re-triggering this function if needed)
     useEffect(() => {
         if (gridScrollX != null) {
-            const topOffsetRelativeToWindow = childrenRefs.current[gridState.draggedElementIndex].current.getBoundingClientRect().top;
-            if (topOffsetRelativeToWindow < 50 && gridScrollX >= 0) {
-                setTimeout(() => {
-                    const difference = -1;
-                    setGridScrollX(gridScrollX + difference);
-                    gridContainerRef.current.scrollTop += difference;
-                    setGridState(gridState => ({
-                        ...gridState,
-                        clientY: gridState.clientY + difference
-                    }))
-                }, 10);
+            const { top: topOffsetRelativeToWindow, height: childHeight } = childrenRefs.current[gridState.draggedElementIndex].current.getBoundingClientRect();
+            if (isScrollingUpNeeded) {
+                if (topOffsetRelativeToWindow < 50 && gridScrollX >= 0) {
+                    scrollTimer.current = setTimeout(() => {
+                        const difference = -1;
+                        setGridScrollX(gridScrollX + difference);
+                        gridContainerRef.current.scrollTop += difference;
+                        setGridState(gridState => ({
+                            ...gridState,
+                            clientY: gridState.clientY + difference
+                        }))
+                    }, 10);
+                }
+            }
+            if (isScrollingDownNeeded) {
+                const { bottom: bottomOffsetContainerRelativeToWindow, height: gridContainerHeight } = gridContainerRef.current.getBoundingClientRect();
+                if (((topOffsetRelativeToWindow + childHeight) > bottomOffsetContainerRelativeToWindow) && (gridScrollXLimit >= (gridScrollX + gridContainerHeight))) {
+                    scrollTimer.current = setTimeout(() => {
+                        const difference = 1;
+                        setGridScrollX(gridScrollX + difference);
+                        gridContainerRef.current.scrollTop += difference;
+                        setGridState(gridState => ({
+                            ...gridState,
+                            clientY: gridState.clientY + difference
+                        }))
+                    }, 10);
+                }
             }
         }
     }, [gridScrollX])
 
     const scrollIfNeeded = useCallback(() => {
-        const topOffsetRelativeToWindow = childrenRefs.current[gridState.draggedElementIndex].current.getBoundingClientRect().top;
+        const { top: topOffsetRelativeToWindow, height: childHeight } = childrenRefs.current[gridState.draggedElementIndex].current.getBoundingClientRect();
         const parentScrollTop = gridContainerRef.current.scrollTop;
+        const { bottom: bottomOffsetContainerRelativeToWindow, height: gridContainerHeight } = gridContainerRef.current.getBoundingClientRect();
+
         if (topOffsetRelativeToWindow < 50 && parentScrollTop > 0) {
+            setIsScrollingUpNeeded(true);
             setGridScrollX(parentScrollTop);
         } else {
-            setGridScrollX(null);
+            if (((topOffsetRelativeToWindow + childHeight) > bottomOffsetContainerRelativeToWindow)) {
+                setIsScrollingDownNeeded(true);
+                setGridScrollX(parentScrollTop);
+                setGridScrollXLimit(gridContainerRef.current.scrollHeight);
+            } else {
+                setGridScrollX(null);
+                setIsScrollingDownNeeded(false);
+                setIsScrollingUpNeeded(false);
+                setGridScrollXLimit(null);
+                if (scrollTimer.current) {
+                    clearTimeout(scrollTimer.current);
+                }
+            }
         }
-    }, [gridState, childrenRefs.current, gridContainerRef.current]);
+    }, [gridState, childrenRefs.current, gridContainerRef.current, isScrollingUpNeeded, isScrollingDownNeeded, scrollTimer.current]);
 
     const onMouseMove = useCallback((event) => {
         if (gridState.draggedElementIndex != null && isDragEnabled) {
@@ -416,7 +451,7 @@ export const Grid = ({
             verifyOverlappingItems();
             scrollIfNeeded();
         }
-    }, [gridState, isDragEnabled]);
+    }, [gridState, isDragEnabled, scrollIfNeeded]);
 
     const onTouchMove = useCallback((event) => {
         if (gridState.draggedElementIndex != null && isDragEnabled) {
@@ -429,8 +464,9 @@ export const Grid = ({
                 clientY: gridState.initialClientY - movementY
             }))
             verifyOverlappingItems();
+            scrollIfNeeded();
         }
-    }, [gridState, isDragEnabled]);
+    }, [gridState, isDragEnabled, scrollIfNeeded]);
 
     return (
         <>
