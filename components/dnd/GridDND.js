@@ -103,6 +103,7 @@ export const GridElement = forwardRef(({ leftOffset = 0, topOffset = 0, dndIndex
                             top: ${gridState.clientY - 10}px;
                             z-index: 1;
                             opacity: 1;
+                            touch-action: none;
                         `
                         :
                         `
