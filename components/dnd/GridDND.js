@@ -223,6 +223,7 @@ export const Grid = ({
     const [spaceBeforeIndex, setSpaceBeforeIndex] = useState(null);
     const [spaceAfterIndex, setSpaceAfterIndex] = useState(null);
     const [maskedElementSpaceIndex, setMaskedElementSpaceIndex] = useState(null);
+    const [gridScrollX, setGridScrollX] = useState(null);
 
     const LayoutElements = useCallback(() => {
         if (gridContainerRef.current && childrenRefs.current) {
@@ -374,6 +375,34 @@ export const Grid = ({
         }
     }, [childrenRefs.current, gridState]);
 
+    //Smooth scrolling here! (setTimeout always re-triggering this function if needed)
+    useEffect(() => {
+        if (gridScrollX != null) {
+            const topOffsetRelativeToWindow = childrenRefs.current[gridState.draggedElementIndex].current.getBoundingClientRect().top;
+            if (topOffsetRelativeToWindow < 50 && gridScrollX >= 0) {
+                setTimeout(() => {
+                    const difference = -1;
+                    setGridScrollX(gridScrollX + difference);
+                    gridContainerRef.current.scrollTop += difference;
+                    setGridState(gridState => ({
+                        ...gridState,
+                        clientY: gridState.clientY + difference
+                    }))
+                }, 10);
+            }
+        }
+    }, [gridScrollX])
+
+    const scrollIfNeeded = useCallback(() => {
+        const topOffsetRelativeToWindow = childrenRefs.current[gridState.draggedElementIndex].current.getBoundingClientRect().top;
+        const parentScrollTop = gridContainerRef.current.scrollTop;
+        if (topOffsetRelativeToWindow < 50 && parentScrollTop > 0) {
+            setGridScrollX(parentScrollTop);
+        } else {
+            setGridScrollX(null);
+        }
+    }, [gridState, childrenRefs.current, gridContainerRef.current]);
+
     const onMouseMove = useCallback((event) => {
         if (gridState.draggedElementIndex != null && isDragEnabled) {
             event.preventDefault();
@@ -384,6 +413,7 @@ export const Grid = ({
                 clientY: gridState.clientY + movementY
             }))
             verifyOverlappingItems();
+            scrollIfNeeded();
         }
     }, [gridState, isDragEnabled]);
 
