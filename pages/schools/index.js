@@ -3,7 +3,6 @@ import React, { useRef, useEffect, useState } from 'react';
 import SecondaryButton from "../../components/SecondaryButton";
 import PrimaryButton from "../../components/PrimaryButton";
 import { SillyHandwritingWithOption } from '../../components/visual/SillyHandwriting';
-import { QuizioIllustrationMain } from "../../components/visual/QuizioIllustrationMain";
 import Link from "next/link";
 import Head from "next/head";
 
@@ -14,7 +13,7 @@ export default () => {
     useEffect(() => {
         const scrollEventListener = () => {
             const scrollTop = mainContentRef.current.scrollTop;
-            if (scrollTop >= 50) {
+            if (scrollTop >= 1) {
                 setIsHeaderSticky(true);
             } else {
                 setIsHeaderSticky(false);
@@ -52,13 +51,21 @@ export default () => {
                         <p className="head__schools"><span className="head__schools__text">Schools</span><img className="head__schools__dev-woman" src="/static/illustrations/dev-woman.svg" /></p>
                         <p className="head__subtitle">Create and distribute tests in minutes</p>
                         <PrimaryButton
+                            title="Take test now"
+                            big
+                            growWithScreenSize
+                            color="blue"
+                            customMarginTop="25"
+                            linkTo="/schools/takeTest"
+                        />
+                        <p className="main__option-separator-text">...or</p>
+                        <PrimaryButton
                             title="Login"
                             big
                             growWithScreenSize
                             color="pink"
                             linkTo="/login"
-                            extraMarginTop />
-                        <p className="main__option-separator-text">...or</p>
+                            marginTop />
                         <SecondaryButton
                             title="Register"
                             marginTop
@@ -74,15 +81,15 @@ export default () => {
                 <section id="quizio-presentation" className="quizio-presentation">
                     <div className="presentation__tile">
                         <p className="presentation-tile__text">Create interactive tests</p>
-                        <img className="presentation-tile__image" src="/static/illustrations/quizio_schools/support-notes-colour.svg"/>
+                        <img className="presentation-tile__image" src="/static/illustrations/quizio_schools/support-notes-colour.svg" />
                     </div>
                     <div className="presentation__tile">
                         <p className="presentation-tile__text">Send them to students</p>
-                        <img className="presentation-tile__image send-to-students-image" src="/static/illustrations/quizio_schools/list-app-colour.svg"/>
+                        <img className="presentation-tile__image send-to-students-image" src="/static/illustrations/quizio_schools/list-app-colour.svg" />
                     </div>
                     <div className="presentation__tile">
                         <p className="presentation-tile__text">Analyze results and view statistics</p>
-                        <img className="presentation-tile__image analyze-results-image" src="/static/illustrations/quizio_schools/charts-and-graphs.svg"/>
+                        <img className="presentation-tile__image analyze-results-image" src="/static/illustrations/quizio_schools/charts-and-graphs.svg" />
                     </div>
                 </section>
                 <section id="about-us" className="about-us-container">
@@ -93,10 +100,10 @@ export default () => {
                 <footer>
                     <span>Quizio - 2020</span>
                     <div className="footer__links">
-                        <Link href="/#head">
+                        <Link href="/schools#head">
                             <a>Home</a>
                         </Link>
-                        <Link href="/#quizio-presentation">
+                        <Link href="/schools#quizio-presentation">
                             <a>The flow</a>
                         </Link>
                         <Link href="/login">
@@ -108,7 +115,7 @@ export default () => {
                     </div>
                 </footer>
                 {!isHeaderSticky ?
-                    <a className="go-down" href="/#quizio-presentation" title="Scroll">
+                    <a className="go-down" href="/schools#quizio-presentation" title="Scroll">
                         <img className="down-arrow" src="/static/arrow.svg" />
                     </a>
                     :
@@ -129,7 +136,8 @@ export default () => {
                     padding-left: 10px;
                     transition: all 0.3s;
                     opacity: 0;
-                    font-size: 2rem;
+                    font-size: 1.5rem;
+                    display: none;
                 }
                 header.sticky h1 {
                     opacity: 1;
@@ -182,23 +190,40 @@ export default () => {
                 .head__name {
                     margin-top: -50px;
                 }
+                nav {
+                    flex: 1;
+                }
                 nav ul {
                     display: flex;
+                    align-items: center;
+                    justify-content: space-around;
                 }
                 nav li {
                     padding: 2px;
                     list-style-type: none;
                     font-size: 1em;
-                    margin-right: 5px;
                 }
                 nav a {
                     color: inherit;
                     text-decoration: none;
                 }
+                @media (min-width: 500px) {
+                    header h1 {
+                        display: block;
+                    }
+                    nav {
+                        flex: none;
+                    }
+                    nav ul {
+                        justify-content: center;
+                    }
+                    nav li {
+                        margin-right: 7px;
+                    }
+                }
                 @media(min-width: 400px) {
                     nav li {
                         font-size: 1.2em;
-                        margin-right: 10px;
                     }
                 }
                 @media (min-width: 1000px) {
@@ -269,6 +294,11 @@ export default () => {
                     font-size: 7em;
                     font-weight: 700;
                 }
+                .head__subtitle  {
+                    margin-top: -15px;
+                    font-size: 2em;
+                    text-align: center;
+                }
                 @media (min-width: 1000px) {
                     .entry-stuff-container h1 {
                         font-size: 8.2em;
@@ -279,11 +309,7 @@ export default () => {
                         font-size: 9em;
                     }
                 }
-                .head__subtitle  {
-                    margin-top: -15px;
-                    font-size: 3em;
-                    text-align: center;
-                }
+                
                 @keyframes SlideDownAndFadeIn {
                     0% {
                         transform: translateY(-20px);

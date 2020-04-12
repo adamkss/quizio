@@ -6,6 +6,7 @@ import TextInput from '../../components/TextInput';
 import { createSessionByEntryCode } from '../../utils/TestRequests';
 import { executeAsyncFunctionAndObserveState } from '../../utils/AsyncUtils';
 import Router from 'next/router';
+import Link from 'next/link';
 
 export default () => {
     const [isLoadingScreenShown, setIsLoadingScreenShown] = React.useState(false);
@@ -49,6 +50,7 @@ export default () => {
                         medium
                         marginTop
                         onClick={onGoClick}
+                        inactive={!entryCode}
                     />
                     {errorMessage ?
                         <p className="error-message">{errorMessage}</p>
@@ -59,9 +61,9 @@ export default () => {
             </main>
 
             <img className="illustration" src="/static/illustrations/student-monochrome.svg" />
-            <h1 className="title fade-in">
+            <a href="/schools" className="title fade-in">
                 Quizio Schools
-                </h1>
+            </a>
             <style jsx>
                 {`
                     main {
@@ -129,17 +131,16 @@ export default () => {
                         font-weight: 500;
                         left: 50%;
                         transform: translateX(-50%);
-                        z-index: -1;
+                        outline: none;
+                        text-decoration: none;
+                        color: black;
+                        font-size: 2rem;
                     }
                     @media (min-width: 450px) {
                         .title {
                             left: 50%;
                             transform: translateX(-50%);
                         }
-                    }
-                    .error-message {
-                        text-align: center;
-                        color: red;
                     }
                 `}
             </style>

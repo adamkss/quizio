@@ -13,7 +13,7 @@ export default () => {
     useEffect(() => {
         const scrollEventListener = () => {
             const scrollTop = mainContentRef.current.scrollTop;
-            if (scrollTop >= 50) {
+            if (scrollTop >= 1) {
                 setIsHeaderSticky(true);
             } else {
                 setIsHeaderSticky(false);
@@ -177,13 +177,15 @@ export default () => {
                     nav ul {
                         justify-content: center;
                     }
+                    nav li {
+                        margin-right: 7px;
+                    }
                 }
                 nav li {
                     display: block;
                     padding: 2px;
                     list-style-type: none;
                     font-size: 1em;
-                    margin-right: 5px;
                     text-align: center;
                 }
                 nav a {
@@ -193,7 +195,6 @@ export default () => {
                 @media(min-width: 400px) {
                     nav li {
                         font-size: 1.2em;
-                        margin-right: 10px;
                     }
                 }
                 @media (min-width: 1000px) {
