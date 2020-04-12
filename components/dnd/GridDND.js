@@ -417,7 +417,7 @@ export const Grid = ({
     const scrollIfNeeded = useCallback(() => {
         const { top: topOffsetRelativeToWindow, height: childHeight } = childrenRefs.current[gridState.draggedElementIndex].current.getBoundingClientRect();
         const parentScrollTop = gridContainerRef.current.scrollTop;
-        const { bottom: bottomOffsetContainerRelativeToWindow, height: gridContainerHeight } = gridContainerRef.current.getBoundingClientRect();
+        const { bottom: bottomOffsetContainerRelativeToWindow } = gridContainerRef.current.getBoundingClientRect();
 
         if (topOffsetRelativeToWindow < 50 && parentScrollTop > 0) {
             setIsScrollingUpNeeded(true);
@@ -432,9 +432,6 @@ export const Grid = ({
                 setIsScrollingDownNeeded(false);
                 setIsScrollingUpNeeded(false);
                 setGridScrollXLimit(null);
-                if (scrollTimer.current) {
-                    clearTimeout(scrollTimer.current);
-                }
             }
         }
     }, [gridState, childrenRefs.current, gridContainerRef.current, isScrollingUpNeeded, isScrollingDownNeeded, scrollTimer.current]);
