@@ -15,7 +15,7 @@ const getRouteNameAfterPath = (path) => {
     }
 }
 
-export const QuizzesLayoutWrapper = ({ children, extraParamFromChild, isLoading = false, scrollToBottomObserverState = null }) => {
+export const QuizzesLayoutWrapper = ({ children, extraParamFromChild, isLoading = false, addObserverCallback = null }) => {
     const { pathname: pathName } = useRouter();
     const [page, setPage] = useState("");
     const [formalPageName, setFormalPageName] = useState('Quizio');
@@ -88,10 +88,10 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild, isLoading 
     }, [mainContentRef]);
 
     useEffect(() => {
-        if (scrollToBottomObserverState) {
-            scrollToBottomObserverState.current.observerCallbacks.push(scrollContentToBottom);
+        if (addObserverCallback) {
+            addObserverCallback(scrollContentToBottom);
         }
-    }, [scrollToBottomObserverState, scrollContentToBottom]);
+    }, [addObserverCallback, scrollContentToBottom]);
 
     return (
         <>

@@ -6,14 +6,13 @@ import PrimaryButton from '../../components/PrimaryButton';
 import TextInput from '../../components/TextInput';
 import Router from "next/router";
 import withAuthSetUp from "../../hocs/withAuthSetUp";
+import { useObserverPattern } from "../../hooks/useObserverPattern";
 
 const Tests = () => {
     const [tests, setTests] = useState([]);
     const [isCreatingNewTestInProgress, setIsCreatingNewTestInProgress] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const scrollToBottomObserverState = useRef({
-        observerCallbacks: []
-    });
+    const { addObserverCallback, triggerObservers } = useObserverPattern();
 
     const loadTestsOfUser = useCallback(async () => {
         setIsLoading(true);
@@ -40,8 +39,8 @@ const Tests = () => {
         await loadTestsOfUser();
         setIsLoading(false);
         onDismissCreateNewTestDialog();
-        scrollToBottom();
-    }, [onDismissCreateNewTestDialog, createTest, loadTestsOfUser, scrollToBottom]);
+        triggerObservers();
+    }, [onDismissCreateNewTestDialog, createTest, loadTestsOfUser, triggerObservers]);
 
     const generateOnGoToEditorCallback = React.useCallback((testId) => {
         return () => {
@@ -55,13 +54,9 @@ const Tests = () => {
         }
     }, [Router])
 
-    const scrollToBottom = React.useCallback(() => {
-        scrollToBottomObserverState.current.observerCallbacks.forEach(callback => callback());
-    }, []);
-
     return (
         <>
-            <QuizzesLayoutWrapper isLoading={isLoading} scrollToBottomObserverState={scrollToBottomObserverState}>
+            <QuizzesLayoutWrapper isLoading={isLoading} addObserverCallback={addObserverCallback}>
                 <main>
                     {tests.map(test =>
                         <div className="test" key={test.id}>

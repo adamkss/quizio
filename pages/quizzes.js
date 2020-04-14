@@ -7,14 +7,19 @@ import TextInput from '../components/TextInput';
 import PrimaryButton from '../components/PrimaryButton';
 import ConfirmationDialog from '../components/ConfirmationDialog';
 import withAuthSetUp from '../hocs/withAuthSetUp';
+import { useObserverPattern } from '../hooks/useObserverPattern';
 
 const Quizzes = () => {
     const [quizes, setQuizzes] = React.useState([]);
     const [isCreatingNewDialogInProgress, setIsCreatingNewDialogInProgress] = useState(false);
     const [quizIdToDelete, setQuizIdToDelete] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const { addObserverCallback, triggerObservers } = useObserverPattern();
 
     const getAllQuizzes = useCallback(async () => {
+        setIsLoading(true);
         const quizes = await getQuizzesOfCurrentUser();
+        setIsLoading(false);
         setQuizzes(quizes);
     }, []);
 
@@ -35,10 +40,13 @@ const Quizzes = () => {
     }, []);
 
     const onCreateNewQuiz = useCallback(async (newQuizName) => {
+        setIsLoading(true);
         const newQuiz = await createNewGenericQuiz(newQuizName);
         setQuizzes((quizes) => [...quizes, newQuiz]);
         onDismissDialogPress();
-    }, []);
+        setIsLoading(false);
+        triggerObservers();
+    }, [triggerObservers]);
 
     const getDeleteQuizCallback = useCallback((quizId) => async () => {
         setQuizIdToDelete(quizId);
@@ -49,7 +57,9 @@ const Quizzes = () => {
     }, []);
 
     const onDeleteQuizConfirm = useCallback(async () => {
+        setIsLoading(true);
         const wasDeleted = await deleteQuiz(quizIdToDelete);
+        setIsLoading(false);
         if (wasDeleted) {
             getAllQuizzes();
             setQuizIdToDelete(null);
@@ -61,7 +71,7 @@ const Quizzes = () => {
     }, []);
 
     return (
-        <QuizzesLayoutWrapper>
+        <QuizzesLayoutWrapper isLoading={isLoading} addObserverCallback={addObserverCallback}>
             <>
                 <main>
                     <section className="quizes">

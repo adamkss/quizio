@@ -1,22 +1,20 @@
-import { useRef, useEffect } from "react"
+import { useRef } from "react"
 
 export const useObserverPattern = () => {
-    const observerStateRef = useRef({
-        observerCallbacks: [],
-        addObserverCallback: function (callback) {
-            this.observerCallbacks.push(callback);
-        },
-        triggerAllObservers: function () {
-            this.observerCallbacks.forEach(callback => callback());
+    const observerStateRef = useRef(function () {
+        var observerCallbacks = [];
+        function addObserverCallback(callback) {
+            observerCallbacks.push(callback);
+        };
+        function triggerAllObservers() {
+            observerCallbacks.forEach(callback => callback());
+        };
+        return {
+            observerCallbacks,
+            addObserverCallback,
+            triggerAllObservers
         }
-    });
-
-    useEffect(() => {
-        const { current: observerState } = observerStateRef;
-        observerState.addObserverCallback = observerState.addObserverCallback.bind(observerState);
-        observerState.triggerAllObservers = observerState.triggerAllObservers.bind(observerState);
-    }, []);
-
+    }());
 
     return {
         observerCallbacks: observerStateRef.current.observerCallbacks,
