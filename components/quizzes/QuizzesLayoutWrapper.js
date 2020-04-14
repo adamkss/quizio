@@ -1,8 +1,9 @@
 import LayoutSetup from '../layoutSetup';
 import Link from 'next/link';
 import Router, { useRouter } from 'next/router';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { clearToken } from '../../utils/AuthUtils';
+import LoadingSpinner from '../LoadingSpinner';
 
 const getRouteNameAfterPath = (path) => {
     switch (path) {
@@ -14,12 +15,13 @@ const getRouteNameAfterPath = (path) => {
     }
 }
 
-export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
+export const QuizzesLayoutWrapper = ({ children, extraParamFromChild, isLoading = false, scrollToBottomObserverState = null }) => {
     const { pathname: pathName } = useRouter();
     const [page, setPage] = useState("");
     const [formalPageName, setFormalPageName] = useState('Quizio');
     const [breadcrumbParts, setBreadcrumbParts] = useState([]);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const mainContentRef = useRef(null);
 
     useEffect(() => {
         if (pathName) {
@@ -80,9 +82,25 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
         Router.push('/');
     }, [clearToken, Router]);
 
+    const scrollContentToBottom = useCallback(() => {
+        const { current: element } = mainContentRef;
+        element.scrollTop = element.scrollHeight;
+    }, [mainContentRef]);
+
+    useEffect(() => {
+        if (scrollToBottomObserverState) {
+            scrollToBottomObserverState.current.observerCallbacks.push(scrollContentToBottom);
+        }
+    }, [scrollToBottomObserverState, scrollContentToBottom]);
+
     return (
         <>
             <LayoutSetup title={formalPageName} />
+            {isLoading ?
+                <LoadingSpinner />
+                :
+                ''
+            }
             <div className="main-layout-orchestrator">
                 <aside>
                     <section className="aside__app-title-container">
@@ -133,9 +151,9 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
                             )}
                         </ol>
                     </header>
-                    <main>
+                    <div className="main-content" ref={mainContentRef}>
                         {children}
-                    </main>
+                    </div>
                 </div>
             </div>
             <style jsx>
@@ -292,7 +310,7 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild }) => {
                         color: inherit;
                         text-decoration: none;
                     }
-                    main {
+                    .main-content {
                         position: relative;
                         height: calc(100vh - 50px);
                         overflow: auto;

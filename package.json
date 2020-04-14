@@ -5,6 +5,7 @@
   "main": "createGenericQuiz.js",
   "scripts": {
     "dev": "next",
+    "dev:https": "node server.js",
     "build": "next build",
     "start": "next start"
   },
@@ -19,6 +20,7 @@
     "next": "^9.0.6",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
+    "react-facebook-login": "^4.1.1",
     "react-use-media-query-hook": "0.0.1"
   }
 }

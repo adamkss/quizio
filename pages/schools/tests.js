@@ -1,5 +1,5 @@
 import { QuizzesLayoutWrapper } from "../../components/quizzes/QuizzesLayoutWrapper"
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useRef } from "react"
 import { getAllTestsOfUser, createTest } from "../../utils/TestRequests";
 import GenericDialog from '../../components/GenericDailog';
 import PrimaryButton from '../../components/PrimaryButton';
@@ -10,9 +10,15 @@ import withAuthSetUp from "../../hocs/withAuthSetUp";
 const Tests = () => {
     const [tests, setTests] = useState([]);
     const [isCreatingNewTestInProgress, setIsCreatingNewTestInProgress] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const scrollToBottomObserverState = useRef({
+        observerCallbacks: []
+    });
 
     const loadTestsOfUser = useCallback(async () => {
+        setIsLoading(true);
         const tests = await getAllTestsOfUser();
+        setIsLoading(false);
         setTests(tests);
     }, [getAllTestsOfUser]);
 
@@ -29,10 +35,13 @@ const Tests = () => {
     }, []);
 
     const onCreateNewTest = useCallback(async (testName) => {
+        setIsLoading(true);
         await createTest(testName);
         await loadTestsOfUser();
+        setIsLoading(false);
         onDismissCreateNewTestDialog();
-    }, [onDismissCreateNewTestDialog, createTest, loadTestsOfUser]);
+        scrollToBottom();
+    }, [onDismissCreateNewTestDialog, createTest, loadTestsOfUser, scrollToBottom]);
 
     const generateOnGoToEditorCallback = React.useCallback((testId) => {
         return () => {
@@ -44,10 +53,15 @@ const Tests = () => {
         return () => {
             Router.push(`/schools/${testId}/codes`);
         }
-    })
+    }, [Router])
+
+    const scrollToBottom = React.useCallback(() => {
+        scrollToBottomObserverState.current.observerCallbacks.forEach(callback => callback());
+    }, []);
+
     return (
         <>
-            <QuizzesLayoutWrapper>
+            <QuizzesLayoutWrapper isLoading={isLoading} scrollToBottomObserverState={scrollToBottomObserverState}>
                 <main>
                     {tests.map(test =>
                         <div className="test" key={test.id}>
