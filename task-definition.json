@@ -13,12 +13,7 @@
                     "protocol": "tcp"
                 }
             ],
-            "essential": true,
-            "entryPoint": [
-                "sh",
-                "-c"
-            ],
-            "command": []
+            "essential": true
         }
     ],
     "requiresCompatibilities": [
