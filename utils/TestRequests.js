@@ -117,3 +117,7 @@ export const searchUnfinishedEntryCodes = (testId, searchTerm) => {
 export const searchFinishedEntryCodes = (testId, searchTerm) => {
     return axios.get(`/elastic-search/finished-entry-codes?testId=${testId}&searchTerm=${searchTerm}`).then(getDataFromResponseAsPromise);
 }
+
+export const getExportedPDFFinishedCodesURL = (testId) => {
+    return axios.post(`/tests/${testId}/entryCodes/finished/exportedPDFs`).then(getDataFromResponseAsPromise);
+}

@@ -96,12 +96,16 @@ export const ViewUnfinishedCodesDialog = ({ testId, onDismissDialog, ...rest }) 
                                 <span>Status</span>
                             </div>
                             <div className="table-search">
-                                <input
-                                    placeholder="Search here..."
-                                    type="text"
-                                    className="table-search-input"
-                                    value={searchTerm}
-                                    onChange={onSearchChange} />
+                                {entryCodes.length > 0 ?
+                                    <input
+                                        placeholder="Search here..."
+                                        type="text"
+                                        className="table-search-input"
+                                        value={searchTerm}
+                                        onChange={onSearchChange} />
+                                    :
+                                    <span className="no-finished-codes-text">No finished codes yet.</span>
+                                }
                             </div>
                             <div className="table-rows">
                                 {entryCodes.map((entryCode, index) =>
@@ -223,6 +227,12 @@ export const ViewUnfinishedCodesDialog = ({ testId, onDismissDialog, ...rest }) 
                 }
                 .exit-icon {
                     width: 21px;
+                }
+                .no-finished-codes-text {
+                    display: block;
+                    padding: 5px;
+                    text-align: center;
+                    font-weight: 300;
                 }
                 `}
             </style>

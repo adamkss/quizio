@@ -3,8 +3,9 @@ import PrimaryButton from '../../PrimaryButton';
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { Code } from '../Code';
 import lodash from 'lodash';
-import { getAllFinishedEntryCodesOfATest, updateEntryCodeName, searchFinishedEntryCodes } from '../../../utils/TestRequests';
+import { getAllFinishedEntryCodesOfATest, updateEntryCodeName, searchFinishedEntryCodes, getExportedPDFFinishedCodesURL } from '../../../utils/TestRequests';
 import { SecondStepInput, getNewEntryCodesArrayWithModifiedElement } from './GenerateNewCodesDialog';
+import {downloadFileInFrontend} from '../../../utils/OpsUtils';
 
 export const ViewFinishedCodesDialog = ({ testId, onDismissDialog, ...rest }) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -84,6 +85,12 @@ export const ViewFinishedCodesDialog = ({ testId, onDismissDialog, ...rest }) =>
         searchFunctionRef.current(searchTerm, testId, initialEntryCodes);
     }, [testId, initialEntryCodes]);
 
+    const onExportToPDFPress = useCallback(async () => {
+        setIsLoading(true);
+        const { url } = await getExportedPDFFinishedCodesURL(testId);
+        setIsLoading(false);
+        downloadFileInFrontend(url);
+    }, [testId]);
     return (
         <>
             <GenericDialog loading={isLoading} onDismissDialog={onDismissDialog} {...rest} title="View finished codes">
@@ -97,12 +104,16 @@ export const ViewFinishedCodesDialog = ({ testId, onDismissDialog, ...rest }) =>
                                 <span>Result</span>
                             </div>
                             <div className="table-search">
-                                <input
-                                    placeholder="Search here..."
-                                    type="text"
-                                    className="table-search-input"
-                                    value={searchTerm}
-                                    onChange={onSearchChange} />
+                                {entryCodes.length > 0 ?
+                                    <input
+                                        placeholder="Search here..."
+                                        type="text"
+                                        className="table-search-input"
+                                        value={searchTerm}
+                                        onChange={onSearchChange} />
+                                    :
+                                    <span className="no-finished-codes-text">No finished codes yet.</span>
+                                }
                             </div>
                             <div className="table-rows">
                                 {entryCodes.map((entryCode, index) =>
@@ -128,13 +139,19 @@ export const ViewFinishedCodesDialog = ({ testId, onDismissDialog, ...rest }) =>
                         </div>
 
                     </div>
-                    <PrimaryButton
-                        title="Done"
-                        secondary
-                        marginTop
-                        rightAligned
-                        onClick={onDismissDialog}
-                    />
+                    <div className="option-buttons-container">
+                        <PrimaryButton
+                            title="Export"
+                            color="pink"
+                            marginRight
+                            onClick={onExportToPDFPress}
+                        />
+                        <PrimaryButton
+                            title="Done"
+                            secondary
+                            onClick={onDismissDialog}
+                        />
+                    </div>
                 </div>
             </GenericDialog>
             <style jsx>
@@ -142,9 +159,6 @@ export const ViewFinishedCodesDialog = ({ testId, onDismissDialog, ...rest }) =>
                 .buttons-container {
                     display: flex;
                     margin-top: 20px;
-                }
-                .codes-list {
-                    
                 }
                 .section-title {
                     display: block;
@@ -204,13 +218,17 @@ export const ViewFinishedCodesDialog = ({ testId, onDismissDialog, ...rest }) =>
                     padding-left: 7px;
                     font-size: 1.15em;
                     font-weight: 300;
-                    border-bottom: 1px solid rgba(0,0,0,0.3);
+                    ${entryCodes.length > 0 ?
+                        `border-bottom : 1px solid rgba(0,0,0,0.3);`
+                        :
+                        'border-radius: 10px;'
+                    }
                 }
                 .table-row:not(:last-child) {
-                    border-bottom: 1px solid grey;
+                    border - bottom: 1px solid grey;
                 }
                 .code-name {
-                    text-align: center;
+                    text - align: center;
                     font-weight: 300;
                     padding: 5px;
                 }
@@ -222,6 +240,17 @@ export const ViewFinishedCodesDialog = ({ testId, onDismissDialog, ...rest }) =>
                 }
                 .exit-icon {
                     width: 21px;
+                }
+                .option-buttons-container {
+                    display: flex;
+                    margin-top: 10px;
+                    justify-content: flex-end;
+                }
+                .no-finished-codes-text {
+                    display: block;
+                    padding: 5px;
+                    text-align: center;
+                    font-weight: 300;
                 }
                 `}
             </style>

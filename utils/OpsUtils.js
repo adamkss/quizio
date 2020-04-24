@@ -51,3 +51,9 @@ export const getArrayAfterElementMove = (array, sourceIndex, targetIndex) => {
         return array;
     }
 }
+
+export const downloadFileInFrontend = (url) => {
+    const a = document.createElement('a');
+    a.href = url;
+    a.click();
+}

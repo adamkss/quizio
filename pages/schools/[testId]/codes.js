@@ -140,7 +140,7 @@ const Codes = () => {
                     }
                     @keyframes TileEntry {
                         0% {
-                            filter: brightness(90%);
+                            filter: brightness(100%);
                             opacity: 0;
                             transform: translateY(-10px);
                         }
@@ -152,7 +152,7 @@ const Codes = () => {
                             filter: brightness(120%);
                         }
                         100% {
-                            filter: brightness(90%);
+                            filter: brightness(100%);
                         }
                     }
                     .tile:hover,
