@@ -52,6 +52,7 @@ export const getArrayAfterElementMove = (array, sourceIndex, targetIndex) => {
     }
 }
 
+//we dynamically create an "a" tag here
 export const downloadFileInFrontend = (url) => {
     const a = document.createElement('a');
     a.href = url;
