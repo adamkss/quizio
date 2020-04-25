@@ -500,7 +500,7 @@ const QuizzIllustration = () => {
             <div className="shell">
                 <h1>Hard Math Question</h1>
                 <SillyHandwritingWithOption text="Between 1914 - 1918" />
-                <SillyHandwritingWithOption text="sin(45)" checked />
+                <SillyHandwritingWithOption text="sin(90)" checked />
                 <SillyHandwritingWithOption text="Mozart" />
             </div>
             <style jsx>
