@@ -1,5 +1,6 @@
 import axios from 'axios';
-const baseURL = 'https://quizio.org:4000';
+//to be changed
+const baseURL = 'https://quizio.org/api';
 axios.defaults.baseURL = baseURL;
 
 export const setAuthToken = (accessToken) => {
