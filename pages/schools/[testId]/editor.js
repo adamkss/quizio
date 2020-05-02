@@ -201,10 +201,12 @@ const Editor = () => {
             updateTestSettings,
             testId,
             {
-                showResultAtTheEnd
+                showResultAtTheEnd,
+                newTestName: testName
             }
         );
-    }, [testId, onSettingsClose]);
+        loadTestInfo();
+    }, [testId, onSettingsClose, loadTestInfo]);
 
     return (
         <>
@@ -223,7 +225,7 @@ const Editor = () => {
                 </Link>
                 <div className="flex-space" />
                 {testInfo ?
-                    <h1 className="header__title fade-in">EDITING TEST: "<span className="header-title__quiz-name">{testInfo.name || ''}</span>"</h1>
+                    <h1 className="header__title fade-in" onClick={onSettingsPress}>EDITING TEST: "<span className="header-title__quiz-name">{testInfo.name || ''}</span>"</h1>
                     :
                     null
                 }
