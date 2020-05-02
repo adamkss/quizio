@@ -54,6 +54,7 @@ const Editor = () => {
     const [testInfo, setTestInfo] = useState(null);
     const [questions, setQuestions] = useState([]);
     const [isLoadingInProgress, setIsLoadingInProgress] = useState(false);
+    const [isDoneDialogOpen, setIsDoneDialogOpen] = useState(false);
     const [isCreatingQuestionInProgress, setIsCreatingQuestionsInProgress] = useState(false);
     const [isDNDEnabled, setIsDNDEnabled] = useState(false);
     const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState(false);
@@ -208,6 +209,14 @@ const Editor = () => {
         loadTestInfo();
     }, [testId, onSettingsClose, loadTestInfo]);
 
+    const onDoneButtonPress = React.useCallback(() => {
+        setIsDoneDialogOpen(true);
+    }, []);
+
+    const onDismissDoneDialog = React.useCallback(() => {
+        setIsDoneDialogOpen(false);
+    }, []);
+
     return (
         <>
             <LayoutSetup title="Quizio Schools - Test editor" />
@@ -240,7 +249,7 @@ const Editor = () => {
                     <img src="/static/settings.svg"></img>
                     <span>Test Settings</span>
                 </button>
-                <button className="header__done-button" onClick={() => { }}>Done</button>
+                <button className="header__done-button" onClick={onDoneButtonPress}>Done</button>
             </header>
             <main>
                 <Grid
@@ -282,6 +291,14 @@ const Editor = () => {
                         initialIsShowingOfFinalProcentEnabled={testInfo.showResultAtTheEnd}
                         onCancel={onSettingsClose}
                         onSave={onSettingsSave} />
+                    :
+                    null
+                }
+                {isDoneDialogOpen ?
+                    <TestDoneDialog
+                        testId={testId}
+                        onDismissDialog={onDismissDoneDialog}
+                        onTestTakeTestPress={() => { }} />
                     :
                     null
                 }
@@ -489,6 +506,45 @@ const TestSettingsDialog = (
                 {`
                     .margin-top {
                         margin-top: 10px;
+                    }
+                `}
+            </style>
+        </>
+    )
+}
+
+const TestDoneDialog = ({
+    testId = -1,
+    onDismissDialog,
+    onTestTakeTestPress
+}) => {
+    return (
+        <>
+            <GenericDialog title="Are you done?" onDismissDialog={onDismissDialog}>
+                <span className="done-dialog__description">Your test can be accessed with entry-codes.
+                Manage your entry-codes <a href={`/schools/${testId}/codes`} target="blank" className="u-color-inherit done-dialog-description-link">here</a>
+                 .</span>
+
+                <PrimaryButton
+                    secondary
+                    title="Done"
+                    marginTop
+                    onClick={onDismissDialog}
+                    rightAligned />
+            </GenericDialog>
+            <style jsx>
+                {`
+                    .done-dialog__description {
+                        font-weight: 300;
+                        color: rgba(0,0,0,0.8);
+                        font-size: 1.25rem;
+                    }
+                    .done-dialog-description-link {
+                        text-decoration: underline;
+                        text-decoration-style: dotted;
+                    }
+                    .done-dialog-description-link:hover {
+                        color: black;
                     }
                 `}
             </style>

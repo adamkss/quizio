@@ -349,7 +349,7 @@ export default () => {
                     }
                     <PrimaryButton
                         secondary
-                        title="Exit"
+                        title="Done"
                         marginTop
                         onClick={closeIsDoneDialog}
                         rightAligned />
