@@ -39,11 +39,11 @@ const Homepage = ({ currentUserDetails }) => {
                     <h1>Welcome, <span>{currentUserDetails.name}</span>.</h1>
                     <section className="tiles-container fade-and-slide-in">
                         <div className="tile quizzes-tile" onClick={onQuizzesTileClick}>
-                            <p className="tile__text">Manage my <span className="tile-text__bold">quizzes</span></p>
+                            <p className="tile__text">Manage my <span className="tile__text--bold">quizzes</span></p>
                             <QuizIllustration />
                         </div>
                         <div className="tile tests-tile" onClick={onTestsTileClick}>
-                            <p className="tile__text">Manage my <span className="tile-text__bold">tests</span></p>
+                            <p className="tile__text">Manage my <span className="tile__text--bold">tests</span></p>
                             <TestIllustration />
                         </div>
                     </section>
@@ -51,7 +51,7 @@ const Homepage = ({ currentUserDetails }) => {
                 {quizToContinueWorkingOn ?
                     <GenericDailog title="Continue editing your quiz?" onDismissDialog={onAbandonContinueAnonymousQuiz}>
                         <p className="continue-editing__text">Continue editing quiz "<span>{quizToContinueWorkingOn.genericQuizName}</span>" ?</p>
-                        <div className="horizontally-end-positioned">
+                        <div className="u-horizontally-end-positioned-content">
                             <PrimaryButton
                                 title="Continue"
                                 marginTop
@@ -129,7 +129,7 @@ const Homepage = ({ currentUserDetails }) => {
                         text-align: center;
                         font-weight: 200;
                     }
-                    .tile-text__bold {
+                    .tile__text--bold {
                         font-weight: 600;
                     }
                     .tile__img {

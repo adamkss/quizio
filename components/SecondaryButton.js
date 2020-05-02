@@ -6,12 +6,12 @@ export default ({ rightAligned = false, centered = false, ...rest }) => {
     return (
         <>
             {rightAligned ?
-                <div className="horizontally-end-positioned">
+                <div className="u-horizontally-end-positioned-content">
                     {secondaryButton}
                 </div>
                 :
                 centered ?
-                    <div className="horizontally-centered">
+                    <div className="u-horizontally-centered-content">
                         {secondaryButton}
                     </div>
                     :

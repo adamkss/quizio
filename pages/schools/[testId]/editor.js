@@ -232,7 +232,7 @@ const Editor = () => {
                         <span className="header-back__title">Quizio Schools</span>
                     </a>
                 </Link>
-                <div className="flex-space" />
+                <div className="u-flex-one" />
                 {testInfo ?
                     <h1 className="header__title fade-in" onClick={onSettingsPress}>EDITING TEST: "<span className="header-title__quiz-name">{testInfo.name || ''}</span>"</h1>
                     :
@@ -476,7 +476,7 @@ const TestSettingsDialog = (
                         marginTop
                         customMarginTop="15px"
                     />
-                    <div className="horizontally-end-positioned margin-top">
+                    <div className="u-horizontally-end-positioned-content margin-top">
                         <PrimaryButton
                             title="Done"
                             marginRight

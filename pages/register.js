@@ -61,7 +61,7 @@ export default () => {
     return (
         <>
             <LayoutSetup />
-            <div className="centered full-view-height small-lateral-padding">
+            <div className="u-centered-content u-full-view-height u-small-vertical-padding">
                 <div className="card fade-and-slide-in">
                     <header>
                         <Link href="/">
@@ -181,14 +181,14 @@ const FirstRegistrationStep = ({ nameReactState, emailReactState }) => {
     return (
         <>
             <LayoutSetup />
-            <div className="horizontally-centered fade-in">
+            <div className="u-horizontally-centered-content fade-in">
                 <TextInput
                     title="Name:"
                     width="100%"
                     value={nameReactState[0]}
                     valueSetter={nameReactState[1]} />
             </div>
-            <div className="horizontally-centered fade-in">
+            <div className="u-horizontally-centered-content fade-in">
                 <TextInput
                     title="E-mail:"
                     width="100%"
@@ -207,7 +207,7 @@ const SecondRegistrationStep = ({ passwordReactState, confirmPasswordReactState 
     return (
         <>
             <LayoutSetup />
-            <div className="horizontally-centered-vertical fade-in">
+            <div className="u-horizontally-centered-vertical-content fade-in">
                 <TextInput
                     password
                     title="Password:"
@@ -233,7 +233,7 @@ const ThirdRegistrationStep = ({ }) => {
     return (
         <>
             <LayoutSetup />
-            <div className="horizontally-centered-vertical fade-in">
+            <div className="u-horizontally-centered-vertical-content fade-in">
                 <img className="fade-and-slide-in" src="/static/check_circle-24px.svg" />
                 <span className="fade-in">You registered successfully!</span>
                 <SecondaryButton

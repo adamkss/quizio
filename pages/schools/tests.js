@@ -77,7 +77,7 @@ const Tests = () => {
                             />
                         </div>
                     )}
-                    <button className="icon-button">
+                    <button className="u-no-border u-no-outline">
                         <img
                             title="Create new quiz"
                             className="add-test-fab"

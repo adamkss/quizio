@@ -60,7 +60,7 @@ export default ({ onDismissDialog, onSaveQuestion }) => {
                         autoFocus />
                     <label className="options-label">Options:</label>
                     {questionOptions.length === 0 ?
-                        <div className="horizontally-centered">
+                        <div className="u-horizontally-centered-content">
                             <span className="no-options-yet">No options defined yet.</span>
                         </div>
                         :
@@ -82,7 +82,7 @@ export default ({ onDismissDialog, onSaveQuestion }) => {
                                 onClick={getQuestionOptionsDeleteCallback(index)} />
                         </div>
                     )}
-                    <div className="horizontally-centered">
+                    <div className="u-horizontally-centered-content">
                         <PrimaryButton title="Add option" color="pink" medium onClick={createNewEmptyOption}/>
                     </div>
                     <PrimaryButton

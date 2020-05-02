@@ -1,10 +1,10 @@
 import LayoutSetup from '../components/layoutSetup';
 import TextInput from '../components/TextInput';
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import PrimaryButton from '../components/PrimaryButton';
 import SecondaryButton from '../components/SecondaryButton';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { login } from '../utils/AuthUtils';
+import { login, resetIsSessionTimedOut } from '../utils/AuthUtils';
 import { saveSuccessfulLoginInfo } from '../utils/AuthUtils';
 import useAuthTokenIfExists from '../hooks/useAuthTokenIfExists';
 import Router from 'next/router';
@@ -13,19 +13,22 @@ import { assignAnonymousQuizToUserIfNeeded } from '../utils/QuizUtils';
 import Link from 'next/link';
 
 export default () => {
-    const [username, setUsername] = React.useState("");
-    const [password, setPassword] = React.useState("");
-    const [isLoginInProgress, setIsLoginInProgress] = React.useState(false);
-    const [isLoginFailed, setIsLoginFailed] = React.useState(false);
-    useAuthTokenIfExists({ redirectURLIfExists: '/homepage' });
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [isLoginInProgress, setIsLoginInProgress] = useState(false);
+    const [isLoginFailed, setIsLoginFailed] = useState(false);
 
-    const onLoginClicked = React.useCallback(async () => {
+    const [, , isSessionTimedOut] = useAuthTokenIfExists({ redirectURLIfExists: '/homepage' });
+
+    const onLoginClicked = useCallback(async () => {
         setIsLoginInProgress(true);
         try {
             const loginResponse = await login({ username, password });
             saveSuccessfulLoginInfo(loginResponse["access_token"]);
             setIsLoginFailed(false);
             await assignAnonymousQuizToUserIfNeeded();
+            if (isSessionTimedOut)
+                resetIsSessionTimedOut();
             Router.push('/homepage');
         }
         catch {
@@ -48,7 +51,14 @@ export default () => {
                             <TextInput title="Password:" width="100%" value={password} valueSetter={setPassword} password />
                             <span className="failed-login-indicator">
                                 Sorry, the credentials are wrong.
-                        </span>
+                            </span>
+                            {isSessionTimedOut ?
+                                <span className="session-timed-out-text">
+                                    The session timed out. Please login again.
+                                </span>
+                                :
+                                null
+                            }
                         </form>
                     </OnEnterPressBoundary>
                     <PrimaryButton title="Login" centered medium marginTop onClick={onLoginClicked} />
@@ -154,6 +164,11 @@ export default () => {
                     .illustration {
                         bottom: -130px;
                     }
+                }
+                .session-timed-out-text {
+                    width: 100%;
+                    text-align: center;
+                    font-weight: 300;
                 }
             `}
             </style>

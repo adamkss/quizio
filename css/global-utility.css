@@ -1,0 +1,48 @@
+.u-centered-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.u-full-view-height {
+    height: 100vh;
+}
+
+.u-small-vertical-padding {
+    padding: 0px 10px;
+}
+
+.u-horizontally-centered-content {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.u-horizontally-centered-vertical-content {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.u-horizontally-end-positioned-content {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.u-no-border {
+    border: none;
+}
+
+.u-no-outline {
+    outline: none;
+}
+
+.u-color-inherit {
+    color: inherit;
+}
+
+.u-flex-one {
+    flex: 1;
+}

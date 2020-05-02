@@ -118,7 +118,7 @@ const FirstStep = ({ setNewCodesNumber }) => {
         <>
             <div>
                 <span className="section-title">Number of new codes:</span>
-                <div className="horizontally-centered">
+                <div className="u-horizontally-centered-content">
                     <NumberInputWithControls width="300px" minimum={0} valueSetter={setNewCodesNumber} />
                 </div>
                 <span className="description">

@@ -49,7 +49,7 @@ export default ({ }) => {
             <main className={`${wasEnteringEffectShown ? null : "fade-and-slide-in"}`}>
                 <section className="dialog">
                     <h1>Name your quiz:</h1>
-                    <div className="horizontally-centered">
+                    <div className="u-horizontally-centered-content">
                         <TextInput width="100%" marginTop="20px" placeholder="Ex. Super hard math quiz..." value={title} valueSetter={setTitle} />
                     </div>
                     <div className="buttons-section">

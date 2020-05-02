@@ -1,4 +1,6 @@
-import '../css/global.css';
+import '../css/global-utility.css';
+import '../css/global-animations.css';
+import '../css/reset.css';
 
 function MyApp({ Component, pageProps }) {
     return <Component {...pageProps} />

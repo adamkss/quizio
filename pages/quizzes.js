@@ -93,7 +93,7 @@ const Quizzes = () => {
                             </div>
                         )}
                     </section>
-                    <button className="icon-button">
+                    <button className="u-no-border u-no-outline">
                         <img
                             title="Create new quiz"
                             className="add-quiz-fab"

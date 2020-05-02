@@ -270,7 +270,7 @@ export default () => {
                         <img src="/static/left-arrow.svg" alt="Back" />
                     </a>
                 </Link>
-                <div className="flex-space" />
+                <div className="u-flex-one" />
                 <h1 className="header__title">Quizio</h1>
                 <button className="header__quiz-settings-button" onClick={onQuizSettingsClick}>
                     <img src="/static/settings.svg"></img>
@@ -380,7 +380,7 @@ export default () => {
             {isAnonymousQuizDialogShown ?
                 <GenericDailog title="Hey there! You're not logged in..." onDismissDialog={onIgnoreAnonymousQuizWarningDialog}>
                     <p className="warning-dialog__text">Register for an account or login if you want to save the quiz and see the results of people :)</p>
-                    <div className="horizontally-end-positioned">
+                    <div className="u-horizontally-end-positioned-content">
                         <PrimaryButton
                             medium
                             color="blue"
@@ -397,7 +397,7 @@ export default () => {
                             onClick={onAnonymousClickRegister}
                         />
                     </div>
-                    <div className="horizontally-end-positioned">
+                    <div className="u-horizontally-end-positioned-content">
                         <PrimaryButton
                             title={isDoneDialogWanted ? `I will never want to edit my quiz` : `Later`}
                             marginTop
@@ -621,7 +621,7 @@ const QuizSettingsDialog = (
                     onChange={showingOfFinalProcentCheckBoxStateChangeCallback}
                     marginTop
                 />
-                <div className="horizontally-end-positioned">
+                <div className="u-horizontally-end-positioned-content">
                     <PrimaryButton
                         title="Done"
                         marginRight
