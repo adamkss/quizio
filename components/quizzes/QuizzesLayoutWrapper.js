@@ -16,7 +16,7 @@ const getRouteNameAfterPath = (path) => {
 }
 
 export const QuizzesLayoutWrapper = ({ children, extraParamFromChild, isLoading = false, addObserverCallback = null }) => {
-    const { pathname: pathName } = useRouter();
+    const { pathname: pathName, asPath } = useRouter();
     const [page, setPage] = useState("");
     const [formalPageName, setFormalPageName] = useState('Quizio');
     const [breadcrumbParts, setBreadcrumbParts] = useState([]);
@@ -31,7 +31,7 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild, isLoading 
             switch (routeName) {
                 case "Quizio - Homepage": setBreadcrumbParts([{
                     text: "Homepage",
-                    link: null
+                    link: "/homepage"
                 }]); break;
                 case "Quizio - My quizzes": setBreadcrumbParts([
                     {
@@ -46,11 +46,11 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild, isLoading 
                     },
                     {
                         text: extraParamFromChild,
-                        link: null
+                        link: asPath
                     },
                     {
                         text: "Results",
-                        link: null
+                        link: asPath
                     }
                 ]); break;
                 case "Quizio Schools - Tests": setBreadcrumbParts([
@@ -66,12 +66,12 @@ export const QuizzesLayoutWrapper = ({ children, extraParamFromChild, isLoading 
                     },
                     {
                         text: "Test entry codes",
-                        link: null
+                        link: asPath
                     }
                 ]); break;
             }
         }
-    }, [pathName, extraParamFromChild]);
+    }, [pathName, asPath, extraParamFromChild]);
 
     const toggleMenuCallback = useCallback(() => {
         setIsMenuOpen(isOpen => !isOpen);
