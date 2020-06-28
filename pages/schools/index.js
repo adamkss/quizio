@@ -95,7 +95,7 @@ export default () => {
                 <section id="about-us" className="about-us-container">
                     <h1>About us</h1>
                     <span className="about__quizio-title">Quizio</span>
-                    <span className="about__quizio-subtitle">making quizzes beautiful since 2020</span>
+                    <span className="about__quizio-subtitle">making quizzes beautiful since 2020. <br/> Made by Andra Neagu.</span>
                 </section>
                 <footer>
                     <span>Quizio - 2020</span>
