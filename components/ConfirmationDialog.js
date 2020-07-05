@@ -27,6 +27,7 @@ export default ({
             title={positiveAnswer}
             onClick={onConfirm}
             medium
+            borderInsteadOfShadow
             color={positiveIsRed ? "white" : "green"}
             textColor={positiveIsRed ? "#ba2232" : "white"}
           />

@@ -258,7 +258,7 @@ export default () => {
 
     return (
         <>
-            <LayoutSetup />
+            <LayoutSetup title="Quizio | Editor" />
             {isAsyncOperationInProgress ?
                 <LoadingSpinner />
                 :
@@ -631,7 +631,7 @@ const QuizSettingsDialog = (
                     />
                     <PrimaryButton
                         title="Cancel"
-                        color="red"
+                        secondary
                         marginTop
                         medium
                         onClick={onCancelClick}

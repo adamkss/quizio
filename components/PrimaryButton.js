@@ -18,9 +18,15 @@ export default ({ rightAligned = false, centered = false, ...rest }) => {
   );
 };
 
-const getColorBehaviorsForColor = (color, secondary, textColor) => {
+const getColorBehaviorsForColor = (
+  color,
+  secondary,
+  textColor,
+  borderInsteadOfShadow
+) => {
+  let colors;
   if (secondary) {
-    return {
+    colors = {
       textColor: "black",
       backgroundColorDefault: "white",
       backgroundColorHover: "hsl(0, 0%, 85%)",
@@ -30,77 +36,91 @@ const getColorBehaviorsForColor = (color, secondary, textColor) => {
       boxShadowActive: "none",
       borderDefault: "1px solid hsl(0, 0%, 75%)",
     };
-  }
-  switch (color) {
-    case "green":
-      return {
-        textColor: textColor,
-        backgroundColorDefault: "#4BAC60",
-        backgroundColorHover: "#4BAC60",
-        backgroundColorActive: "darkgreen",
-        boxShadowDefault: "1px 1px 8px #4BAC60",
-        boxShadowHover: "1px 1px 12px #4BAC60",
-        boxShadowActive: "1px 1px 12px darkgreen",
-        borderDefault: "none",
-      };
-    case "red":
-      return {
-        textColor: textColor,
-        backgroundColorDefault: "#ba2232",
-        backgroundColorHover: "#ba2232",
-        backgroundColorActive: "purple",
-        boxShadowDefault: "1px 1px 8px #ba2232",
-        boxShadowHover: "1px 1px 12px #ba2232",
-        boxShadowActive: "1px 1px 12px purple",
-        borderDefault: "none",
-      };
-    case "blue":
-      return {
-        textColor: textColor,
-        backgroundColorDefault: "blue",
-        backgroundColorHover: "#0040FF",
-        backgroundColorActive: "blue",
-        boxShadowDefault: "1px 1px 8px blue",
-        boxShadowHover: "1px 1px 12px #0040FF",
-        boxShadowActive: "1px 1px 12px blue",
-        borderDefault: "none",
-      };
-    case "pink":
-      return {
-        textColor: textColor,
-        backgroundColorDefault: "#F64D72",
-        backgroundColorHover: "#FF4D90",
-        backgroundColorActive: "#b51b45",
-        boxShadowDefault: "1px 1px 8px #F64D72",
-        boxShadowHover: "1px 1px 12px #FF4D90",
-        boxShadowActive: "1px 1px 12px #b51b45",
-        borderDefault: "none",
-      };
-    case "purple": {
-      return {
-        textColor: textColor,
-        backgroundColorDefault: "#43318D",
-        backgroundColorHover: "#43318D",
-        backgroundColorActive: "#43318D",
-        boxShadowDefault: "1px 1px 8px #43318D",
-        boxShadowHover: "1px 1px 12px #43318D",
-        boxShadowActive: "1px 1px 12px #43318D",
-        borderDefault: "none",
-      };
+  } else {
+    switch (color) {
+      case "green":
+        colors = {
+          textColor: textColor,
+          backgroundColorDefault: "#4BAC60",
+          backgroundColorHover: "#4BAC60",
+          backgroundColorActive: "darkgreen",
+          boxShadowDefault: "1px 1px 8px #4BAC60",
+          boxShadowHover: "1px 1px 12px #4BAC60",
+          boxShadowActive: "1px 1px 12px darkgreen",
+          borderDefault: "none",
+        };
+        break;
+      case "red":
+        colors = {
+          textColor: textColor,
+          backgroundColorDefault: "#ba2232",
+          backgroundColorHover: "#ba2232",
+          backgroundColorActive: "purple",
+          boxShadowDefault: "1px 1px 8px #ba2232",
+          boxShadowHover: "1px 1px 12px #ba2232",
+          boxShadowActive: "1px 1px 12px purple",
+          borderDefault: "none",
+        };
+        break;
+      case "blue":
+        colors = {
+          textColor: textColor,
+          backgroundColorDefault: "blue",
+          backgroundColorHover: "#0040FF",
+          backgroundColorActive: "blue",
+          boxShadowDefault: "1px 1px 8px blue",
+          boxShadowHover: "1px 1px 12px #0040FF",
+          boxShadowActive: "1px 1px 12px blue",
+          borderDefault: "none",
+        };
+        break;
+      case "pink":
+        colors = {
+          textColor: textColor,
+          backgroundColorDefault: "#F64D72",
+          backgroundColorHover: "#FF4D90",
+          backgroundColorActive: "#b51b45",
+          boxShadowDefault: "1px 1px 8px #F64D72",
+          boxShadowHover: "1px 1px 12px #FF4D90",
+          boxShadowActive: "1px 1px 12px #b51b45",
+          borderDefault: "none",
+        };
+        break;
+      case "purple": {
+        colors = {
+          textColor: textColor,
+          backgroundColorDefault: "#43318D",
+          backgroundColorHover: "#43318D",
+          backgroundColorActive: "#43318D",
+          boxShadowDefault: "1px 1px 8px #43318D",
+          boxShadowHover: "1px 1px 12px #43318D",
+          boxShadowActive: "1px 1px 12px #43318D",
+          borderDefault: "none",
+        };
+        break;
+      }
+      case "white": {
+        colors = {
+          textColor: textColor,
+          backgroundColorDefault: "white",
+          backgroundColorHover: "rgba(0, 0, 0, 0.1)",
+          backgroundColorActive: "rgba(0, 0, 0, 0.4)",
+          boxShadowDefault: "1px 1px 8px rgba(0,0,0, 0.4)",
+          boxShadowHover: "1px 1px 12px rgba(0,0,0, 0.5)",
+          boxShadowActive: "1px 1px 12px rgba(0,0,0, 0.5)",
+          borderDefault: "none",
+        };
+        break;
+      }
     }
-    case "white": {
-      return {
-        textColor: textColor,
-        backgroundColorDefault: "white",
-        backgroundColorHover: "white",
-        backgroundColorActive: "rgba(0,0,0,0.4)",
-        boxShadowDefault: "1px 1px 8px rgba(0,0,0, 0.4)",
-        boxShadowHover: "1px 1px 12px rgba(0,0,0, 0.5)",
-        boxShadowActive: "1px 1px 12px rgba(0,0,0, 0.5)",
-        borderDefault: "none",
-      };
-    }
   }
+  if (borderInsteadOfShadow) {
+    colors.boxShadowActive = "none";
+    colors.boxShadowDefault = "none";
+    colors.boxShadowHover = "none";
+    colors.borderDefault = "1px solid hsl(0, 0%, 75%)";
+  }
+  return colors;
 };
 
 const PrimaryButton = ({
@@ -120,12 +140,14 @@ const PrimaryButton = ({
   secondary = false,
   noFixedWidth = false,
   textColor = "white",
+  borderInsteadOfShadow = false,
   ...rest
 }) => {
   const colorsForDifferentStates = getColorBehaviorsForColor(
     color,
     secondary,
-    textColor
+    textColor,
+    borderInsteadOfShadow
   );
   const onClickHandler = React.useCallback(() => {
     if (linkTo) {
@@ -202,7 +224,9 @@ const PrimaryButton = ({
 
                   button.inactive {
                       background-color: grey;
-                      box-shadow: 1px 1px 8px grey;
+                      box-shadow: ${
+                        borderInsteadOfShadow ? "none" : "1px 1px 8px grey"
+                      };
                       cursor: default;
                   }
                   button:not(.inactive):hover {
