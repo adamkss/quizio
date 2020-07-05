@@ -1,5 +1,5 @@
 const webpack = require("webpack");
-// Initialize doteenv library
+// Initialize the dotenv library
 require("dotenv").config();
 
 module.exports = {
